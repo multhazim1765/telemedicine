@@ -22,11 +22,15 @@ All notable changes made to this project are documented in this file.
     - `In stock`
     - `Out of stock`
   - Removed low-stock category from both filter options and displayed status labels.
+- Updated login screen layout in `src/App.tsx`:
+  - Moved login-page switching into a dedicated sidebar panel for easier access.
+  - Prevented login form squeeze by widening the auth container for sidebar mode.
+  - Applied responsive split layout so the main form and sidebar both remain readable.
 
 ### Repository
 - Initialized local Git repository and configured remote:
   - Remote: `https://github.com/multhazim1765/telemedicine.git`
 - Resolved remote history conflict (`README.md`) during rebase and completed push.
-- Pushed latest pharmacy change to `main`:
-  - Commit: `acdaf78`
-  - Message: `Pharmacy: remove low stock state and filters`
+- Pushed updates to `main`:
+  - Commit: `acdaf78` — `Pharmacy: remove low stock state and filters`
+  - Commit: `de29a52` — `Login: widen sidebar layout and add changelog`
