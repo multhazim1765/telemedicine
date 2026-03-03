@@ -52,8 +52,8 @@ const resolveDashboardPath = (role: UserRole, hospitalName?: string): string => 
 
 const prettyRole = (role: UserRole): string => role.charAt(0).toUpperCase() + role.slice(1);
 
-const AuthCard = ({ children }: { children: ReactNode }) => (
-  <main className="mx-auto flex min-h-screen w-full max-w-md items-center p-4">
+const AuthCard = ({ children, wide = false }: { children: ReactNode; wide?: boolean }) => (
+  <main className={`mx-auto flex min-h-screen w-full items-center p-4 ${wide ? "max-w-5xl" : "max-w-md"}`}>
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -72,6 +72,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [showResetHint, setShowResetHint] = useState(false);
   const requestedHospitalName = hospitalSlug ? hospitalSlugToName(hospitalSlug) : undefined;
+  const showLoginSidebar = !requestedHospitalName || !isFirebaseConfigured;
 
   const demoCredentials = getDemoCredentials().filter((credential) => {
     if (!requestedHospitalName) {
@@ -109,77 +110,85 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthCard>
-      <p className="text-xs font-semibold text-[#2BB673]">Rural Health Network</p>
-      <h1 className="mt-1 text-2xl font-semibold text-slate-800">
-        {requestedHospitalName ? `${requestedHospitalName} Login` : "Welcome Back"}
-      </h1>
-      <p className="mt-1 text-sm text-slate-500">Secure access with role-based medical dashboards.</p>
+    <AuthCard wide={showLoginSidebar}>
+      <div className={`grid gap-4 ${showLoginSidebar ? "lg:grid-cols-[minmax(360px,1fr)_320px]" : ""}`}>
+        <div>
+          <p className="text-xs font-semibold text-[#2BB673]">Rural Health Network</p>
+          <h1 className="mt-1 text-2xl font-semibold text-slate-800">
+            {requestedHospitalName ? `${requestedHospitalName} Login` : "Welcome Back"}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">Secure access with role-based medical dashboards.</p>
 
-      <form className="mt-4 space-y-3" onSubmit={onSubmit}>
-        <input className="input" placeholder="Phone number (or email)" value={email} onChange={(event) => setEmail(event.target.value)} />
-        <input className="input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-        <button className="btn-primary relative w-full overflow-hidden">
-          <span className="relative z-10">Login</span>
-          <span className="absolute inset-0 -z-0 animate-pulse bg-white/10" />
-        </button>
-      </form>
+          <form className="mt-4 space-y-3" onSubmit={onSubmit}>
+            <input className="input" placeholder="Phone number (or email)" value={email} onChange={(event) => setEmail(event.target.value)} />
+            <input className="input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
+            <button className="btn-primary relative w-full overflow-hidden">
+              <span className="relative z-10">Login</span>
+              <span className="absolute inset-0 -z-0 animate-pulse bg-white/10" />
+            </button>
+          </form>
 
-      <button className="mt-2 text-xs font-medium text-[#2BB673]" onClick={() => setShowResetHint((value) => !value)}>
-        Reset password help
-      </button>
-      <AnimatePresence>
-        {showResetHint && (
-          <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-2 rounded-xl bg-emerald-50 p-2 text-xs text-emerald-700">
-            Admin can reset from Security section. Firebase users also support email reset.
-          </motion.p>
+          <button className="mt-2 text-xs font-medium text-[#2BB673]" onClick={() => setShowResetHint((value) => !value)}>
+            Reset password help
+          </button>
+          <AnimatePresence>
+            {showResetHint && (
+              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-2 rounded-xl bg-emerald-50 p-2 text-xs text-emerald-700">
+                Admin can reset from Security section. Firebase users also support email reset.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          <p className="mt-3 text-xs text-slate-600">
+            New user? <Link className="font-semibold text-[#2BB673]" to="/signup">Create account</Link>
+          </p>
+
+          {error && (
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-700">
+              {error}
+            </motion.p>
+          )}
+        </div>
+
+        {showLoginSidebar && (
+          <aside className="space-y-3">
+            {!requestedHospitalName && (
+              <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                <p className="mb-2 text-xs font-semibold text-slate-700">Switch Login Page</p>
+                <div className="grid gap-2">
+                  {hospitalLoginAccounts.map((account) => (
+                    <Link key={account.uid} className="btn-muted text-left" to={`/login/hospital/${hospitalNameToSlug(account.hospitalName ?? "")}`}>
+                      {account.hospitalName}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isFirebaseConfigured && (
+              <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                <p className="mb-2 text-xs font-semibold text-slate-700">Quick demo accounts</p>
+                <div className="grid gap-2">
+                  {demoCredentials.map((demoUser) => (
+                    <button
+                      key={demoUser.email}
+                      className="btn-muted w-full text-left"
+                      type="button"
+                      onClick={() => {
+                        setEmail(demoUser.email);
+                        setPassword(demoUser.password);
+                        void completeLogin(demoUser.email, demoUser.password).catch((err) => setError((err as Error).message));
+                      }}
+                    >
+                      {prettyRole(demoUser.role)} · {demoUser.email}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
         )}
-      </AnimatePresence>
-
-      <p className="mt-3 text-xs text-slate-600">
-        New user? <Link className="font-semibold text-[#2BB673]" to="/signup">Create account</Link>
-      </p>
-
-      {!requestedHospitalName && (
-        <div className="mt-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-          <p className="mb-2 text-xs font-semibold text-slate-700">Hospital Login Pages</p>
-          <div className="grid gap-2">
-            {hospitalLoginAccounts.map((account) => (
-              <Link key={account.uid} className="btn-muted text-left" to={`/login/hospital/${hospitalNameToSlug(account.hospitalName ?? "")}`}>
-                {account.hospitalName}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!isFirebaseConfigured && (
-        <div className="mt-4 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-          <p className="mb-2 text-xs font-semibold text-slate-700">Quick demo accounts</p>
-          <div className="grid gap-2">
-            {demoCredentials.map((demoUser) => (
-              <button
-                key={demoUser.email}
-                className="btn-muted w-full text-left"
-                type="button"
-                onClick={() => {
-                  setEmail(demoUser.email);
-                  setPassword(demoUser.password);
-                  void completeLogin(demoUser.email, demoUser.password).catch((err) => setError((err as Error).message));
-                }}
-              >
-                {prettyRole(demoUser.role)} · {demoUser.email}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-700">
-          {error}
-        </motion.p>
-      )}
+      </div>
     </AuthCard>
   );
 };
