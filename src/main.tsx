@@ -1,0 +1,19 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./index.css";
+import { registerServiceWorker } from "./pwa/registerServiceWorker";
+import { startAutoSync } from "./agents/syncAgent";
+import { processSyncAction } from "./services/firestoreService";
+
+registerServiceWorker();
+startAutoSync(processSyncAction);
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
