@@ -10,7 +10,7 @@ export const PharmacyDashboard = () => {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [stocks, setStocks] = useState<MedicineStock[]>([]);
   const [phoneFilter, setPhoneFilter] = useState("");
-  const [stockFilter, setStockFilter] = useState<"all" | "low" | "in">("all");
+  const [stockFilter, setStockFilter] = useState<"all" | "in" | "out">("all");
   const [stockSearch, setStockSearch] = useState("");
 
   useEffect(() => {
@@ -44,12 +44,12 @@ export const PharmacyDashboard = () => {
         return false;
       }
 
-      if (stockFilter === "low") {
-        return stock.quantity > 0 && stock.quantity <= 10;
+      if (stockFilter === "in") {
+        return stock.quantity > 0;
       }
 
-      if (stockFilter === "in") {
-        return stock.inStock && stock.quantity > 0;
+      if (stockFilter === "out") {
+        return stock.quantity <= 0;
       }
 
       return true;
@@ -68,10 +68,10 @@ export const PharmacyDashboard = () => {
             value={stockSearch}
             onChange={(event) => setStockSearch(event.target.value)}
           />
-          <select className="input md:w-44" value={stockFilter} onChange={(event) => setStockFilter(event.target.value as "all" | "low" | "in") }>
+          <select className="input md:w-44" value={stockFilter} onChange={(event) => setStockFilter(event.target.value as "all" | "in" | "out") }>
             <option value="all">All stock</option>
-            <option value="low">Low stock</option>
             <option value="in">In stock</option>
+            <option value="out">Out of stock</option>
           </select>
         </div>
 
@@ -87,20 +87,24 @@ export const PharmacyDashboard = () => {
             </thead>
             <tbody>
               {filteredStocks.map((stock) => {
-                const lowStock = stock.quantity <= 10;
+                const isOutOfStock = stock.quantity <= 0;
+                const statusLabel = isOutOfStock ? "Out of stock" : "In stock";
+                const statusClassName = isOutOfStock
+                  ? "bg-rose-100 text-rose-700"
+                  : "bg-emerald-100 text-emerald-700";
                 return (
                   <motion.tr
                     key={stock.id}
-                    className={`border-t border-slate-200 ${lowStock ? "bg-amber-50" : "bg-white"}`}
-                    animate={lowStock ? { opacity: [1, 0.7, 1] } : { opacity: 1 }}
-                    transition={lowStock ? { duration: 1.2, repeat: Infinity } : { duration: 0.2 }}
+                    className="border-t border-slate-200 bg-white"
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <td className="px-2 py-2">{stock.medicineName}</td>
                     <td className="px-2 py-2">{stock.medicineId}</td>
                     <td className="px-2 py-2">{stock.quantity}</td>
                     <td className="px-2 py-2">
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${stock.inStock && stock.quantity > 0 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
-                        {stock.inStock && stock.quantity > 0 ? "Available" : "Out of stock"}
+                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${statusClassName}`}>
+                        {statusLabel}
                       </span>
                     </td>
                   </motion.tr>
