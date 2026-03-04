@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { subscribeCollection } from "../../services/firestoreService";
 import { Appointment, PharmacyRequest } from "../../types/models";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
+import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
 export const AnalyticsPage = () => {
+  const businessDate = useBusinessDate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [requests, setRequests] = useState<PharmacyRequest[]>([]);
 
@@ -16,29 +19,41 @@ export const AnalyticsPage = () => {
     };
   }, []);
 
+  const requestsForBusinessDate = useMemo(
+    () => requests.filter((item) => String(item.updatedAt ?? "").startsWith(businessDate)),
+    [requests, businessDate]
+  );
+
+  const appointmentsForBusinessDate = useMemo(
+    () => appointments.filter((item) => item.appointmentDate === businessDate),
+    [appointments, businessDate]
+  );
+
   const smsData = useMemo(() => {
-    const sent = requests.filter((item) => item.smsDeliveryStatus === "sent").length;
-    const failed = requests.filter((item) => item.smsDeliveryStatus === "failed").length;
-    const pending = requests.filter((item) => !item.smsDeliveryStatus || item.smsDeliveryStatus === "pending").length;
+    const sent = requestsForBusinessDate.filter((item) => item.smsDeliveryStatus === "sent").length;
+    const failed = requestsForBusinessDate.filter((item) => item.smsDeliveryStatus === "failed").length;
+    const pending = requestsForBusinessDate.filter((item) => !item.smsDeliveryStatus || item.smsDeliveryStatus === "pending").length;
     return [
       { name: "Sent", value: sent, color: "#2BB673" },
       { name: "Failed", value: failed, color: "#ef4444" },
       { name: "Pending", value: pending, color: "#f59e0b" }
     ];
-  }, [requests]);
+  }, [requestsForBusinessDate]);
 
   const appointmentBySlot = useMemo(() => {
-    const slots = appointments.reduce<Record<string, number>>((acc, item) => {
+    const slots = appointmentsForBusinessDate.reduce<Record<string, number>>((acc, item) => {
       acc[item.slot] = (acc[item.slot] ?? 0) + 1;
       return acc;
     }, {});
     return Object.entries(slots).map(([name, value]) => ({ name, value }));
-  }, [appointments]);
+  }, [appointmentsForBusinessDate]);
 
   return (
-    <section className="grid gap-4 lg:grid-cols-2">
-      <article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-        <h3 className="mb-2 text-sm font-semibold text-slate-700">SMS Delivery Mix</h3>
+    <div className="space-y-3">
+      <BusinessDateBadge />
+      <section className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <h3 className="mb-2 text-sm font-semibold text-slate-700">SMS Delivery Mix ({businessDate})</h3>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -51,10 +66,10 @@ export const AnalyticsPage = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </article>
+        </article>
 
-      <article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-        <h3 className="mb-2 text-sm font-semibold text-slate-700">Appointments By Slot</h3>
+        <article className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <h3 className="mb-2 text-sm font-semibold text-slate-700">Appointments By Slot ({businessDate})</h3>
         <ul className="space-y-2 text-sm">
           {appointmentBySlot.map((entry) => (
             <li key={entry.name} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
@@ -63,7 +78,8 @@ export const AnalyticsPage = () => {
             </li>
           ))}
         </ul>
-      </article>
-    </section>
+        </article>
+      </section>
+    </div>
   );
 };

@@ -5,6 +5,8 @@ import { SkeletonCards } from "../../components/ui/Feedback";
 import { listCollection } from "../../services/firestoreService";
 import { Appointment, Doctor, Patient, PharmacyRequest, TriageSession } from "../../types/models";
 import { DashboardCard } from "../../components/ui/DashboardCard";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
+import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
 const monthLabel = (dateText?: string): string => {
   if (!dateText) {
@@ -18,6 +20,7 @@ const monthLabel = (dateText?: string): string => {
 };
 
 export const SystemOverviewPage = () => {
+  const businessDate = useBusinessDate();
   const [loading, setLoading] = useState(true);
   const [loadMessage, setLoadMessage] = useState("");
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -69,10 +72,11 @@ export const SystemOverviewPage = () => {
     };
   }, []);
 
-  const today = new Date().toISOString().slice(0, 10);
-  const appointmentsToday = appointments.filter((item) => item.appointmentDate === today).length;
-  const highRiskCases = triageSessions.filter((item) => item.result.severityLevel === "high").length;
-  const smsSentToday = pharmacyRequests.filter((item) => item.smsDeliveryStatus === "sent").length;
+  const appointmentsToday = appointments.filter((item) => item.appointmentDate === businessDate).length;
+  const highRiskCases = triageSessions.filter((item) => item.result?.severityLevel === "high").length;
+  const smsSentToday = pharmacyRequests.filter(
+    (item) => item.smsDeliveryStatus === "sent" && String(item.updatedAt ?? "").startsWith(businessDate)
+  ).length;
 
   const patientTrendData = useMemo(() => {
     const counts = patients.reduce<Record<string, number>>((acc, patient) => {
@@ -86,7 +90,7 @@ export const SystemOverviewPage = () => {
 
   const riskDistributionData = useMemo(() => {
     const buckets = triageSessions.reduce<Record<string, number>>((acc, session) => {
-      const key = session.result.severityLevel;
+      const key = session.result?.severityLevel ?? "low";
       acc[key] = (acc[key] ?? 0) + 1;
       return acc;
     }, {});
@@ -100,7 +104,7 @@ export const SystemOverviewPage = () => {
 
   const medicineUsageData = useMemo(() => {
     const usage = pharmacyRequests.reduce<Record<string, number>>((acc, request) => {
-      request.medicines.forEach((medicine) => {
+      (request.medicines ?? []).forEach((medicine) => {
         acc[medicine] = (acc[medicine] ?? 0) + 1;
       });
       return acc;
@@ -118,6 +122,7 @@ export const SystemOverviewPage = () => {
 
   return (
     <section className="space-y-4">
+      <BusinessDateBadge />
       {loadMessage && (
         <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-700 ring-1 ring-amber-200">{loadMessage}</p>
       )}

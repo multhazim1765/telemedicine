@@ -21,12 +21,12 @@ export const LogsPage = () => {
           <motion.div key={log.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Accordion>
               <AccordionSummary expandIcon={<ChevronDown className="h-4 w-4" />}>
-                <p className="text-sm font-medium text-slate-700">{log.symptoms.join(", ").slice(0, 80)}</p>
+                <p className="text-sm font-medium text-slate-700">{(log.symptoms ?? []).join(", ").slice(0, 80) || "No symptom details"}</p>
               </AccordionSummary>
               <AccordionDetails>
-                <p className="text-xs text-slate-600">Severity: {log.result.severityLevel}</p>
-                <p className="text-xs text-slate-600">Action: {log.result.recommendedAction}</p>
-                <p className="text-xs text-slate-500">Created: {log.createdAt}</p>
+                <p className="text-xs text-slate-600">Severity: {log.result?.severityLevel ?? "unknown"}</p>
+                <p className="text-xs text-slate-600">Action: {log.result?.recommendedAction ?? "N/A"}</p>
+                <p className="text-xs text-slate-500">Created: {log.createdAt ?? "N/A"}</p>
               </AccordionDetails>
             </Accordion>
           </motion.div>

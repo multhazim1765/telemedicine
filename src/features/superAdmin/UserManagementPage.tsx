@@ -1,11 +1,16 @@
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Drawer, TextField } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { Trash2, UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AppUser, UserRole } from "../../types/models";
 import { useToast } from "../../components/ui/ToastProvider";
 import { adminApi } from "../../services/adminApi";
 import { subscribeCollection } from "../../services/firestoreService";
+import { addDemoUser, deleteDemoUser } from "../../services/authService";
+import { isFirebaseConfigured } from "../../services/firebase";
+import { useAuth } from "../../hooks/useAuth";
+
+type UserCategory = "all" | "hospital" | "patient" | "pharmacy";
 
 const roleColor: Record<UserRole, "default" | "primary" | "secondary" | "success" | "warning" | "error" | "info"> = {
   patient: "info",
@@ -16,7 +21,10 @@ const roleColor: Record<UserRole, "default" | "primary" | "secondary" | "success
 
 export const UserManagementPage = () => {
   const { pushToast } = useToast();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<AppUser[]>([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<UserCategory>("all");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [confirmDeleteUid, setConfirmDeleteUid] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -31,15 +39,58 @@ export const UserManagementPage = () => {
     return unsub;
   }, []);
 
+  const categoryCount = useMemo(() => {
+    return {
+      all: users.length,
+      hospital: users.filter((user) => user.role === "doctor").length,
+      patient: users.filter((user) => user.role === "patient").length,
+      pharmacy: users.filter((user) => user.role === "pharmacy").length
+    };
+  }, [users]);
+
+  const filteredUsers = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return users.filter((user) => {
+      const inCategory =
+        category === "all"
+          ? true
+          : category === "hospital"
+            ? user.role === "doctor"
+            : user.role === category;
+
+      if (!inCategory) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      return [user.displayName, user.email, user.phone ?? "", user.hospitalName ?? ""]
+        .some((value) => value.toLowerCase().includes(normalizedSearch));
+    });
+  }, [users, category, search]);
+
   const onCreateUser = async () => {
     try {
-      await adminApi.addUser({
-        uid: `admin-created-${Date.now()}`,
+      if (isFirebaseConfigured) {
+        throw new Error("Create user is disabled in Firebase mode. Create users in Firebase Auth first.");
+      }
+
+      const createdUser = addDemoUser({
         email: form.email,
+        password: form.password,
         displayName: form.displayName,
-        role: form.role,
-        phone: ""
+        role: form.role
       });
+
+      await adminApi.addUser({
+        ...createdUser,
+        id: createdUser.uid,
+        phone: createdUser.phone ?? ""
+      });
+
       setDrawerOpen(false);
       setForm({ email: "", password: "", displayName: "", role: "patient" });
       pushToast("User added successfully", "success");
@@ -52,9 +103,23 @@ export const UserManagementPage = () => {
     if (!confirmDeleteUid) {
       return;
     }
-    await adminApi.deleteUser(confirmDeleteUid);
-    setConfirmDeleteUid(null);
-    pushToast("User removed", "info");
+
+    try {
+      if (isFirebaseConfigured) {
+        throw new Error("Delete user is disabled in Firebase mode. Remove users from Firebase Auth.");
+      }
+
+      if (confirmDeleteUid === currentUser?.uid) {
+        throw new Error("You cannot delete the currently signed-in account.");
+      }
+
+      deleteDemoUser(confirmDeleteUid);
+      await adminApi.deleteUser(confirmDeleteUid);
+      setConfirmDeleteUid(null);
+      pushToast("User removed", "info");
+    } catch (error) {
+      pushToast((error as Error).message, "error");
+    }
   };
 
   return (
@@ -66,19 +131,38 @@ export const UserManagementPage = () => {
         </Button>
       </div>
 
+      <div className="mb-3 grid gap-2 rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200 md:grid-cols-[1fr_auto_auto_auto_auto]">
+        <TextField
+          size="small"
+          fullWidth
+          label="Search users"
+          placeholder="Name, email, phone, hospital"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <Button variant={category === "all" ? "contained" : "outlined"} onClick={() => setCategory("all")}>All ({categoryCount.all})</Button>
+        <Button variant={category === "hospital" ? "contained" : "outlined"} onClick={() => setCategory("hospital")}>Hospital ({categoryCount.hospital})</Button>
+        <Button variant={category === "patient" ? "contained" : "outlined"} onClick={() => setCategory("patient")}>Patient ({categoryCount.patient})</Button>
+        <Button variant={category === "pharmacy" ? "contained" : "outlined"} onClick={() => setCategory("pharmacy")}>Pharmacy ({categoryCount.pharmacy})</Button>
+      </div>
+
       <div className="space-y-2">
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
           <motion.div key={user.uid} layout className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-800">{user.displayName}</p>
               <p className="truncate text-xs text-slate-500">{user.email}</p>
+              {user.phone && <p className="truncate text-xs text-slate-500">{user.phone}</p>}
             </div>
-            <Chip size="small" color={roleColor[user.role]} label={user.role} />
+            <Chip size="small" color={roleColor[user.role]} label={user.role === "doctor" ? "hospital" : user.role} />
             <Button color="error" onClick={() => setConfirmDeleteUid(user.uid)} startIcon={<Trash2 size={14} />}>
               Delete
             </Button>
           </motion.div>
         ))}
+        {filteredUsers.length === 0 && (
+          <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600 ring-1 ring-slate-200">No users found for current category/search.</p>
+        )}
       </div>
 
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>

@@ -12,6 +12,8 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { sendPrescriptionSMSNow } from "../../services/functionService";
 import { hospitalNameToSlug, hospitalSlugToName } from "../../data/hospitalDoctors";
 import { buildPrescriptionSmsTemplate, runClinicalDecisionSupport } from "../../services/clinicalDecisionService";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
+import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
 export const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ export const DoctorDashboard = () => {
   const [overrideText, setOverrideText] = useState("");
   const [confirmSendOpen, setConfirmSendOpen] = useState(false);
   const [statusText, setStatusText] = useState("");
+  const businessDate = useBusinessDate();
 
   useEffect(() => {
     const unsubDoctors = subscribeCollection("doctors", setDoctors);
@@ -279,7 +282,7 @@ export const DoctorDashboard = () => {
     .filter(
       (item) =>
         item.doctorId === effectiveDoctorId &&
-        item.appointmentDate === new Date().toISOString().slice(0, 10) &&
+        item.appointmentDate === businessDate &&
         item.status === "booked"
     )
     .sort((a, b) => {
@@ -297,7 +300,7 @@ export const DoctorDashboard = () => {
 
   const resetAllTokensForToday = async () => {
     await Promise.all(myTodayAppointments.map((item) => deleteDocumentById("appointments", item.id)));
-    setStatusText("All today tokens reset.");
+    setStatusText(`All tokens reset for ${businessDate}.`);
   };
 
   const resetSelectedSlotTokens = async () => {
@@ -306,7 +309,7 @@ export const DoctorDashboard = () => {
     }
     const forSlot = myTodayAppointments.filter((item) => item.slot === selectedResetSlot);
     await Promise.all(forSlot.map((item) => deleteDocumentById("appointments", item.id)));
-    setStatusText(`Tokens reset for slot ${selectedResetSlot}.`);
+    setStatusText(`Tokens reset for ${selectedResetSlot} on ${businessDate}.`);
   };
 
   const filteredTriageSessions = triageSessions.filter(
@@ -315,6 +318,7 @@ export const DoctorDashboard = () => {
 
   return (
     <DashboardLayout title="Doctor Dashboard">
+      <BusinessDateBadge />
       <section className="card mb-4">
         <h2 className="mb-2 text-base font-semibold">Doctor Pages</h2>
         <p className="mb-2 text-sm text-slate-700">
@@ -341,7 +345,7 @@ export const DoctorDashboard = () => {
       </section>
 
       <section className="card mb-4">
-        <h2 className="mb-2 text-base font-semibold">Appointment Tokens By Slot (Today)</h2>
+        <h2 className="mb-2 text-base font-semibold">Appointment Tokens By Slot ({businessDate})</h2>
         {Object.keys(slotGroups).length === 0 ? (
           <p className="text-sm text-slate-600">No appointments booked yet.</p>
         ) : (
@@ -379,7 +383,7 @@ export const DoctorDashboard = () => {
             Reset Slot Tokens
           </button>
           <button className="btn-muted" onClick={() => void resetAllTokensForToday()}>
-            Reset All Today
+            Reset All On Date
           </button>
         </div>
       </section>

@@ -4,8 +4,11 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { subscribeCollection } from "../../services/firestoreService";
 import { MedicineStock, PharmacyRequest, Prescription } from "../../types/models";
 import { updatePharmacyAvailability } from "../../agents/pharmacyAgent";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
+import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
 export const PharmacyDashboard = () => {
+  const businessDate = useBusinessDate();
   const [requests, setRequests] = useState<PharmacyRequest[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [stocks, setStocks] = useState<MedicineStock[]>([]);
@@ -25,11 +28,13 @@ export const PharmacyDashboard = () => {
   }, []);
 
   const filteredRequests = useMemo(() => {
+    const requestsForDate = requests.filter((request) => String(request.updatedAt ?? "").startsWith(businessDate));
+
     if (!phoneFilter.trim()) {
-      return requests;
+      return requestsForDate;
     }
-    return requests.filter((request) => request.patientPhone.includes(phoneFilter.trim()));
-  }, [phoneFilter, requests]);
+    return requestsForDate.filter((request) => request.patientPhone.includes(phoneFilter.trim()));
+  }, [phoneFilter, requests, businessDate]);
 
   const getPrescription = (prescriptionId: string): Prescription | undefined =>
     prescriptions.find((item) => item.id === prescriptionId);
@@ -58,6 +63,7 @@ export const PharmacyDashboard = () => {
 
   return (
     <DashboardLayout title="Pharmacy Dashboard">
+      <BusinessDateBadge />
       <section className="card mb-4">
         <h2 className="mb-3 text-base font-semibold">Medicine Stock</h2>
         <div className="mb-3 grid gap-2 md:grid-cols-[1fr_auto]">
@@ -116,7 +122,7 @@ export const PharmacyDashboard = () => {
       </section>
 
       <section className="card">
-        <h2 className="mb-2 text-base font-semibold">Pharmacy Requests</h2>
+        <h2 className="mb-2 text-base font-semibold">Pharmacy Requests ({businessDate})</h2>
         <input
           className="input mb-3"
           type="text"

@@ -9,6 +9,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { sendPrescriptionSMSNow } from "../../services/functionService";
 import { DashboardCard } from "../../components/ui/DashboardCard";
 import { CalendarClock, ClipboardList, ShieldAlert, Syringe } from "lucide-react";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
+import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
 const symptomOptions = [
   "chest_pain",
@@ -25,6 +27,7 @@ const symptomOptions = [
 
 export const PatientDashboard = () => {
   const { user } = useAuth();
+  const businessDate = useBusinessDate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [result, setResult] = useState<TriageResult | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -98,6 +101,7 @@ export const PatientDashboard = () => {
 
   return (
     <DashboardLayout title="Patient Dashboard">
+      <BusinessDateBadge />
       <section className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardCard title="Appointments" value={myAppointments.length} icon={<CalendarClock className="h-4 w-4" />} />
         <DashboardCard title="Prescriptions" value={myRequests.length} icon={<ClipboardList className="h-4 w-4" />} />
@@ -195,7 +199,7 @@ export const PatientDashboard = () => {
                 if (!user?.uid || !selectedSlot || !selectedDoctor) {
                   return;
                 }
-                const appointmentDate = new Date().toISOString().slice(0, 10);
+                const appointmentDate = businessDate;
                 const existingForSlot = appointments.filter(
                   (item) =>
                     item.doctorId === selectedDoctor.id &&

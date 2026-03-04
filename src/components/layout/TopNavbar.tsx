@@ -3,6 +3,7 @@ import { Bell, ChevronDown, LogOut, Menu, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { logout } from "../../services/authService";
 import { AppUser } from "../../types/models";
+import { useBusinessDate } from "../../hooks/useBusinessDate";
 
 interface TopNavbarProps {
   title: string;
@@ -12,6 +13,7 @@ interface TopNavbarProps {
 }
 
 export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar }: TopNavbarProps) => {
+  const businessDate = useBusinessDate();
   const [openProfile, setOpenProfile] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const profileRef = useRef<HTMLDivElement | null>(null);
@@ -40,6 +42,9 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
         </button>
         <button type="button" className="btn-muted hidden lg:inline-flex" onClick={onToggleSidebar}>Toggle</button>
         <h1 className="text-lg font-semibold text-slate-100">{title}</h1>
+        <span className="rounded-lg bg-[#083731] px-2 py-1 text-xs font-medium text-emerald-100 ring-1 ring-[#68ffb040]">
+          Date: {businessDate}
+        </span>
 
         <div className="mx-auto hidden max-w-sm flex-1 items-center gap-2 rounded-xl bg-[#083731] px-3 py-2 ring-1 ring-[#68ffb040] md:flex">
           <Search className="h-4 w-4 text-emerald-200" />
