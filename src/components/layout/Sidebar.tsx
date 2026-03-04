@@ -1,5 +1,20 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, LayoutDashboard, Shield, Stethoscope, Syringe, Users } from "lucide-react";
+import {
+  BarChart3,
+  Bell,
+  Building2,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  Pill,
+  Settings,
+  Shield,
+  ShieldAlert,
+  Stethoscope,
+  Syringe,
+  UserRound,
+  Users
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { UserRole } from "../../types/models";
 import { sidebarMotion } from "../../utils/animations";
@@ -18,15 +33,15 @@ const navByRole: Record<UserRole, Array<{ to: string; label: string; icon: JSX.E
   super_admin: [
     { to: "/super-admin", label: "Overview", icon: <LayoutDashboard className="h-4 w-4" /> },
     { to: "/super-admin/users", label: "Users", icon: <Users className="h-4 w-4" /> },
-    { to: "/super-admin/hospitals", label: "Hospitals", icon: <Stethoscope className="h-4 w-4" /> },
-    { to: "/super-admin/patients", label: "Patients", icon: <Stethoscope className="h-4 w-4" /> },
-    { to: "/super-admin/triage-rules", label: "Triage Rules", icon: <LayoutDashboard className="h-4 w-4" /> },
-    { to: "/super-admin/medicines", label: "Medicines", icon: <Syringe className="h-4 w-4" /> },
+    { to: "/super-admin/hospitals", label: "Hospitals", icon: <Building2 className="h-4 w-4" /> },
+    { to: "/super-admin/patients", label: "Patients", icon: <UserRound className="h-4 w-4" /> },
+    { to: "/super-admin/triage-rules", label: "Triage Rules", icon: <ClipboardList className="h-4 w-4" /> },
+    { to: "/super-admin/medicines", label: "Medicines", icon: <Pill className="h-4 w-4" /> },
     { to: "/super-admin/sms-logs", label: "SMS Logs", icon: <Bell className="h-4 w-4" /> },
-    { to: "/super-admin/analytics", label: "Analytics", icon: <LayoutDashboard className="h-4 w-4" /> },
-    { to: "/super-admin/logs", label: "Logs", icon: <Bell className="h-4 w-4" /> },
-    { to: "/super-admin/settings", label: "Settings", icon: <Shield className="h-4 w-4" /> },
-    { to: "/super-admin/security", label: "Security", icon: <Shield className="h-4 w-4" /> }
+    { to: "/super-admin/analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
+    { to: "/super-admin/logs", label: "Logs", icon: <FileText className="h-4 w-4" /> },
+    { to: "/super-admin/settings", label: "Settings", icon: <Settings className="h-4 w-4" /> },
+    { to: "/super-admin/security", label: "Security", icon: <ShieldAlert className="h-4 w-4" /> }
   ]
 };
 
@@ -35,7 +50,7 @@ const SidebarContent = ({ collapsed, role, onCloseMobile }: Pick<SidebarProps, "
   const navItems = role ? navByRole[role] : [];
 
   return (
-    <div className="h-full rounded-2xl bg-[#0E5C4A] p-3 shadow-sm ring-1 ring-emerald-800/50">
+    <div className="h-full rounded-2xl bg-[#062b26] p-3 shadow-sm ring-1 ring-[#68ffb05e]">
       <div className="mb-4 flex items-center gap-2 px-2 py-1 text-white">
         <Shield className="h-5 w-5" />
         {!collapsed && <span className="text-sm font-semibold">Health Console</span>}
@@ -49,7 +64,7 @@ const SidebarContent = ({ collapsed, role, onCloseMobile }: Pick<SidebarProps, "
               to={item.to}
               onClick={onCloseMobile}
               className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
-                active ? "bg-[#2BB673] text-white" : "text-emerald-50 hover:bg-emerald-700/40"
+                active ? "bg-[#1a7d5e] text-white ring-1 ring-[#68ffb080]" : "text-emerald-50 hover:bg-[#0d4239]"
               }`}
             >
               {item.icon}

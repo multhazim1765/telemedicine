@@ -16,7 +16,7 @@ export const DashboardShell = ({ title, children }: DashboardShellProps) => {
   const { user } = useAuth();
 
   return (
-    <main className="min-h-screen bg-pageBg p-3 sm:p-4">
+    <main className="min-h-screen p-3 sm:p-4 dashboard-theme">
       <div className="mx-auto flex max-w-7xl gap-3">
         <Sidebar
           collapsed={collapsed}

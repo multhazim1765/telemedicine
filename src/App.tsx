@@ -52,12 +52,12 @@ const resolveDashboardPath = (role: UserRole, hospitalName?: string): string => 
 
 const prettyRole = (role: UserRole): string => role.charAt(0).toUpperCase() + role.slice(1);
 
-const AuthCard = ({ children, wide = false }: { children: ReactNode; wide?: boolean }) => (
+const AuthCard = ({ children, wide = false, panelClassName = "" }: { children: ReactNode; wide?: boolean; panelClassName?: string }) => (
   <main className={`mx-auto flex min-h-screen w-full items-center p-4 ${wide ? "max-w-5xl" : "max-w-md"}`}>
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
+      className={`w-full rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 ${panelClassName}`}
     >
       {children}
     </motion.section>
@@ -71,8 +71,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showResetHint, setShowResetHint] = useState(false);
+  const [activeTab, setActiveTab] = useState<"login" | "facilities" | "demo">("login");
   const requestedHospitalName = hospitalSlug ? hospitalSlugToName(hospitalSlug) : undefined;
-  const showLoginSidebar = !requestedHospitalName || !isFirebaseConfigured;
 
   const demoCredentials = getDemoCredentials().filter((credential) => {
     if (!requestedHospitalName) {
@@ -110,54 +110,61 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthCard wide={showLoginSidebar}>
-      <div className={`grid gap-4 ${showLoginSidebar ? "lg:grid-cols-[minmax(360px,1fr)_320px]" : ""}`}>
-        <div>
-          <p className="text-xs font-semibold text-[#2BB673]">Rural Health Network</p>
-          <h1 className="mt-1 text-2xl font-semibold text-slate-800">
-            {requestedHospitalName ? `${requestedHospitalName} Login` : "Welcome Back"}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">Secure access with role-based medical dashboards.</p>
+    <AuthCard wide panelClassName="login-auth-panel">
+      <div className="login-shell">
+        <section className="doctor-panel">
+          <img src="/doctor-3d.svg" alt="3D doctor illustration" className="doctor-image" />
+          <p className="doctor-caption">Rural Health Network</p>
+        </section>
 
-          <form className="mt-4 space-y-3" onSubmit={onSubmit}>
-            <input className="input" placeholder="Phone number (or email)" value={email} onChange={(event) => setEmail(event.target.value)} />
-            <input className="input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-            <button className="btn-primary relative w-full overflow-hidden">
-              <span className="relative z-10">Login</span>
-              <span className="absolute inset-0 -z-0 animate-pulse bg-white/10" />
-            </button>
-          </form>
+        <section className="tabs-panel">
+          <div className="tab-header" role="tablist" aria-label="Login sections">
+            <button type="button" role="tab" aria-selected={activeTab === "login"} className={`tab-button ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>[LOGIN]</button>
+            <button type="button" role="tab" aria-selected={activeTab === "facilities"} className={`tab-button ${activeTab === "facilities" ? "active" : ""}`} onClick={() => setActiveTab("facilities")}>[FACILITIES]</button>
+            <button type="button" role="tab" aria-selected={activeTab === "demo"} className={`tab-button ${activeTab === "demo" ? "active" : ""}`} onClick={() => setActiveTab("demo")}>[DEMO ACCESS]</button>
+          </div>
 
-          <button className="mt-2 text-xs font-medium text-[#2BB673]" onClick={() => setShowResetHint((value) => !value)}>
-            Reset password help
-          </button>
-          <AnimatePresence>
-            {showResetHint && (
-              <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-2 rounded-xl bg-emerald-50 p-2 text-xs text-emerald-700">
-                Admin can reset from Security section. Firebase users also support email reset.
-              </motion.p>
+          <div className="tab-content">
+            {activeTab === "login" && (
+              <>
+                <h1 className="login-title">{requestedHospitalName ? `${requestedHospitalName} Login` : "Welcome Back"}</h1>
+                <p className="login-subtitle">Secure access with role-based medical dashboards.</p>
+
+                <form className="mt-4 space-y-3" onSubmit={onSubmit}>
+                  <input className="login-input" placeholder="Phone number (or email)" value={email} onChange={(event) => setEmail(event.target.value)} />
+                  <input className="login-input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
+                  <button className="login-action" type="submit">Login</button>
+                </form>
+
+                <button className="login-link mt-2" onClick={() => setShowResetHint((value) => !value)}>
+                  Reset password help
+                </button>
+                <AnimatePresence>
+                  {showResetHint && (
+                    <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="login-hint">
+                      Admin can reset from Security section. Firebase users also support email reset.
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                <p className="mt-3 text-xs text-slate-300">
+                  New user? <Link className="login-link" to="/signup">Create account</Link>
+                </p>
+
+                {error && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-300">
+                    {error}
+                  </motion.p>
+                )}
+              </>
             )}
-          </AnimatePresence>
 
-          <p className="mt-3 text-xs text-slate-600">
-            New user? <Link className="font-semibold text-[#2BB673]" to="/signup">Create account</Link>
-          </p>
-
-          {error && (
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-700">
-              {error}
-            </motion.p>
-          )}
-        </div>
-
-        {showLoginSidebar && (
-          <aside className="space-y-3">
-            {!requestedHospitalName && (
-              <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                <p className="mb-2 text-xs font-semibold text-slate-700">Switch Login Page</p>
+            {activeTab === "facilities" && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8dffbf]">Hospital Login Pages</p>
                 <div className="grid gap-2">
                   {hospitalLoginAccounts.map((account) => (
-                    <Link key={account.uid} className="btn-muted text-left" to={`/login/hospital/${hospitalNameToSlug(account.hospitalName ?? "")}`}>
+                    <Link key={account.uid} className="tab-item" to={`/login/hospital/${hospitalNameToSlug(account.hospitalName ?? "")}`}>
                       {account.hospitalName}
                     </Link>
                   ))}
@@ -165,29 +172,33 @@ const LoginPage = () => {
               </div>
             )}
 
-            {!isFirebaseConfigured && (
-              <div className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
-                <p className="mb-2 text-xs font-semibold text-slate-700">Quick demo accounts</p>
-                <div className="grid gap-2">
-                  {demoCredentials.map((demoUser) => (
-                    <button
-                      key={demoUser.email}
-                      className="btn-muted w-full text-left"
-                      type="button"
-                      onClick={() => {
-                        setEmail(demoUser.email);
-                        setPassword(demoUser.password);
-                        void completeLogin(demoUser.email, demoUser.password).catch((err) => setError((err as Error).message));
-                      }}
-                    >
-                      {prettyRole(demoUser.role)} · {demoUser.email}
-                    </button>
-                  ))}
-                </div>
+            {activeTab === "demo" && (
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8dffbf]">Demo Accounts</p>
+                {!isFirebaseConfigured ? (
+                  <div className="grid gap-2">
+                    {demoCredentials.map((demoUser) => (
+                      <button
+                        key={demoUser.email}
+                        className="tab-item w-full text-left"
+                        type="button"
+                        onClick={() => {
+                          setEmail(demoUser.email);
+                          setPassword(demoUser.password);
+                          void completeLogin(demoUser.email, demoUser.password).catch((err) => setError((err as Error).message));
+                        }}
+                      >
+                        {prettyRole(demoUser.role)} · {demoUser.email}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-300">Demo access is hidden when Firebase is configured.</p>
+                )}
               </div>
             )}
-          </aside>
-        )}
+          </div>
+        </section>
       </div>
     </AuthCard>
   );
