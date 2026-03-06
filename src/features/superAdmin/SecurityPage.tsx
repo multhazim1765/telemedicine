@@ -1,7 +1,12 @@
 import { Button, TextField } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { FormEvent, useState } from "react";
-import { changeCurrentPassword, requestPasswordReset } from "../../services/authService";
+import {
+  changeCurrentPassword,
+  getPatientHospitalLoginPassword,
+  requestPasswordReset,
+  setPatientHospitalLoginPassword
+} from "../../services/authService";
 import { useToast } from "../../components/ui/ToastProvider";
 
 export const SecurityPage = () => {
@@ -9,6 +14,7 @@ export const SecurityPage = () => {
   const [resetIdentifier, setResetIdentifier] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [sharedPassword, setSharedPassword] = useState(getPatientHospitalLoginPassword());
   const [errors, setErrors] = useState<string[]>([]);
 
   const validatePassword = (password: string, confirm: string): string[] => {
@@ -58,8 +64,41 @@ export const SecurityPage = () => {
     }
   };
 
+  const onSaveSharedPassword = (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      setPatientHospitalLoginPassword(sharedPassword);
+      setSharedPassword(getPatientHospitalLoginPassword());
+      pushToast("Patient/Hospital shared login password updated", "success");
+    } catch (error) {
+      pushToast((error as Error).message, "error");
+    }
+  };
+
   return (
     <section className="grid gap-4 lg:grid-cols-2">
+      <motion.form
+        onSubmit={onSaveSharedPassword}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-white/80 p-4 shadow-[0_10px_30px_rgba(15,23,42,0.08)] ring-1 ring-cyan-100"
+      >
+        <h2 className="mb-3 text-base font-semibold text-slate-800">Patient/Hospital Login Password</h2>
+        <p className="mb-3 text-xs text-slate-600">
+          This password is used for all patient and hospital (doctor role) logins in demo mode.
+        </p>
+        <TextField
+          fullWidth
+          size="small"
+          label="Shared Password"
+          value={sharedPassword}
+          onChange={(event) => setSharedPassword(event.target.value)}
+        />
+        <Button className="!mt-3" type="submit" variant="contained" fullWidth>
+          Save Shared Password
+        </Button>
+      </motion.form>
+
       <motion.form
         onSubmit={onReset}
         initial={{ opacity: 0, y: 10 }}

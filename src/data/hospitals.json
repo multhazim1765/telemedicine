@@ -1,17 +1,774 @@
 [
-  { "hospitalName": "Apollo Hospital Chennai", "district": "Chennai District" },
-  { "hospitalName": "Government General Hospital Chennai", "district": "Chennai District" },
-  { "hospitalName": "MGM Healthcare", "district": "Chengalpattu District" },
-  { "hospitalName": "Sri Ramachandra Medical Centre", "district": "Kancheepuram District" },
-  { "hospitalName": "Coimbatore Medical College Hospital", "district": "Coimbatore District" },
-  { "hospitalName": "PSG Hospitals", "district": "Coimbatore District" },
-  { "hospitalName": "Madurai Rajaji Government Hospital", "district": "Madurai District" },
-  { "hospitalName": "Velammal Medical College Hospital", "district": "Madurai District" },
-  { "hospitalName": "KMCH Trichy", "district": "Tiruchirappalli District" },
-  { "hospitalName": "Kauvery Hospital Trichy", "district": "Tiruchirappalli District" },
-  { "hospitalName": "Thanjavur Medical College Hospital", "district": "Thanjavur District" },
-  { "hospitalName": "Shifa Hospital", "district": "Thanjavur District" },
-  { "hospitalName": "Tirunelveli Medical College Hospital", "district": "Tirunelveli District" },
-  { "hospitalName": "Thoothukudi Government Medical College Hospital", "district": "Thoothukudi District" },
-  { "hospitalName": "Nagercoil Government Medical College Hospital", "district": "Kanyakumari District" }
+  {
+    "hospitalName": "Ariyalur Apollo Hospital",
+    "district": "Ariyalur District"
+  },
+  {
+    "hospitalName": "Ariyalur GH Multispeciality",
+    "district": "Ariyalur District"
+  },
+  {
+    "hospitalName": "Ariyalur Aster Care",
+    "district": "Ariyalur District"
+  },
+  {
+    "hospitalName": "Ariyalur City Medical Centre",
+    "district": "Ariyalur District"
+  },
+  {
+    "hospitalName": "Ariyalur Sunrise Clinic",
+    "district": "Ariyalur District"
+  },
+  {
+    "hospitalName": "Chengalpattu Apollo Hospital",
+    "district": "Chengalpattu District"
+  },
+  {
+    "hospitalName": "Chengalpattu GH Multispeciality",
+    "district": "Chengalpattu District"
+  },
+  {
+    "hospitalName": "Chengalpattu Aster Care",
+    "district": "Chengalpattu District"
+  },
+  {
+    "hospitalName": "Chengalpattu City Medical Centre",
+    "district": "Chengalpattu District"
+  },
+  {
+    "hospitalName": "Chengalpattu Sunrise Clinic",
+    "district": "Chengalpattu District"
+  },
+  {
+    "hospitalName": "Chennai Apollo Hospital",
+    "district": "Chennai District"
+  },
+  {
+    "hospitalName": "Chennai GH Multispeciality",
+    "district": "Chennai District"
+  },
+  {
+    "hospitalName": "Chennai Aster Care",
+    "district": "Chennai District"
+  },
+  {
+    "hospitalName": "Chennai City Medical Centre",
+    "district": "Chennai District"
+  },
+  {
+    "hospitalName": "Chennai Sunrise Clinic",
+    "district": "Chennai District"
+  },
+  {
+    "hospitalName": "Coimbatore Apollo Hospital",
+    "district": "Coimbatore District"
+  },
+  {
+    "hospitalName": "Coimbatore GH Multispeciality",
+    "district": "Coimbatore District"
+  },
+  {
+    "hospitalName": "Coimbatore Aster Care",
+    "district": "Coimbatore District"
+  },
+  {
+    "hospitalName": "Coimbatore City Medical Centre",
+    "district": "Coimbatore District"
+  },
+  {
+    "hospitalName": "Coimbatore Sunrise Clinic",
+    "district": "Coimbatore District"
+  },
+  {
+    "hospitalName": "Cuddalore Apollo Hospital",
+    "district": "Cuddalore District"
+  },
+  {
+    "hospitalName": "Cuddalore GH Multispeciality",
+    "district": "Cuddalore District"
+  },
+  {
+    "hospitalName": "Cuddalore Aster Care",
+    "district": "Cuddalore District"
+  },
+  {
+    "hospitalName": "Cuddalore City Medical Centre",
+    "district": "Cuddalore District"
+  },
+  {
+    "hospitalName": "Cuddalore Sunrise Clinic",
+    "district": "Cuddalore District"
+  },
+  {
+    "hospitalName": "Dharmapuri Apollo Hospital",
+    "district": "Dharmapuri District"
+  },
+  {
+    "hospitalName": "Dharmapuri GH Multispeciality",
+    "district": "Dharmapuri District"
+  },
+  {
+    "hospitalName": "Dharmapuri Aster Care",
+    "district": "Dharmapuri District"
+  },
+  {
+    "hospitalName": "Dharmapuri City Medical Centre",
+    "district": "Dharmapuri District"
+  },
+  {
+    "hospitalName": "Dharmapuri Sunrise Clinic",
+    "district": "Dharmapuri District"
+  },
+  {
+    "hospitalName": "Dindigul Apollo Hospital",
+    "district": "Dindigul District"
+  },
+  {
+    "hospitalName": "Dindigul GH Multispeciality",
+    "district": "Dindigul District"
+  },
+  {
+    "hospitalName": "Dindigul Aster Care",
+    "district": "Dindigul District"
+  },
+  {
+    "hospitalName": "Dindigul City Medical Centre",
+    "district": "Dindigul District"
+  },
+  {
+    "hospitalName": "Dindigul Sunrise Clinic",
+    "district": "Dindigul District"
+  },
+  {
+    "hospitalName": "Erode Apollo Hospital",
+    "district": "Erode District"
+  },
+  {
+    "hospitalName": "Erode GH Multispeciality",
+    "district": "Erode District"
+  },
+  {
+    "hospitalName": "Erode Aster Care",
+    "district": "Erode District"
+  },
+  {
+    "hospitalName": "Erode City Medical Centre",
+    "district": "Erode District"
+  },
+  {
+    "hospitalName": "Erode Sunrise Clinic",
+    "district": "Erode District"
+  },
+  {
+    "hospitalName": "Kallakurichi Apollo Hospital",
+    "district": "Kallakurichi District"
+  },
+  {
+    "hospitalName": "Kallakurichi GH Multispeciality",
+    "district": "Kallakurichi District"
+  },
+  {
+    "hospitalName": "Kallakurichi Aster Care",
+    "district": "Kallakurichi District"
+  },
+  {
+    "hospitalName": "Kallakurichi City Medical Centre",
+    "district": "Kallakurichi District"
+  },
+  {
+    "hospitalName": "Kallakurichi Sunrise Clinic",
+    "district": "Kallakurichi District"
+  },
+  {
+    "hospitalName": "Kancheepuram Apollo Hospital",
+    "district": "Kancheepuram District"
+  },
+  {
+    "hospitalName": "Kancheepuram GH Multispeciality",
+    "district": "Kancheepuram District"
+  },
+  {
+    "hospitalName": "Kancheepuram Aster Care",
+    "district": "Kancheepuram District"
+  },
+  {
+    "hospitalName": "Kancheepuram City Medical Centre",
+    "district": "Kancheepuram District"
+  },
+  {
+    "hospitalName": "Kancheepuram Sunrise Clinic",
+    "district": "Kancheepuram District"
+  },
+  {
+    "hospitalName": "Karur Apollo Hospital",
+    "district": "Karur District"
+  },
+  {
+    "hospitalName": "Karur GH Multispeciality",
+    "district": "Karur District"
+  },
+  {
+    "hospitalName": "Karur Aster Care",
+    "district": "Karur District"
+  },
+  {
+    "hospitalName": "Karur City Medical Centre",
+    "district": "Karur District"
+  },
+  {
+    "hospitalName": "Karur Sunrise Clinic",
+    "district": "Karur District"
+  },
+  {
+    "hospitalName": "Krishnagiri Apollo Hospital",
+    "district": "Krishnagiri District"
+  },
+  {
+    "hospitalName": "Krishnagiri GH Multispeciality",
+    "district": "Krishnagiri District"
+  },
+  {
+    "hospitalName": "Krishnagiri Aster Care",
+    "district": "Krishnagiri District"
+  },
+  {
+    "hospitalName": "Krishnagiri City Medical Centre",
+    "district": "Krishnagiri District"
+  },
+  {
+    "hospitalName": "Krishnagiri Sunrise Clinic",
+    "district": "Krishnagiri District"
+  },
+  {
+    "hospitalName": "Madurai Apollo Hospital",
+    "district": "Madurai District"
+  },
+  {
+    "hospitalName": "Madurai GH Multispeciality",
+    "district": "Madurai District"
+  },
+  {
+    "hospitalName": "Madurai Aster Care",
+    "district": "Madurai District"
+  },
+  {
+    "hospitalName": "Madurai City Medical Centre",
+    "district": "Madurai District"
+  },
+  {
+    "hospitalName": "Madurai Sunrise Clinic",
+    "district": "Madurai District"
+  },
+  {
+    "hospitalName": "Mayiladuthurai Apollo Hospital",
+    "district": "Mayiladuthurai District"
+  },
+  {
+    "hospitalName": "Mayiladuthurai GH Multispeciality",
+    "district": "Mayiladuthurai District"
+  },
+  {
+    "hospitalName": "Mayiladuthurai Aster Care",
+    "district": "Mayiladuthurai District"
+  },
+  {
+    "hospitalName": "Mayiladuthurai City Medical Centre",
+    "district": "Mayiladuthurai District"
+  },
+  {
+    "hospitalName": "Mayiladuthurai Sunrise Clinic",
+    "district": "Mayiladuthurai District"
+  },
+  {
+    "hospitalName": "Nagapattinam Apollo Hospital",
+    "district": "Nagapattinam District"
+  },
+  {
+    "hospitalName": "Nagapattinam GH Multispeciality",
+    "district": "Nagapattinam District"
+  },
+  {
+    "hospitalName": "Nagapattinam Aster Care",
+    "district": "Nagapattinam District"
+  },
+  {
+    "hospitalName": "Nagapattinam City Medical Centre",
+    "district": "Nagapattinam District"
+  },
+  {
+    "hospitalName": "Nagapattinam Sunrise Clinic",
+    "district": "Nagapattinam District"
+  },
+  {
+    "hospitalName": "Namakkal Apollo Hospital",
+    "district": "Namakkal District"
+  },
+  {
+    "hospitalName": "Namakkal GH Multispeciality",
+    "district": "Namakkal District"
+  },
+  {
+    "hospitalName": "Namakkal Aster Care",
+    "district": "Namakkal District"
+  },
+  {
+    "hospitalName": "Namakkal City Medical Centre",
+    "district": "Namakkal District"
+  },
+  {
+    "hospitalName": "Namakkal Sunrise Clinic",
+    "district": "Namakkal District"
+  },
+  {
+    "hospitalName": "Nilgiris Apollo Hospital",
+    "district": "Nilgiris District"
+  },
+  {
+    "hospitalName": "Nilgiris GH Multispeciality",
+    "district": "Nilgiris District"
+  },
+  {
+    "hospitalName": "Nilgiris Aster Care",
+    "district": "Nilgiris District"
+  },
+  {
+    "hospitalName": "Nilgiris City Medical Centre",
+    "district": "Nilgiris District"
+  },
+  {
+    "hospitalName": "Nilgiris Sunrise Clinic",
+    "district": "Nilgiris District"
+  },
+  {
+    "hospitalName": "Perambalur Apollo Hospital",
+    "district": "Perambalur District"
+  },
+  {
+    "hospitalName": "Perambalur GH Multispeciality",
+    "district": "Perambalur District"
+  },
+  {
+    "hospitalName": "Perambalur Aster Care",
+    "district": "Perambalur District"
+  },
+  {
+    "hospitalName": "Perambalur City Medical Centre",
+    "district": "Perambalur District"
+  },
+  {
+    "hospitalName": "Perambalur Sunrise Clinic",
+    "district": "Perambalur District"
+  },
+  {
+    "hospitalName": "Pudukkottai Apollo Hospital",
+    "district": "Pudukkottai District"
+  },
+  {
+    "hospitalName": "Pudukkottai GH Multispeciality",
+    "district": "Pudukkottai District"
+  },
+  {
+    "hospitalName": "Pudukkottai Aster Care",
+    "district": "Pudukkottai District"
+  },
+  {
+    "hospitalName": "Pudukkottai City Medical Centre",
+    "district": "Pudukkottai District"
+  },
+  {
+    "hospitalName": "Pudukkottai Sunrise Clinic",
+    "district": "Pudukkottai District"
+  },
+  {
+    "hospitalName": "Ramanathapuram Apollo Hospital",
+    "district": "Ramanathapuram District"
+  },
+  {
+    "hospitalName": "Ramanathapuram GH Multispeciality",
+    "district": "Ramanathapuram District"
+  },
+  {
+    "hospitalName": "Ramanathapuram Aster Care",
+    "district": "Ramanathapuram District"
+  },
+  {
+    "hospitalName": "Ramanathapuram City Medical Centre",
+    "district": "Ramanathapuram District"
+  },
+  {
+    "hospitalName": "Ramanathapuram Sunrise Clinic",
+    "district": "Ramanathapuram District"
+  },
+  {
+    "hospitalName": "Ranipet Apollo Hospital",
+    "district": "Ranipet District"
+  },
+  {
+    "hospitalName": "Ranipet GH Multispeciality",
+    "district": "Ranipet District"
+  },
+  {
+    "hospitalName": "Ranipet Aster Care",
+    "district": "Ranipet District"
+  },
+  {
+    "hospitalName": "Ranipet City Medical Centre",
+    "district": "Ranipet District"
+  },
+  {
+    "hospitalName": "Ranipet Sunrise Clinic",
+    "district": "Ranipet District"
+  },
+  {
+    "hospitalName": "Salem Apollo Hospital",
+    "district": "Salem District"
+  },
+  {
+    "hospitalName": "Salem GH Multispeciality",
+    "district": "Salem District"
+  },
+  {
+    "hospitalName": "Salem Aster Care",
+    "district": "Salem District"
+  },
+  {
+    "hospitalName": "Salem City Medical Centre",
+    "district": "Salem District"
+  },
+  {
+    "hospitalName": "Salem Sunrise Clinic",
+    "district": "Salem District"
+  },
+  {
+    "hospitalName": "Sivaganga Apollo Hospital",
+    "district": "Sivaganga District"
+  },
+  {
+    "hospitalName": "Sivaganga GH Multispeciality",
+    "district": "Sivaganga District"
+  },
+  {
+    "hospitalName": "Sivaganga Aster Care",
+    "district": "Sivaganga District"
+  },
+  {
+    "hospitalName": "Sivaganga City Medical Centre",
+    "district": "Sivaganga District"
+  },
+  {
+    "hospitalName": "Sivaganga Sunrise Clinic",
+    "district": "Sivaganga District"
+  },
+  {
+    "hospitalName": "Tenkasi Apollo Hospital",
+    "district": "Tenkasi District"
+  },
+  {
+    "hospitalName": "Tenkasi GH Multispeciality",
+    "district": "Tenkasi District"
+  },
+  {
+    "hospitalName": "Tenkasi Aster Care",
+    "district": "Tenkasi District"
+  },
+  {
+    "hospitalName": "Tenkasi City Medical Centre",
+    "district": "Tenkasi District"
+  },
+  {
+    "hospitalName": "Tenkasi Sunrise Clinic",
+    "district": "Tenkasi District"
+  },
+  {
+    "hospitalName": "Thanjavur Apollo Hospital",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Thanjavur GH Multispeciality",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Thanjavur Aster Care",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Thanjavur City Medical Centre",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Thanjavur Sunrise Clinic",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Shifa Hospital",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Meenakshi Hospital",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "A to Z Speciality Hospital",
+    "district": "Thanjavur District"
+  },
+  {
+    "hospitalName": "Theni Apollo Hospital",
+    "district": "Theni District"
+  },
+  {
+    "hospitalName": "Theni GH Multispeciality",
+    "district": "Theni District"
+  },
+  {
+    "hospitalName": "Theni Aster Care",
+    "district": "Theni District"
+  },
+  {
+    "hospitalName": "Theni City Medical Centre",
+    "district": "Theni District"
+  },
+  {
+    "hospitalName": "Theni Sunrise Clinic",
+    "district": "Theni District"
+  },
+  {
+    "hospitalName": "Thoothukudi Apollo Hospital",
+    "district": "Thoothukudi District"
+  },
+  {
+    "hospitalName": "Thoothukudi GH Multispeciality",
+    "district": "Thoothukudi District"
+  },
+  {
+    "hospitalName": "Thoothukudi Aster Care",
+    "district": "Thoothukudi District"
+  },
+  {
+    "hospitalName": "Thoothukudi City Medical Centre",
+    "district": "Thoothukudi District"
+  },
+  {
+    "hospitalName": "Thoothukudi Sunrise Clinic",
+    "district": "Thoothukudi District"
+  },
+  {
+    "hospitalName": "Tiruchirappalli Apollo Hospital",
+    "district": "Tiruchirappalli District"
+  },
+  {
+    "hospitalName": "Tiruchirappalli GH Multispeciality",
+    "district": "Tiruchirappalli District"
+  },
+  {
+    "hospitalName": "Tiruchirappalli Aster Care",
+    "district": "Tiruchirappalli District"
+  },
+  {
+    "hospitalName": "Tiruchirappalli City Medical Centre",
+    "district": "Tiruchirappalli District"
+  },
+  {
+    "hospitalName": "Tiruchirappalli Sunrise Clinic",
+    "district": "Tiruchirappalli District"
+  },
+  {
+    "hospitalName": "Tirunelveli Apollo Hospital",
+    "district": "Tirunelveli District"
+  },
+  {
+    "hospitalName": "Tirunelveli GH Multispeciality",
+    "district": "Tirunelveli District"
+  },
+  {
+    "hospitalName": "Tirunelveli Aster Care",
+    "district": "Tirunelveli District"
+  },
+  {
+    "hospitalName": "Tirunelveli City Medical Centre",
+    "district": "Tirunelveli District"
+  },
+  {
+    "hospitalName": "Tirunelveli Sunrise Clinic",
+    "district": "Tirunelveli District"
+  },
+  {
+    "hospitalName": "Tirupathur Apollo Hospital",
+    "district": "Tirupathur District"
+  },
+  {
+    "hospitalName": "Tirupathur GH Multispeciality",
+    "district": "Tirupathur District"
+  },
+  {
+    "hospitalName": "Tirupathur Aster Care",
+    "district": "Tirupathur District"
+  },
+  {
+    "hospitalName": "Tirupathur City Medical Centre",
+    "district": "Tirupathur District"
+  },
+  {
+    "hospitalName": "Tirupathur Sunrise Clinic",
+    "district": "Tirupathur District"
+  },
+  {
+    "hospitalName": "Tiruppur Apollo Hospital",
+    "district": "Tiruppur District"
+  },
+  {
+    "hospitalName": "Tiruppur GH Multispeciality",
+    "district": "Tiruppur District"
+  },
+  {
+    "hospitalName": "Tiruppur Aster Care",
+    "district": "Tiruppur District"
+  },
+  {
+    "hospitalName": "Tiruppur City Medical Centre",
+    "district": "Tiruppur District"
+  },
+  {
+    "hospitalName": "Tiruppur Sunrise Clinic",
+    "district": "Tiruppur District"
+  },
+  {
+    "hospitalName": "Tiruvallur Apollo Hospital",
+    "district": "Tiruvallur District"
+  },
+  {
+    "hospitalName": "Tiruvallur GH Multispeciality",
+    "district": "Tiruvallur District"
+  },
+  {
+    "hospitalName": "Tiruvallur Aster Care",
+    "district": "Tiruvallur District"
+  },
+  {
+    "hospitalName": "Tiruvallur City Medical Centre",
+    "district": "Tiruvallur District"
+  },
+  {
+    "hospitalName": "Tiruvallur Sunrise Clinic",
+    "district": "Tiruvallur District"
+  },
+  {
+    "hospitalName": "Tiruvannamalai Apollo Hospital",
+    "district": "Tiruvannamalai District"
+  },
+  {
+    "hospitalName": "Tiruvannamalai GH Multispeciality",
+    "district": "Tiruvannamalai District"
+  },
+  {
+    "hospitalName": "Tiruvannamalai Aster Care",
+    "district": "Tiruvannamalai District"
+  },
+  {
+    "hospitalName": "Tiruvannamalai City Medical Centre",
+    "district": "Tiruvannamalai District"
+  },
+  {
+    "hospitalName": "Tiruvannamalai Sunrise Clinic",
+    "district": "Tiruvannamalai District"
+  },
+  {
+    "hospitalName": "Tiruvarur Apollo Hospital",
+    "district": "Tiruvarur District"
+  },
+  {
+    "hospitalName": "Tiruvarur GH Multispeciality",
+    "district": "Tiruvarur District"
+  },
+  {
+    "hospitalName": "Tiruvarur Aster Care",
+    "district": "Tiruvarur District"
+  },
+  {
+    "hospitalName": "Tiruvarur City Medical Centre",
+    "district": "Tiruvarur District"
+  },
+  {
+    "hospitalName": "Tiruvarur Sunrise Clinic",
+    "district": "Tiruvarur District"
+  },
+  {
+    "hospitalName": "Vellore Apollo Hospital",
+    "district": "Vellore District"
+  },
+  {
+    "hospitalName": "Vellore GH Multispeciality",
+    "district": "Vellore District"
+  },
+  {
+    "hospitalName": "Vellore Aster Care",
+    "district": "Vellore District"
+  },
+  {
+    "hospitalName": "Vellore City Medical Centre",
+    "district": "Vellore District"
+  },
+  {
+    "hospitalName": "Vellore Sunrise Clinic",
+    "district": "Vellore District"
+  },
+  {
+    "hospitalName": "Viluppuram Apollo Hospital",
+    "district": "Viluppuram District"
+  },
+  {
+    "hospitalName": "Viluppuram GH Multispeciality",
+    "district": "Viluppuram District"
+  },
+  {
+    "hospitalName": "Viluppuram Aster Care",
+    "district": "Viluppuram District"
+  },
+  {
+    "hospitalName": "Viluppuram City Medical Centre",
+    "district": "Viluppuram District"
+  },
+  {
+    "hospitalName": "Viluppuram Sunrise Clinic",
+    "district": "Viluppuram District"
+  },
+  {
+    "hospitalName": "Virudhunagar Apollo Hospital",
+    "district": "Virudhunagar District"
+  },
+  {
+    "hospitalName": "Virudhunagar GH Multispeciality",
+    "district": "Virudhunagar District"
+  },
+  {
+    "hospitalName": "Virudhunagar Aster Care",
+    "district": "Virudhunagar District"
+  },
+  {
+    "hospitalName": "Virudhunagar City Medical Centre",
+    "district": "Virudhunagar District"
+  },
+  {
+    "hospitalName": "Virudhunagar Sunrise Clinic",
+    "district": "Virudhunagar District"
+  },
+  {
+    "hospitalName": "Kanyakumari Apollo Hospital",
+    "district": "Kanyakumari District"
+  },
+  {
+    "hospitalName": "Kanyakumari GH Multispeciality",
+    "district": "Kanyakumari District"
+  },
+  {
+    "hospitalName": "Kanyakumari Aster Care",
+    "district": "Kanyakumari District"
+  },
+  {
+    "hospitalName": "Kanyakumari City Medical Centre",
+    "district": "Kanyakumari District"
+  },
+  {
+    "hospitalName": "Kanyakumari Sunrise Clinic",
+    "district": "Kanyakumari District"
+  }
 ]

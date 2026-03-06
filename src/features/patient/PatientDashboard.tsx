@@ -3,7 +3,7 @@ import { DashboardLayout } from "../../components/DashboardLayout";
 import { triageAgent } from "../../agents/triageAgent";
 import { appointmentAgent } from "../../agents/appointmentAgent";
 import { createDocument, subscribeCollection, updateDocumentById } from "../../services/firestoreService";
-import { Appointment, Doctor, PharmacyRequest, TriageResult } from "../../types/models";
+import { Appointment, Doctor, Patient, PharmacyRequest, TriageResult } from "../../types/models";
 import { nowIso } from "../../utils/date";
 import { useAuth } from "../../hooks/useAuth";
 import { sendPrescriptionSMSNow } from "../../services/functionService";
@@ -12,7 +12,6 @@ import { CalendarClock, ClipboardList, ShieldAlert, Syringe } from "lucide-react
 import { useBusinessDate } from "../../hooks/useBusinessDate";
 import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 import { districts } from "../../constants/districts";
-import doctorsDataset from "../../data/doctors.json";
 
 const symptomOptions = [
   "chest_pain",
@@ -27,25 +26,6 @@ const symptomOptions = [
   "sore_throat"
 ];
 
-interface DatasetDoctor {
-  hospital: string;
-  doctorName: string;
-  id: string;
-  place: string;
-  designation: string;
-}
-
-const specializationFromDesignation = (designation: string): string => {
-  const lower = designation.toLowerCase();
-  if (lower.includes("cardio")) {
-    return "cardiology";
-  }
-  if (lower.includes("pedia")) {
-    return "pediatrics";
-  }
-  return "general";
-};
-
 export const PatientDashboard = () => {
   const { user } = useAuth();
   const businessDate = useBusinessDate();
@@ -54,6 +34,7 @@ export const PatientDashboard = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [specialization, setSpecialization] = useState("general");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [patientDistrict, setPatientDistrict] = useState("");
   const [suggestedDoctor, setSuggestedDoctor] = useState<Doctor | null>(null);
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
   const [lastTriageSessionId, setLastTriageSessionId] = useState("");
@@ -65,6 +46,12 @@ export const PatientDashboard = () => {
 
   useEffect(() => {
     const unsubDoctors = subscribeCollection("doctors", setDoctors);
+    const unsubPatients = subscribeCollection("patients", (patientList) => {
+      const myRecord = (patientList as Patient[]).find((item) => item.userId === user?.uid || item.id === user?.uid);
+      const resolvedDistrict = myRecord?.district ?? myRecord?.village ?? "";
+      setPatientDistrict(resolvedDistrict);
+      setSelectedDistrict(resolvedDistrict);
+    });
     const unsubAppointments = subscribeCollection("appointments", setAppointments);
     const unsubPharmacy = subscribeCollection("pharmacy_requests", (requests) => {
       setMyRequests(requests.filter((request) => request.patientId === user?.uid));
@@ -72,41 +59,22 @@ export const PatientDashboard = () => {
 
     return () => {
       unsubDoctors();
+      unsubPatients();
       unsubAppointments();
       unsubPharmacy();
     };
   }, [user?.uid]);
 
   const canSubmit = useMemo(() => symptoms.length > 0, [symptoms]);
-  const datasetDoctors = useMemo<Doctor[]>(
-    () =>
-      (doctorsDataset as DatasetDoctor[]).map((doctor) => ({
-        id: doctor.id.toLowerCase(),
-        userId: doctor.id.toLowerCase(),
-        doctorCode: doctor.id,
-        name: doctor.doctorName,
-        hospitalName: doctor.hospital,
-        place: doctor.place,
-        district: doctor.place,
-        designation: doctor.designation,
-        specialization: specializationFromDesignation(doctor.designation),
-        availabilitySlots: ["Morning", "Afternoon"],
-        city: doctor.place,
-        phone: ""
-      })),
-    []
-  );
-  const allDoctors = useMemo(() => {
-    const merged = [...doctors, ...datasetDoctors];
-    return merged.filter((doctor, index, list) => list.findIndex((item) => item.id === doctor.id) === index);
-  }, [doctors, datasetDoctors]);
-
+  const effectiveDistrict = patientDistrict || selectedDistrict;
   const filteredDoctors = useMemo(
-    () =>
-      selectedDistrict
-        ? allDoctors.filter((doctor) => doctor.place === selectedDistrict)
-        : allDoctors,
-    [allDoctors, selectedDistrict]
+    () => {
+      if (!effectiveDistrict) {
+        return [];
+      }
+      return doctors.filter((doctor) => doctor.place === effectiveDistrict || doctor.district === effectiveDistrict);
+    },
+    [doctors, effectiveDistrict]
   );
 
   const selectedDoctor = useMemo(
@@ -189,6 +157,11 @@ export const PatientDashboard = () => {
 
       <section className="card mb-4">
         <h2 className="mb-2 text-base font-semibold">Symptom Form</h2>
+        {patientDistrict && (
+          <p className="mb-2 text-xs text-slate-600">
+            Registered district: <span className="font-semibold text-slate-800">{patientDistrict}</span>
+          </p>
+        )}
         <form onSubmit={submitTriage} className="space-y-3">
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-700" htmlFor="district-select">
@@ -197,10 +170,10 @@ export const PatientDashboard = () => {
             <select
               id="district-select"
               className="input"
-              value={selectedDistrict}
+              value={effectiveDistrict}
               onChange={(event) => setSelectedDistrict(event.target.value)}
+              disabled
             >
-              <option value="">All Districts</option>
               {districts.map((district) => (
                 <option key={district} value={district}>
                   {district}
@@ -423,7 +396,7 @@ export const PatientDashboard = () => {
         <h2 className="mb-2 text-base font-semibold">My Appointments</h2>
         <ul className="space-y-2 text-sm">
           {myAppointments.map((appointment) => {
-              const doctor = allDoctors.find((item) => item.id === appointment.doctorId);
+              const doctor = doctors.find((item) => item.id === appointment.doctorId);
               return (
                 <li key={appointment.id} className="rounded-md bg-slate-100 p-2">
                   <p>Doctor: {doctor?.name ?? appointment.doctorId}</p>

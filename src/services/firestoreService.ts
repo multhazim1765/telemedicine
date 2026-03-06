@@ -22,6 +22,7 @@ import { nowIso } from "../utils/date";
 import { hospitalDoctors } from "../data/hospitalDoctors";
 import { medicineRules } from "../data/medicineTriageDataset";
 import { hospitalLoginAccounts } from "../data/hospitalDoctors";
+import { defaultHospitalCatalog } from "../utils/hospitalCatalog";
 
 type CollectionName = keyof FirestoreCollections;
 type CollectionRecord = FirestoreCollections[CollectionName];
@@ -76,12 +77,14 @@ const seedStore = (): DemoStore => ({
       name: "Rural Patient",
       age: 34,
       gender: "female",
+      district: "Chennai District",
       village: "Bishnupur",
       phone: "+910000000001",
       createdAt: nowIso()
     }
   ],
   doctors: hospitalDoctors,
+  hospital_catalog: defaultHospitalCatalog,
   appointments: [],
   triage_sessions: [],
   consultations: [],
@@ -122,15 +125,35 @@ const loadDemoStore = (): DemoStore => {
         Boolean((doctor as { designation?: string }).designation)
     );
 
-    const migratedDoctors =
-      hasMasterDoctorShape && parsedDoctors.length >= seeded.doctors.length
-        ? parsedDoctors
-        : seeded.doctors;
+    const seededDoctors = seeded.doctors as FirestoreCollections["doctors"][];
+    const parsedDoctorsTyped = parsedDoctors as FirestoreCollections["doctors"][];
+    const parsedDoctorsById = new Map(parsedDoctorsTyped.map((doctor) => [doctor.id, doctor]));
+    const seededDoctorIds = new Set(seededDoctors.map((doctor) => doctor.id));
+
+    const mergedSeededDoctors = seededDoctors.map(
+      (seedDoctor) => parsedDoctorsById.get(seedDoctor.id) ?? seedDoctor
+    );
+
+    const customParsedDoctors = parsedDoctorsTyped.filter(
+      (doctor) => !seededDoctorIds.has(doctor.id)
+    );
+
+    const migratedDoctors = hasMasterDoctorShape
+      ? [...mergedSeededDoctors, ...customParsedDoctors]
+      : seeded.doctors;
+
+    const parsedCatalog = (parsed.hospital_catalog ?? []) as FirestoreCollections["hospital_catalog"][];
+    const seededCatalog = seeded.hospital_catalog as FirestoreCollections["hospital_catalog"][];
+    const parsedCatalogById = new Map(parsedCatalog.map((item) => [item.id, item]));
+    const mergedCatalog = seededCatalog.map((seedItem) => parsedCatalogById.get(seedItem.id) ?? seedItem);
+    const seededCatalogIds = new Set(seededCatalog.map((item) => item.id));
+    const customCatalogItems = parsedCatalog.filter((item) => !seededCatalogIds.has(item.id));
 
     return {
       users: parsed.users ?? seeded.users,
       patients: parsed.patients ?? seeded.patients,
       doctors: migratedDoctors,
+      hospital_catalog: [...mergedCatalog, ...customCatalogItems],
       appointments: parsed.appointments ?? seeded.appointments,
       triage_sessions: parsed.triage_sessions ?? seeded.triage_sessions,
       consultations: parsed.consultations ?? seeded.consultations,

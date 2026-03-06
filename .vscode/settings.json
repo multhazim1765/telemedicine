@@ -8,5 +8,6 @@
       ],
       "url": "vscode://schemas/tsconfig"
     }
-  ]
+  ],
+  "search.useParentIgnoreFiles": false
 }

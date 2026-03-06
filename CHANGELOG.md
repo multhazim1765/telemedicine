@@ -2,6 +2,31 @@
 
 All notable changes made to this project are documented in this file.
 
+## [2026-03-07]
+
+### Changed
+- Reworked authentication flows in `src/App.tsx`:
+  - Categorized login into three role tabs: `PATIENT`, `HOSPITAL`, and `PHARMACY`.
+  - Added dedicated super admin login route/page at `/login/super-admin`.
+  - Added `Super Admin Login` button under the login page logo panel.
+- Updated hospital login UX to be fully filtered and role-specific:
+  - Added district and hospital filters for hospital login.
+  - Replaced manual identifier input with doctor selector dropdown formatted as `Doctor Name (DOCTOR_ID)`.
+- Standardized patient/hospital shared login credential behavior:
+  - Added managed shared password handling in `src/services/authService.ts`.
+  - Added super admin control to edit shared patient/hospital password in `src/features/superAdmin/SecurityPage.tsx`.
+- Updated hospital account generation in `src/data/hospitalDoctors.ts` to derive from catalog data with district metadata.
+
+### Fixed
+- Fixed patient dashboard scope in `src/features/patient/PatientDashboard.tsx` so patients only see hospitals/doctors from their own registered district.
+- Fixed business date rollover behavior in `src/services/businessDateService.ts`:
+  - Added auto/manual date mode handling.
+  - Auto-resets stale manual dates to current system date once the stored date has passed.
+  - Added periodic refresh subscription so date-bound UI stays current without manual intervention.
+
+### Validation
+- Verified successful production build after all updates (`npm run build`).
+
 ## [2026-03-04]
 
 ### Changed

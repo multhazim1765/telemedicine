@@ -3,6 +3,7 @@ import {
   Appointment,
   Consultation,
   Doctor,
+  HospitalCatalog,
   MedicineStock,
   Patient,
   PharmacyRequest,
@@ -14,6 +15,7 @@ export interface FirestoreCollections {
   users: AppUser;
   patients: Patient;
   doctors: Doctor;
+  hospital_catalog: HospitalCatalog;
   appointments: Appointment;
   triage_sessions: TriageSession;
   consultations: Consultation;

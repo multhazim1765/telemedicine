@@ -16,7 +16,8 @@ export interface Patient {
   name: string;
   age: number;
   gender: "male" | "female" | "other";
-  village: string;
+  district?: string;
+  village?: string;
   phone: string;
   comorbidities?: string[];
   allergies?: string[];
@@ -36,6 +37,12 @@ export interface Doctor {
   availabilitySlots: string[];
   city?: string;
   phone?: string;
+}
+
+export interface HospitalCatalog {
+  id: string;
+  hospitalName: string;
+  district: string;
 }
 
 export interface TriageResult {

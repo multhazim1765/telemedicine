@@ -315,13 +315,15 @@ export const assignUserRole = onCall(async (request) => {
   );
 
   if (role === "patient") {
+    const resolvedDistrict = district || village || "Unknown District";
     await db.collection("patients").doc(uid).set(
       {
         userId: uid,
         name: displayName,
         age: age > 0 ? age : 25,
         gender,
-        village: village || "Unknown",
+        district: resolvedDistrict,
+        village: village || resolvedDistrict,
         phone,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp()

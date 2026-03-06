@@ -12,7 +12,7 @@ import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db, isFirebaseConfigured } from "./firebase";
 import { AppUser, UserRole } from "../types/models";
 import { assignUserRole } from "./functionService";
-import { hospitalLoginAccounts } from "../data/hospitalDoctors";
+import { hospitalDoctors, hospitalLoginAccounts } from "../data/hospitalDoctors";
 import { setDocumentById } from "./firestoreService";
 import { nowIso } from "../utils/date";
 
@@ -22,8 +22,41 @@ interface DemoUser extends AppUser {
 
 const DEMO_SESSION_KEY = "telehealth-demo-user-id";
 const DEMO_USERS_KEY = "telehealth-demo-users";
+const PATIENT_HOSPITAL_PASSWORD_KEY = "telehealth-patient-hospital-login-password";
+const DEFAULT_PATIENT_HOSPITAL_PASSWORD = "am9790";
 
-const DEFAULT_DEMO_USERS: DemoUser[] = [
+const isPatientOrHospitalRole = (role: UserRole): boolean => role === "patient" || role === "doctor";
+
+export const getPatientHospitalLoginPassword = (): string => {
+  const configured = localStorage.getItem(PATIENT_HOSPITAL_PASSWORD_KEY)?.trim();
+  return configured || DEFAULT_PATIENT_HOSPITAL_PASSWORD;
+};
+
+const applyManagedPassword = (users: DemoUser[]): DemoUser[] => {
+  const managedPassword = getPatientHospitalLoginPassword();
+  return users.map((user) =>
+    isPatientOrHospitalRole(user.role)
+      ? {
+          ...user,
+          password: managedPassword
+        }
+      : user
+  );
+};
+
+export const setPatientHospitalLoginPassword = (password: string): void => {
+  const nextPassword = password.trim();
+  if (nextPassword.length < 4) {
+    throw new Error("Password must be at least 4 characters.");
+  }
+
+  localStorage.setItem(PATIENT_HOSPITAL_PASSWORD_KEY, nextPassword);
+  const updatedUsers = applyManagedPassword(getDemoUsers());
+  setDemoUsers(updatedUsers);
+  broadcastDemoAuthChange();
+};
+
+const buildDefaultDemoUsers = (): DemoUser[] => [
   {
     uid: "demo-super-admin-1",
     email: "am9790@telehealth.local",
@@ -35,7 +68,7 @@ const DEFAULT_DEMO_USERS: DemoUser[] = [
   {
     uid: "demo-patient-1",
     email: "patient@demo.local",
-    password: "demo123",
+    password: getPatientHospitalLoginPassword(),
     role: "patient",
     displayName: "Rural Patient",
     phone: "+910000000001"
@@ -48,10 +81,20 @@ const DEFAULT_DEMO_USERS: DemoUser[] = [
     displayName: "Village Pharmacy",
     phone: "+910000000003"
   },
+  ...hospitalDoctors.map((doctor, index) => ({
+    uid: doctor.id,
+    email: `${doctor.id}@telehealth.local`,
+    password: getPatientHospitalLoginPassword(),
+    role: "doctor" as const,
+    displayName: doctor.name,
+    phone: `+910001${String(index + 1).padStart(6, "0")}`,
+    hospitalName: doctor.hospitalName
+  })),
   ...hospitalLoginAccounts
 ];
 
 const mergeDefaultDemoUsers = (users: DemoUser[]): DemoUser[] => {
+  const DEFAULT_DEMO_USERS = buildDefaultDemoUsers();
   const byUid = new Map(users.map((user) => [user.uid, user]));
 
   for (const defaultUser of DEFAULT_DEMO_USERS) {
@@ -75,10 +118,12 @@ const mergeDefaultDemoUsers = (users: DemoUser[]): DemoUser[] => {
 };
 
 const getDemoUsers = (): DemoUser[] => {
+  const DEFAULT_DEMO_USERS = buildDefaultDemoUsers();
   const raw = localStorage.getItem(DEMO_USERS_KEY);
   if (!raw) {
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(DEFAULT_DEMO_USERS));
-    return [...DEFAULT_DEMO_USERS];
+    const managedDefaults = applyManagedPassword(DEFAULT_DEMO_USERS);
+    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
+    return managedDefaults;
   }
 
   try {
@@ -88,11 +133,13 @@ const getDemoUsers = (): DemoUser[] => {
       return [...DEFAULT_DEMO_USERS];
     }
     const merged = mergeDefaultDemoUsers(parsed);
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(merged));
-    return merged;
+    const managed = applyManagedPassword(merged);
+    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managed));
+    return managed;
   } catch {
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(DEFAULT_DEMO_USERS));
-    return [...DEFAULT_DEMO_USERS];
+    const managedDefaults = applyManagedPassword(DEFAULT_DEMO_USERS);
+    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
+    return managedDefaults;
   }
 };
 
@@ -197,6 +244,8 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
   if (!isFirebaseConfigured) {
     const email = phoneToEmail(normalizedPhone);
     const users = getDemoUsers();
+    const managedPassword = getPatientHospitalLoginPassword();
+    const resolvedPassword = isPatientOrHospitalRole(input.role) ? managedPassword : input.password;
     const alreadyExists = users.some(
       (item) => item.email.toLowerCase() === email.toLowerCase() || item.phone === normalizedPhone
     );
@@ -208,7 +257,7 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
     const created: DemoUser = {
       uid: `demo-${input.role}-${Date.now()}`,
       email,
-      password: input.password,
+      password: resolvedPassword,
       role: input.role,
       displayName: input.displayName,
       phone: normalizedPhone
@@ -217,13 +266,15 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
     setDemoUsers([...users, created]);
 
     if (input.role === "patient") {
+      const resolvedDistrict = input.district ?? input.village ?? "Unknown District";
       await setDocumentById("patients", created.uid, {
         id: created.uid,
         userId: created.uid,
         name: input.displayName,
         age: input.age ?? 25,
         gender: input.gender ?? "other",
-        village: input.village ?? "Unknown",
+        district: resolvedDistrict,
+        village: input.village ?? resolvedDistrict,
         phone: normalizedPhone,
         createdAt: nowIso()
       });
@@ -347,8 +398,23 @@ export const deleteMyDoctorAccount = async (): Promise<void> => {
   await deleteUser(currentUser);
 };
 
-export const getDemoCredentials = (): Array<{ email: string; password: string; role: UserRole }> =>
-  getDemoUsers().map(({ email, password, role }) => ({ email, password, role }));
+export const getDemoCredentials = (): Array<{
+  uid: string;
+  displayName: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  phone?: string;
+  hospitalName?: string;
+}> => getDemoUsers().map(({ uid, displayName, email, password, role, phone, hospitalName }) => ({
+  uid,
+  displayName,
+  email,
+  password,
+  role,
+  phone,
+  hospitalName
+}));
 
 export const requestPasswordReset = async (emailOrPhone: string): Promise<void> => {
   const email = resolveLoginIdentifierToEmail(emailOrPhone);
@@ -423,9 +489,12 @@ export const addDemoUser = (input: {
   phone?: string;
 }): AppUser => {
   const users = getDemoUsers();
+  const resolvedRole = input.role;
+  const managedPassword = getPatientHospitalLoginPassword();
   const normalizedPhone = input.phone ? normalizePhone(input.phone) : undefined;
   const email = input.email.trim().toLowerCase() || (normalizedPhone ? phoneToEmail(normalizedPhone) : "");
-  if (!email || !input.password) {
+  const resolvedPassword = isPatientOrHospitalRole(resolvedRole) ? managedPassword : input.password;
+  if (!email || !resolvedPassword) {
     throw new Error("Phone/email and password are required.");
   }
 
@@ -437,8 +506,8 @@ export const addDemoUser = (input: {
   const user: DemoUser = {
     uid: `demo-${input.role}-${Date.now()}`,
     email,
-    password: input.password,
-    role: input.role,
+    password: resolvedPassword,
+    role: resolvedRole,
     displayName: input.displayName,
     phone: normalizedPhone
   };
@@ -537,11 +606,15 @@ export const upsertDemoUserByUid = (uid: string, input: {
   }
 
   const current = index >= 0 ? users[index] : undefined;
+  const resolvedRole = input.role ?? current?.role ?? "patient";
+  const managedPassword = getPatientHospitalLoginPassword();
   const next: DemoUser = {
     uid,
     email: resolvedEmail,
-    password: current?.password ?? input.password ?? "demo123",
-    role: input.role ?? current?.role ?? "patient",
+    password: isPatientOrHospitalRole(resolvedRole)
+      ? managedPassword
+      : current?.password ?? input.password ?? "demo123",
+    role: resolvedRole,
     displayName: input.displayName,
     phone: normalizedPhone ?? current?.phone
   };
