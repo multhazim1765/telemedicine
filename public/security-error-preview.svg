@@ -1,0 +1,6 @@
+<svg width="960" height="220" viewBox="0 0 960 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="220" rx="20" fill="#F5F8FA"/>
+  <rect x="220" y="38" width="520" height="144" rx="16" fill="#F8FAFC" stroke="#FECACA" stroke-width="2"/>
+  <text x="480" y="92" text-anchor="middle" fill="#DC2626" font-size="38" font-family="Arial, sans-serif" font-weight="700">Something went wrong</text>
+  <text x="480" y="132" text-anchor="middle" fill="#334155" font-size="24" font-family="Arial, sans-serif">Please refresh the page. If issue continues, contact support.</text>
+</svg>

@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function hasRole(role) {
+      return isSignedIn() && request.auth.token.role == role;
+    }
+
+    function isPatientOwner(patientUserId) {
+      return hasRole('patient') && request.auth.uid == patientUserId;
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if false;
+    }
+
+    match /patients/{patientId} {
+      allow read: if isSignedIn() && (isPatientOwner(resource.data.userId) || hasRole('doctor'));
+      allow create: if hasRole('patient') && request.auth.uid == request.resource.data.userId;
+      allow update: if hasRole('patient') && request.auth.uid == resource.data.userId;
+      allow delete: if false;
+    }
+
+    match /doctors/{doctorId} {
+      allow read: if isSignedIn();
+      allow create, update: if hasRole('doctor');
+      allow delete: if hasRole('doctor') && request.auth.uid == doctorId;
+    }
+
+    match /triage_sessions/{sessionId} {
+      allow create: if hasRole('patient') && request.auth.uid == request.resource.data.patientId;
+      allow read: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow update: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow delete: if false;
+    }
+
+    match /appointments/{appointmentId} {
+      allow create: if hasRole('patient') && request.auth.uid == request.resource.data.patientId;
+      allow read: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow update: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow delete: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+    }
+
+    match /consultations/{consultationId} {
+      allow create, update: if hasRole('doctor');
+      allow read: if hasRole('doctor') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow delete: if false;
+    }
+
+    match /prescriptions/{prescriptionId} {
+      allow create, update: if hasRole('doctor');
+      allow read: if hasRole('doctor') || hasRole('pharmacy') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow delete: if false;
+    }
+
+    match /pharmacy_requests/{requestId} {
+      allow create: if hasRole('doctor');
+      allow read, update: if hasRole('pharmacy') || (hasRole('patient') && request.auth.uid == resource.data.patientId);
+      allow delete: if false;
+    }
+  }
+}

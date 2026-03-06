@@ -1,0 +1,85 @@
+{
+  "triage_rules": [
+    {
+      "ruleId": "TR001",
+      "condition": "Anaphylaxis",
+      "requiredSymptoms": ["rash", "swelling", "breathing difficulty"],
+      "triageOption": "Emergency",
+      "thresholdPercent": 70,
+      "explainability": "Suggest when >=70% symptoms match"
+    },
+    {
+      "ruleId": "TR002",
+      "condition": "Cardiac Emergency",
+      "requiredSymptoms": ["chest pain", "breathing difficulty", "sweating"],
+      "triageOption": "Emergency",
+      "thresholdPercent": 70,
+      "explainability": "Chest pain + breathing difficulty is always high risk"
+    },
+    {
+      "ruleId": "TR009",
+      "condition": "Viral Fever",
+      "requiredSymptoms": ["fever", "body pain", "fatigue"],
+      "triageOption": "Mild",
+      "thresholdPercent": 70,
+      "explainability": "Fever pattern and constitutional symptoms"
+    }
+  ],
+  "medicine_rules": [
+    {
+      "medicineId": "M040",
+      "medicineName": "Paracetamol 500mg",
+      "category": "Fever",
+      "triageOption": "Mild",
+      "defaultDosage": "1 tablet after food when needed",
+      "alternatives": []
+    },
+    {
+      "medicineId": "M026",
+      "medicineName": "Amoxicillin 500mg",
+      "category": "Antibiotic",
+      "triageOption": "Urgent",
+      "defaultDosage": "1 dose now, then every 12 hours",
+      "alternatives": ["M027"]
+    },
+    {
+      "medicineId": "M027",
+      "medicineName": "Azithromycin",
+      "category": "Antibiotic",
+      "triageOption": "Urgent",
+      "defaultDosage": "1 dose now, then every 12 hours",
+      "alternatives": ["M026"]
+    }
+  ],
+  "risk_rules": [
+    {
+      "ruleId": "RR001",
+      "condition": "match_percent_70_or_above",
+      "effect": "+20 risk score",
+      "explainability": "Rule confidence contribution"
+    },
+    {
+      "ruleId": "RR002",
+      "condition": "age_gt_60_and_comorbidity",
+      "effect": "increase risk to HIGH",
+      "explainability": "Elderly patient with chronic disease"
+    },
+    {
+      "ruleId": "RR003",
+      "condition": "fever_days_gt_3",
+      "effect": "escalate to MODERATE",
+      "explainability": "Persistent fever requires escalation"
+    },
+    {
+      "ruleId": "RR004",
+      "condition": "chest_pain_and_breathing_difficulty",
+      "effect": "set HIGH risk",
+      "explainability": "Potential cardiopulmonary emergency"
+    }
+  ],
+  "indexes": {
+    "triage_rules": ["condition", "triageOption"],
+    "medicine_rules": ["category", "triageOption", "medicineId"],
+    "risk_rules": ["ruleId"]
+  }
+}

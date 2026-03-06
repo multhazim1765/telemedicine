@@ -1,0 +1,17 @@
+[
+  { "hospitalName": "Apollo Hospital Chennai", "district": "Chennai District" },
+  { "hospitalName": "Government General Hospital Chennai", "district": "Chennai District" },
+  { "hospitalName": "MGM Healthcare", "district": "Chengalpattu District" },
+  { "hospitalName": "Sri Ramachandra Medical Centre", "district": "Kancheepuram District" },
+  { "hospitalName": "Coimbatore Medical College Hospital", "district": "Coimbatore District" },
+  { "hospitalName": "PSG Hospitals", "district": "Coimbatore District" },
+  { "hospitalName": "Madurai Rajaji Government Hospital", "district": "Madurai District" },
+  { "hospitalName": "Velammal Medical College Hospital", "district": "Madurai District" },
+  { "hospitalName": "KMCH Trichy", "district": "Tiruchirappalli District" },
+  { "hospitalName": "Kauvery Hospital Trichy", "district": "Tiruchirappalli District" },
+  { "hospitalName": "Thanjavur Medical College Hospital", "district": "Thanjavur District" },
+  { "hospitalName": "Shifa Hospital", "district": "Thanjavur District" },
+  { "hospitalName": "Tirunelveli Medical College Hospital", "district": "Tirunelveli District" },
+  { "hospitalName": "Thoothukudi Government Medical College Hospital", "district": "Thoothukudi District" },
+  { "hospitalName": "Nagercoil Government Medical College Hospital", "district": "Kanyakumari District" }
+]
