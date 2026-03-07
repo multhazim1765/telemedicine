@@ -35,21 +35,24 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
   }, []);
 
   return (
-    <header className="sticky top-3 z-30 mb-4 rounded-2xl bg-[#062b26] px-4 py-3 shadow-sm ring-1 ring-[#68ffb05e]">
+    <header className="sticky top-3 z-30 mb-4 rounded-[1.7rem] bg-[#fffdf9] px-4 py-3 shadow-[0_18px_38px_rgba(70,49,35,0.08)] ring-1 ring-[#e8dccd]">
       <div className="flex items-center gap-2">
         <button type="button" className="btn-muted lg:hidden" onClick={onToggleMobileSidebar}>
           <Menu className="h-4 w-4" />
         </button>
         <button type="button" className="btn-muted hidden lg:inline-flex" onClick={onToggleSidebar}>Toggle</button>
-        <h1 className="text-lg font-semibold text-slate-100">{title}</h1>
-        <span className="rounded-lg bg-[#083731] px-2 py-1 text-xs font-medium text-emerald-100 ring-1 ring-[#68ffb040]">
+        <div>
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#a27944]">Care desk</p>
+          <h1 className="font-[Georgia] text-xl font-semibold text-[#32251b]">{title}</h1>
+        </div>
+        <span className="rounded-full bg-[#faf3e6] px-3 py-1 text-xs font-medium text-[#7a5f44] ring-1 ring-[#eadac6]">
           Date: {businessDate}
         </span>
 
-        <div className="mx-auto hidden max-w-sm flex-1 items-center gap-2 rounded-xl bg-[#083731] px-3 py-2 ring-1 ring-[#68ffb040] md:flex">
-          <Search className="h-4 w-4 text-emerald-200" />
+        <div className="mx-auto hidden max-w-sm flex-1 items-center gap-2 rounded-full bg-[#fbf7f1] px-3 py-2 ring-1 ring-[#eadac6] md:flex">
+          <Search className="h-4 w-4 text-[#8d7b6b]" />
           <input
-            className="w-full bg-transparent text-sm text-emerald-50 outline-none placeholder:text-emerald-200/70"
+            className="w-full bg-transparent text-sm text-[#32251b] outline-none placeholder:text-[#9a8878]"
             placeholder="Search patients, appointments..."
           />
         </div>
@@ -60,7 +63,7 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
             whileTap={{ scale: 0.94 }}
             animate={{ rotate: [0, 8, -8, 0] }}
             transition={{ duration: 0.4 }}
-            className="relative rounded-xl p-2 text-emerald-100 hover:bg-[#0b3e36]"
+            className="relative rounded-xl p-2 text-[#6d584a] hover:bg-[#faf3ea]"
             onClick={() => setOpenNotifications((value) => !value)}
           >
             <Bell className="h-5 w-5" />
@@ -73,9 +76,9 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 z-50 mt-2 w-64 rounded-xl bg-[#062b26] p-2 shadow-lg ring-1 ring-[#68ffb05e]"
+                className="absolute right-0 z-50 mt-2 w-64 rounded-xl bg-[#fffdf9] p-2 shadow-lg ring-1 ring-[#e8dccd]"
               >
-                <p className="rounded-lg px-3 py-2 text-sm text-emerald-50">No new notifications.</p>
+                <p className="rounded-lg px-3 py-2 text-sm text-[#6d584a]">No new notifications.</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -84,7 +87,7 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
         <div className="relative" ref={profileRef}>
           <button
             type="button"
-            className="flex items-center gap-2 rounded-xl bg-[#083731] px-3 py-2 text-sm text-emerald-50 ring-1 ring-[#68ffb040]"
+            className="flex items-center gap-2 rounded-full bg-[#fbf7f1] px-3 py-2 text-sm text-[#32251b] ring-1 ring-[#eadac6]"
             onClick={() => setOpenProfile((v) => !v)}
           >
             <span className="max-w-28 truncate">{user?.displayName ?? "Guest"}</span>
@@ -97,11 +100,11 @@ export const TopNavbar = ({ title, user, onToggleSidebar, onToggleMobileSidebar 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.2 }}
-                className="absolute right-0 z-50 mt-2 w-48 rounded-xl bg-[#062b26] p-2 shadow-lg ring-1 ring-[#68ffb05e]"
+                className="absolute right-0 z-50 mt-2 w-48 rounded-xl bg-[#fffdf9] p-2 shadow-lg ring-1 ring-[#e8dccd]"
               >
                 <button
                   type="button"
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-emerald-50 hover:bg-[#0b3e36]"
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-[#32251b] hover:bg-[#faf3ea]"
                   onClick={() => void logout()}
                 >
                   <LogOut className="h-4 w-4" />

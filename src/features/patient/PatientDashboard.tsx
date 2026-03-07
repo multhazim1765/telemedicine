@@ -131,6 +131,42 @@ export const PatientDashboard = () => {
     setLastTriageSessionId(triageSessionId);
   };
 
+  const renderClinicalDecision = (request: PharmacyRequest) => {
+    if (!request.clinicalDecision) {
+      return null;
+    }
+
+    const decision = request.clinicalDecision;
+
+    return (
+      <div className="mt-2 rounded-md bg-white p-3 ring-1 ring-slate-200">
+        <p>Symptoms: {decision.symptoms.join(", ")}</p>
+        <p>Severity: {decision.severityLevel.toUpperCase()} ({decision.severityScore})</p>
+        <p>Action: {decision.recommendedAction}</p>
+        <p>Condition: {decision.primaryMatch?.condition ?? "No >=70% rule match"}</p>
+        <p>Risk: {decision.riskLevel.toUpperCase()} ({decision.riskScore}%)</p>
+        <p>Review after: {decision.reviewAfterDays} day(s)</p>
+        {decision.primaryMatch?.matchedSymptoms?.length ? <p>Matched symptoms: {decision.primaryMatch.matchedSymptoms.join(", ")}</p> : null}
+        {decision.riskReasons.length > 0 ? <p>Risk reasons: {decision.riskReasons.join(", ")}</p> : null}
+        {decision.alternativeMatches.length > 0 ? (
+          <p>Additional matches: {decision.alternativeMatches.map((match) => `${match.condition} (${match.matchPercent}%)`).join(", ")}</p>
+        ) : null}
+        <div className="mt-2">
+          <p className="font-medium">Clinical decision medicines</p>
+          <ul className="mt-1 list-disc pl-5">
+            {decision.medicines.map((medicine) => (
+              <li key={`${request.id}-${medicine.selectedMedicineName}`}>
+                {medicine.selectedMedicineName} - {medicine.selectedDosage}
+                {medicine.selectedMedicineName !== medicine.medicineName ? ` (from ${medicine.medicineName})` : ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="mt-2">Doctor notes: {decision.notes || "N/A"}</p>
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout title="Patient Dashboard">
       <BusinessDateBadge />
@@ -340,8 +376,11 @@ export const PatientDashboard = () => {
             {myRequests.map((request) => (
               <li key={request.id} className="rounded-md bg-slate-100 p-2">
                 <p>Medicines: {request.medicines.join(", ")}</p>
+                {request.dosageInstructions?.length ? <p>Dosage: {request.dosageInstructions.join(" | ")}</p> : null}
+                {request.notes ? <p>Notes: {request.notes}</p> : null}
                 <p>Pharmacy Status: {request.smsStatus}</p>
                 <p>SMS Delivery: {request.smsDeliveryStatus ?? "pending"}</p>
+                {renderClinicalDecision(request)}
                 {request.smsDeliveryStatus !== "sent" && (
                   <button
                     className="btn-muted mt-2"
@@ -352,6 +391,10 @@ export const PatientDashboard = () => {
                         const smsResult = await sendPrescriptionSMSNow({
                           patientPhone: request.patientPhone,
                           medicines: request.medicines,
+                          dosageInstructions: request.dosageInstructions,
+                          reviewAfterDays: request.reviewAfterDays,
+                          customMessage: request.smsContent,
+                          clinicalDecision: request.clinicalDecision,
                           requestId: request.id,
                           doctorName: request.doctorName ?? "Doctor"
                         });
@@ -386,7 +429,10 @@ export const PatientDashboard = () => {
             <li key={`pres-${request.id}`} className="rounded-md bg-slate-100 p-2">
               <p>Doctor: {request.doctorName ?? request.doctorId ?? "N/A"}</p>
               <p>Medicines: {request.medicines.join(", ")}</p>
+              {request.dosageInstructions?.length ? <p>Dosage: {request.dosageInstructions.join(" | ")}</p> : null}
+              {request.notes ? <p>Notes: {request.notes}</p> : null}
               <p>SMS Delivery: {request.smsDeliveryStatus ?? "pending"}</p>
+              {renderClinicalDecision(request)}
             </li>
           ))}
         </ul>

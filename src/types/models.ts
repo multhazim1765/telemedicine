@@ -8,6 +8,8 @@ export interface AppUser {
   displayName: string;
   phone?: string;
   hospitalName?: string;
+  pharmacyName?: string;
+  district?: string;
 }
 
 export interface Patient {
@@ -85,6 +87,7 @@ export interface Consultation {
   patientId: string;
   doctorId: string;
   notes: string;
+  clinicalDecision?: ClinicalDecisionSummary;
   createdAt: string;
 }
 
@@ -96,7 +99,42 @@ export interface Prescription {
   medicines: string[];
   dosageInstructions: string[];
   notes: string;
+  clinicalDecision?: ClinicalDecisionSummary;
   createdAt: string;
+}
+
+export interface ClinicalDecisionMatchSummary {
+  condition: string;
+  category: string;
+  triageOption: string;
+  matchPercent: number;
+  matchedSymptoms: string[];
+}
+
+export interface ClinicalDecisionMedicineSummary {
+  medicineName: string;
+  selectedMedicineName: string;
+  suggestedDosage: string;
+  selectedDosage: string;
+  inStock: boolean;
+  alternativeMedicineNames: string[];
+  explanation: string;
+}
+
+export interface ClinicalDecisionSummary {
+  symptoms: string[];
+  severityScore: number;
+  severityLevel: TriageResult["severityLevel"];
+  recommendedAction: string;
+  feverDays: number;
+  reviewAfterDays: number;
+  notes: string;
+  primaryMatch?: ClinicalDecisionMatchSummary;
+  alternativeMatches: ClinicalDecisionMatchSummary[];
+  riskScore: number;
+  riskLevel: "low" | "moderate" | "high";
+  riskReasons: string[];
+  medicines: ClinicalDecisionMedicineSummary[];
 }
 
 export type PharmacySmsStatus = "pending" | "available" | "not_available";
@@ -110,6 +148,11 @@ export interface PharmacyRequest {
   doctorId?: string;
   doctorName?: string;
   medicines: string[];
+  dosageInstructions?: string[];
+  notes?: string;
+  reviewAfterDays?: number;
+  clinicalDecision?: ClinicalDecisionSummary;
+  smsContent?: string;
   smsStatus: PharmacySmsStatus;
   smsDeliveryStatus?: DeliveryStatus;
   smsMessageId?: string;

@@ -1,6 +1,6 @@
 import { httpsCallable } from "firebase/functions";
 import { functions, isFirebaseConfigured } from "./firebase";
-import { UserRole } from "../types/models";
+import { ClinicalDecisionSummary, UserRole } from "../types/models";
 
 interface AssignRolePayload {
   role: UserRole;
@@ -41,6 +41,7 @@ interface SendPrescriptionSmsPayload {
   dosageInstructions?: string[];
   reviewAfterDays?: number;
   customMessage?: string;
+  clinicalDecision?: ClinicalDecisionSummary;
   requestId: string;
   doctorName?: string;
 }

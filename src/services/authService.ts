@@ -15,6 +15,7 @@ import { assignUserRole } from "./functionService";
 import { hospitalDoctors, hospitalLoginAccounts } from "../data/hospitalDoctors";
 import { setDocumentById } from "./firestoreService";
 import { nowIso } from "../utils/date";
+import { demoPharmacies } from "../data/demoPharmacies";
 
 interface DemoUser extends AppUser {
   password: string;
@@ -73,14 +74,16 @@ const buildDefaultDemoUsers = (): DemoUser[] => [
     displayName: "Rural Patient",
     phone: "+910000000001"
   },
-  {
-    uid: "demo-pharmacy-1",
-    email: "pharmacy@demo.local",
-    password: "demo123",
-    role: "pharmacy",
-    displayName: "Village Pharmacy",
-    phone: "+910000000003"
-  },
+  ...demoPharmacies.map((pharmacy) => ({
+    uid: pharmacy.uid,
+    email: pharmacy.email,
+    password: pharmacy.password,
+    role: "pharmacy" as const,
+    displayName: pharmacy.displayName,
+    pharmacyName: pharmacy.pharmacyName,
+    district: pharmacy.district,
+    phone: pharmacy.phone
+  })),
   ...hospitalDoctors.map((doctor, index) => ({
     uid: doctor.id,
     email: `${doctor.id}@telehealth.local`,
@@ -110,7 +113,10 @@ const mergeDefaultDemoUsers = (users: DemoUser[]): DemoUser[] => {
       displayName: defaultUser.displayName,
       phone: defaultUser.phone,
       email: defaultUser.email,
-      password: defaultUser.password
+      password: defaultUser.password,
+      hospitalName: defaultUser.hospitalName,
+      pharmacyName: defaultUser.pharmacyName,
+      district: defaultUser.district
     });
   }
 
@@ -406,14 +412,18 @@ export const getDemoCredentials = (): Array<{
   role: UserRole;
   phone?: string;
   hospitalName?: string;
-}> => getDemoUsers().map(({ uid, displayName, email, password, role, phone, hospitalName }) => ({
+  pharmacyName?: string;
+  district?: string;
+}> => getDemoUsers().map(({ uid, displayName, email, password, role, phone, hospitalName, pharmacyName, district }) => ({
   uid,
   displayName,
   email,
   password,
   role,
   phone,
-  hospitalName
+  hospitalName,
+  pharmacyName,
+  district
 }));
 
 export const requestPasswordReset = async (emailOrPhone: string): Promise<void> => {
@@ -487,6 +497,9 @@ export const addDemoUser = (input: {
   displayName: string;
   role: UserRole;
   phone?: string;
+  hospitalName?: string;
+  pharmacyName?: string;
+  district?: string;
 }): AppUser => {
   const users = getDemoUsers();
   const resolvedRole = input.role;
@@ -509,7 +522,10 @@ export const addDemoUser = (input: {
     password: resolvedPassword,
     role: resolvedRole,
     displayName: input.displayName,
-    phone: normalizedPhone
+    phone: normalizedPhone,
+    hospitalName: input.hospitalName,
+    pharmacyName: input.pharmacyName,
+    district: input.district
   };
 
   setDemoUsers([...users, user]);
@@ -588,6 +604,9 @@ export const upsertDemoUserByUid = (uid: string, input: {
   role?: UserRole;
   phone?: string;
   password?: string;
+  hospitalName?: string;
+  pharmacyName?: string;
+  district?: string;
 }): AppUser => {
   const users = getDemoUsers();
   const index = users.findIndex((user) => user.uid === uid);
@@ -613,10 +632,13 @@ export const upsertDemoUserByUid = (uid: string, input: {
     email: resolvedEmail,
     password: isPatientOrHospitalRole(resolvedRole)
       ? managedPassword
-      : current?.password ?? input.password ?? "demo123",
+      : current?.password ?? input.password ?? "am9790",
     role: resolvedRole,
     displayName: input.displayName,
-    phone: normalizedPhone ?? current?.phone
+    phone: normalizedPhone ?? current?.phone,
+    hospitalName: input.hospitalName ?? current?.hospitalName,
+    pharmacyName: input.pharmacyName ?? current?.pharmacyName,
+    district: input.district ?? current?.district
   };
 
   if (index >= 0) {

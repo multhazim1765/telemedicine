@@ -23,6 +23,7 @@ import { hospitalDoctors } from "../data/hospitalDoctors";
 import { medicineRules } from "../data/medicineTriageDataset";
 import { hospitalLoginAccounts } from "../data/hospitalDoctors";
 import { defaultHospitalCatalog } from "../utils/hospitalCatalog";
+import { demoPharmacies } from "../data/demoPharmacies";
 
 type CollectionName = keyof FirestoreCollections;
 type CollectionRecord = FirestoreCollections[CollectionName];
@@ -52,14 +53,16 @@ const seedStore = (): DemoStore => ({
       displayName: "Rural Patient",
       phone: "+910000000001"
     },
-    {
-      id: "demo-pharmacy-1",
-      uid: "demo-pharmacy-1",
-      email: "pharmacy@demo.local",
-      role: "pharmacy",
-      displayName: "Village Pharmacy",
-      phone: "+910000000003"
-    },
+    ...demoPharmacies.map((pharmacy) => ({
+      id: pharmacy.uid,
+      uid: pharmacy.uid,
+      email: pharmacy.email,
+      role: "pharmacy" as const,
+      displayName: pharmacy.displayName,
+      pharmacyName: pharmacy.pharmacyName,
+      district: pharmacy.district,
+      phone: pharmacy.phone
+    })),
     ...hospitalLoginAccounts.map((account) => ({
       id: account.uid,
       uid: account.uid,
@@ -149,8 +152,18 @@ const loadDemoStore = (): DemoStore => {
     const seededCatalogIds = new Set(seededCatalog.map((item) => item.id));
     const customCatalogItems = parsedCatalog.filter((item) => !seededCatalogIds.has(item.id));
 
+    const parsedUsers = (parsed.users ?? []) as FirestoreCollections["users"][];
+    const seededUsers = seeded.users as FirestoreCollections["users"][];
+    const parsedUsersById = new Map(parsedUsers.map((user) => [user.uid, user]));
+    const mergedSeededUsers = seededUsers.map((seedUser) => ({
+      ...seedUser,
+      ...(parsedUsersById.get(seedUser.uid) ?? {})
+    }));
+    const seededUserIds = new Set(seededUsers.map((user) => user.uid));
+    const customUsers = parsedUsers.filter((user) => !seededUserIds.has(user.uid));
+
     return {
-      users: parsed.users ?? seeded.users,
+      users: [...mergedSeededUsers, ...customUsers],
       patients: parsed.patients ?? seeded.patients,
       doctors: migratedDoctors,
       hospital_catalog: [...mergedCatalog, ...customCatalogItems],

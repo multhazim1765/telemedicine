@@ -35,6 +35,7 @@ const navByRole: Record<UserRole, Array<{ to: string; label: string; icon: JSX.E
     { to: "/super-admin/users", label: "Users", icon: <Users className="h-4 w-4" /> },
     { to: "/super-admin/hospitals", label: "Hospitals", icon: <Building2 className="h-4 w-4" /> },
     { to: "/super-admin/patients", label: "Patients", icon: <UserRound className="h-4 w-4" /> },
+    { to: "/super-admin/pharmacies", label: "Pharmacies", icon: <Syringe className="h-4 w-4" /> },
     { to: "/super-admin/triage-rules", label: "Triage Rules", icon: <ClipboardList className="h-4 w-4" /> },
     { to: "/super-admin/medicines", label: "Medicines", icon: <Pill className="h-4 w-4" /> },
     { to: "/super-admin/sms-logs", label: "SMS Logs", icon: <Bell className="h-4 w-4" /> },
@@ -50,10 +51,13 @@ const SidebarContent = ({ collapsed, role, onCloseMobile }: Pick<SidebarProps, "
   const navItems = role ? navByRole[role] : [];
 
   return (
-    <div className="h-full rounded-2xl bg-[#062b26] p-3 shadow-sm ring-1 ring-[#68ffb05e]">
-      <div className="mb-4 flex items-center gap-2 px-2 py-1 text-white">
-        <Shield className="h-5 w-5" />
-        {!collapsed && <span className="text-sm font-semibold">Health Console</span>}
+    <div className="h-full rounded-[1.7rem] bg-[#fffdf9] p-3 shadow-[0_18px_38px_rgba(70,49,35,0.08)] ring-1 ring-[#e8dccd]">
+      <div className="mb-5 rounded-2xl bg-[linear-gradient(135deg,#fff8ef,#f7ebdd)] px-3 py-3 text-[#4a3425] ring-1 ring-[#eadac6]">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-[#824c2d]" />
+          {!collapsed && <span className="text-sm font-semibold uppercase tracking-[0.12em] text-[#8a5a28]">Care Network</span>}
+        </div>
+        {!collapsed && <p className="mt-2 text-xs text-[#7b6a5d]">Hospital operations dashboard</p>}
       </div>
       <div className="space-y-1">
         {navItems.map((item) => {
@@ -64,7 +68,7 @@ const SidebarContent = ({ collapsed, role, onCloseMobile }: Pick<SidebarProps, "
               to={item.to}
               onClick={onCloseMobile}
               className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
-                active ? "bg-[#1a7d5e] text-white ring-1 ring-[#68ffb080]" : "text-emerald-50 hover:bg-[#0d4239]"
+                active ? "bg-[linear-gradient(135deg,#f9eedb,#f4dfb7)] text-[#5b311e] ring-1 ring-[#e2c999]" : "text-[#6d584a] hover:bg-[#faf3ea]"
               }`}
             >
               {item.icon}

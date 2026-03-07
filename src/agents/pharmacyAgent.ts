@@ -21,13 +21,19 @@ const normalizePhoneForSms = (phone: string): string => {
 export const formatPharmacyRequest = (
   prescription: Prescription,
   patientPhone: string,
-  doctorName?: string
+  doctorName?: string,
+  smsContent?: string
 ): Omit<PharmacyRequest, "id"> => ({
   prescriptionId: prescription.id,
   patientId: prescription.patientId,
   doctorId: prescription.doctorId,
   doctorName,
   medicines: prescription.medicines,
+  dosageInstructions: prescription.dosageInstructions,
+  notes: prescription.notes,
+  reviewAfterDays: prescription.clinicalDecision?.reviewAfterDays,
+  clinicalDecision: prescription.clinicalDecision,
+  smsContent,
   patientPhone: normalizePhoneForSms(patientPhone),
   smsStatus: "pending",
   smsDeliveryStatus: "pending",
@@ -37,9 +43,10 @@ export const formatPharmacyRequest = (
 export const createPharmacyRequest = async (
   prescription: Prescription,
   patientPhone: string,
-  doctorName?: string
+  doctorName?: string,
+  smsContent?: string
 ): Promise<string> => {
-  const request = formatPharmacyRequest(prescription, patientPhone, doctorName);
+  const request = formatPharmacyRequest(prescription, patientPhone, doctorName, smsContent);
   return createDocument("pharmacy_requests", request);
 };
 

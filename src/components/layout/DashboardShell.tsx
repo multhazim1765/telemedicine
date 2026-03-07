@@ -16,7 +16,7 @@ export const DashboardShell = ({ title, children }: DashboardShellProps) => {
   const { user } = useAuth();
 
   return (
-    <main className="min-h-screen p-3 sm:p-4 dashboard-theme">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(211,164,95,0.14),_transparent_18%),linear-gradient(180deg,_#fbf8f3,_#f2e8dc)] p-3 sm:p-4 dashboard-theme">
       <div className="mx-auto flex max-w-7xl gap-3">
         <Sidebar
           collapsed={collapsed}

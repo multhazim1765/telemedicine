@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { UserRole } from "../types/models";
 import { hasRole, isJwtSessionValid } from "../services/authService";
+import { MedicalSpinner } from "./ui/Feedback";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -49,7 +50,7 @@ export const ProtectedRoute = ({
   }, [requireJwt, user?.uid]);
 
   if (isLoading || checkingJwt) {
-    return <div className="p-6 text-sm">Loading account...</div>;
+    return <MedicalSpinner fullScreen label="Checking access" message="Verifying your account and permissions" />;
   }
 
   if (!user) {

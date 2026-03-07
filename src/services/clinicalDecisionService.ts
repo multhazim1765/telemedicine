@@ -1,4 +1,4 @@
-import { MedicineStock, Patient, TriageSession } from "../types/models";
+import { ClinicalDecisionSummary, MedicineStock, Patient, TriageSession } from "../types/models";
 import {
   defaultDosageByTriage,
   medicineAlternatives,
@@ -32,6 +32,13 @@ export interface SuggestedMedicine {
   inStock: boolean;
   alternativeMedicineNames: string[];
   explanation: string;
+}
+
+export interface ClinicalDecisionSupportOutput {
+  match?: SymptomMatchResult;
+  allMatches: SymptomMatchResult[];
+  risk: RiskResult;
+  medicines: SuggestedMedicine[];
 }
 
 const normalizeToken = (value: string): string => value.trim().toLowerCase();
@@ -224,7 +231,7 @@ export const runClinicalDecisionSupport = (input: {
   patient?: Patient;
   feverDays?: number;
   stocks: MedicineStock[];
-}) => {
+}): ClinicalDecisionSupportOutput => {
   const matches = calculateSymptomMatch(input.session.symptoms);
   const topMatch = matches[0];
   const risk = calculateRiskStratification({
@@ -250,13 +257,110 @@ export const runClinicalDecisionSupport = (input: {
   };
 };
 
+const summarizeMatch = (match: SymptomMatchResult) => ({
+  condition: match.condition,
+  category: match.category,
+  triageOption: match.triageOption,
+  matchPercent: match.matchPercent,
+  matchedSymptoms: match.matchedSymptoms
+});
+
+export const buildClinicalDecisionSummary = (input: {
+  session: TriageSession;
+  notes: string;
+  feverDays: number;
+  reviewAfterDays: number;
+  output: ClinicalDecisionSupportOutput;
+  prescribedMedicines: Array<{ medicine: string; dosage: string }>;
+}): ClinicalDecisionSummary => {
+  const prescribedByName = new Map(
+    input.prescribedMedicines.map((entry) => [entry.medicine, entry.dosage])
+  );
+
+  const medicineSummaries = input.output.medicines.map((medicine) => {
+    const matchedDraft = input.prescribedMedicines.find(
+      (entry) => entry.medicine === medicine.medicineName || medicine.alternativeMedicineNames.includes(entry.medicine)
+    );
+    const selectedMedicineName = matchedDraft?.medicine ?? medicine.medicineName;
+
+    return {
+      medicineName: medicine.medicineName,
+      selectedMedicineName,
+      suggestedDosage: medicine.suggestedDosage,
+      selectedDosage: matchedDraft?.dosage ?? prescribedByName.get(selectedMedicineName) ?? medicine.suggestedDosage,
+      inStock: medicine.inStock,
+      alternativeMedicineNames: medicine.alternativeMedicineNames,
+      explanation: medicine.explanation
+    };
+  });
+
+  for (const prescribedMedicine of input.prescribedMedicines) {
+    const alreadyIncluded = medicineSummaries.some(
+      (medicine) => medicine.selectedMedicineName === prescribedMedicine.medicine
+    );
+
+    if (!alreadyIncluded) {
+      medicineSummaries.push({
+        medicineName: prescribedMedicine.medicine,
+        selectedMedicineName: prescribedMedicine.medicine,
+        suggestedDosage: prescribedMedicine.dosage,
+        selectedDosage: prescribedMedicine.dosage,
+        inStock: true,
+        alternativeMedicineNames: [],
+        explanation: "Added manually during consultation."
+      });
+    }
+  }
+
+  return {
+    symptoms: input.session.symptoms,
+    severityScore: input.session.result.severityScore,
+    severityLevel: input.session.result.severityLevel,
+    recommendedAction: input.session.result.recommendedAction,
+    feverDays: input.feverDays,
+    reviewAfterDays: input.reviewAfterDays,
+    notes: input.notes,
+    primaryMatch: input.output.match ? summarizeMatch(input.output.match) : undefined,
+    alternativeMatches: input.output.allMatches.slice(1, 4).map(summarizeMatch),
+    riskScore: input.output.risk.riskScore,
+    riskLevel: input.output.risk.riskLevel,
+    riskReasons: input.output.risk.reasons,
+    medicines: medicineSummaries
+  };
+};
+
 export const buildPrescriptionSmsTemplate = (input: {
   medicines: Array<{ medicine: string; dosage: string }>;
   reviewAfterDays: number;
+  clinicalDecision?: ClinicalDecisionSummary;
 }): string => {
   const medicineLines = input.medicines
     .map((item) => `${item.medicine} - ${item.dosage}`)
     .join("\n");
+
+  if (input.clinicalDecision) {
+    const { clinicalDecision } = input;
+    const matchLines = [clinicalDecision.primaryMatch, ...clinicalDecision.alternativeMatches]
+      .filter((match): match is NonNullable<typeof clinicalDecision.primaryMatch> => Boolean(match))
+      .map((match) => `${match.condition} (${match.matchPercent}% ${match.triageOption})`)
+      .join(", ");
+
+    return [
+      "Civil Hospital PHC:",
+      `Symptoms: ${clinicalDecision.symptoms.join(", ") || "N/A"}`,
+      `Severity: ${clinicalDecision.severityLevel.toUpperCase()} (${clinicalDecision.severityScore})`,
+      `Likely condition: ${clinicalDecision.primaryMatch?.condition ?? "No >=70% rule match"}`,
+      `Risk: ${clinicalDecision.riskLevel.toUpperCase()} ${clinicalDecision.riskScore}%`,
+      clinicalDecision.riskReasons.length > 0 ? `Risk reasons: ${clinicalDecision.riskReasons.join(", ")}` : "Risk reasons: None noted",
+      matchLines ? `Rule matches: ${matchLines}` : "Rule matches: No strong rule match",
+      `Action: ${clinicalDecision.recommendedAction}`,
+      "Prescription:",
+      medicineLines,
+      `Doctor notes: ${clinicalDecision.notes || "As advised"}`,
+      `Review after ${input.reviewAfterDays} days.`,
+      "If symptoms worsen, visit hospital immediately."
+    ].join("\n");
+  }
 
   return [
     "Civil Hospital PHC:",

@@ -1,13 +1,11 @@
 import { FormEvent, ReactNode, Suspense, lazy, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
-import { ShieldPlus, Stethoscope, UserRoundCheck } from "lucide-react";
 import { RoleRoute } from "./components/routes/RoleRoute";
-import { getDemoCredentials, getPatientHospitalLoginPassword, loginWithEmail, logout, signUpWithPhone } from "./services/authService";
+import { getDemoCredentials, getPatientHospitalLoginPassword, loginWithEmail, signUpWithPhone } from "./services/authService";
 import { isFirebaseConfigured } from "./services/firebase";
 import { UserRole } from "./types/models";
 import { useAuth } from "./hooks/useAuth";
-import { seedChennaiDoctors } from "./services/functionService";
 import { hospitalNameToSlug } from "./data/hospitalDoctors";
 import { pageTransition } from "./utils/animations";
 import { ToastProvider } from "./components/ui/ToastProvider";
@@ -23,6 +21,7 @@ const SuperAdminLayout = lazy(() => import("./features/superAdmin/SuperAdminLayo
 const SystemOverviewPage = lazy(() => import("./features/superAdmin/SystemOverviewPage").then((module) => ({ default: module.SystemOverviewPage })));
 const UserManagementPage = lazy(() => import("./features/superAdmin/UserManagementPage").then((module) => ({ default: module.UserManagementPage })));
 const PatientManagementPage = lazy(() => import("./features/superAdmin/PatientManagementPage").then((module) => ({ default: module.PatientManagementPage })));
+const PharmacyManagementPage = lazy(() => import("./features/superAdmin/PharmacyManagementPage").then((module) => ({ default: module.PharmacyManagementPage })));
 const LogsPage = lazy(() => import("./features/superAdmin/LogsPage").then((module) => ({ default: module.LogsPage })));
 const SecurityPage = lazy(() => import("./features/superAdmin/SecurityPage").then((module) => ({ default: module.SecurityPage })));
 const HospitalManagementPage = lazy(() => import("./features/superAdmin/HospitalManagementPage").then((module) => ({ default: module.HospitalManagementPage })));
@@ -54,8 +53,18 @@ const resolveDashboardPath = (role: UserRole, hospitalName?: string): string => 
 
 const prettyRole = (role: UserRole): string => role.charAt(0).toUpperCase() + role.slice(1);
 
+const RootRedirect = () => {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <MedicalSpinner label="Preparing workspace" message="Loading your care dashboard" fullScreen />;
+  }
+
+  return <Navigate to={user ? resolveDashboardPath(user.role, user.hospitalName) : "/login"} replace />;
+};
+
 const AuthCard = ({ children, wide = false, panelClassName = "" }: { children: ReactNode; wide?: boolean; panelClassName?: string }) => (
-  <main className={`mx-auto flex min-h-screen w-full items-center p-4 ${wide ? "max-w-5xl" : "max-w-md"}`}>
+  <main className={`mx-auto flex min-h-screen w-full items-center p-4 ${wide ? "max-w-7xl" : "max-w-md"}`}>
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -64,6 +73,22 @@ const AuthCard = ({ children, wide = false, panelClassName = "" }: { children: R
       {children}
     </motion.section>
   </main>
+);
+
+const AuthMascot = ({ imageClassName = "auth-mascot-image" }: { imageClassName?: string }) => (
+  <motion.div
+    className="auth-mascot"
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+  >
+    <motion.img
+      src="/doctor-3d.svg"
+      alt="Telemedicine mascot"
+      className={imageClassName}
+      animate={{ y: [0, -6, 0] }}
+      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+    />
+  </motion.div>
 );
 
 const LoginPage = () => {
@@ -80,6 +105,8 @@ const LoginPage = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedHospital, setSelectedHospital] = useState("");
   const [selectedDoctorUid, setSelectedDoctorUid] = useState("");
+  const [selectedPharmacyDistrict, setSelectedPharmacyDistrict] = useState("");
+  const [selectedPharmacyUid, setSelectedPharmacyUid] = useState("");
   const sharedPassword = getPatientHospitalLoginPassword();
   const requestedHospitalName = hospitalSlug
     ? hospitalCatalog.find((hospital) => hospitalNameToSlug(hospital.hospitalName) === hospitalSlug)?.hospitalName
@@ -141,6 +168,39 @@ const LoginPage = () => {
     return credential.role === "doctor" && credential.hospitalName === selectedHospital;
   });
 
+  const pharmacyCredentials = getDemoCredentials()
+    .filter((credential) => credential.role === "pharmacy" && credential.pharmacyName && credential.district)
+    .sort((a, b) => {
+      const districtOrder = (a.district ?? "").localeCompare(b.district ?? "");
+      if (districtOrder !== 0) {
+        return districtOrder;
+      }
+      return (a.pharmacyName ?? a.displayName).localeCompare(b.pharmacyName ?? b.displayName);
+    });
+
+  const pharmacyDistrictOptions = Array.from(
+    new Set(pharmacyCredentials.map((credential) => credential.district).filter((district): district is string => Boolean(district)))
+  );
+
+  const pharmaciesInDistrict = pharmacyCredentials.filter(
+    (credential) => !selectedPharmacyDistrict || credential.district === selectedPharmacyDistrict
+  );
+
+  useEffect(() => {
+    if (activeCategory !== "pharmacy") {
+      return;
+    }
+
+    if (!selectedPharmacyDistrict && pharmacyDistrictOptions.length > 0) {
+      setSelectedPharmacyDistrict(pharmacyDistrictOptions[0]);
+      return;
+    }
+
+    if (!pharmaciesInDistrict.some((pharmacy) => pharmacy.uid === selectedPharmacyUid)) {
+      setSelectedPharmacyUid(pharmaciesInDistrict[0]?.uid ?? "");
+    }
+  }, [activeCategory, pharmaciesInDistrict, pharmacyDistrictOptions, selectedPharmacyDistrict, selectedPharmacyUid]);
+
   const filteredDoctorCredentials = demoCredentials
     .filter((credential) => credential.role === "doctor" && /^d\d+$/i.test(credential.uid))
     .sort((a, b) => {
@@ -162,6 +222,7 @@ const LoginPage = () => {
   }, [activeCategory, filteredDoctorCredentials, selectedDoctorUid]);
 
   const selectedDoctorCredential = filteredDoctorCredentials.find((doctor) => doctor.uid === selectedDoctorUid) ?? null;
+  const selectedPharmacyCredential = pharmaciesInDistrict.find((pharmacy) => pharmacy.uid === selectedPharmacyUid) ?? null;
 
   const completeLogin = async (
     identifier: string,
@@ -214,11 +275,21 @@ const LoginPage = () => {
     setError("");
     try {
       const loginCategory = isSuperAdminLogin ? "super_admin" : activeCategory;
-      const loginIdentifier = activeCategory === "hospital" && !isSuperAdminLogin
+      const loginIdentifier = !isSuperAdminLogin && activeCategory === "hospital"
         ? selectedDoctorCredential?.email ?? ""
-        : email;
+        : !isSuperAdminLogin && activeCategory === "pharmacy"
+          ? selectedPharmacyCredential?.email ?? ""
+          : email;
       if (!loginIdentifier) {
-        throw new Error(isSuperAdminLogin ? "Enter super admin email or phone." : "Select a doctor to login.");
+        throw new Error(
+          isSuperAdminLogin
+            ? "Enter super admin email or phone."
+            : activeCategory === "hospital"
+              ? "Select a doctor to login."
+              : activeCategory === "pharmacy"
+                ? "Select a pharmacy to login."
+                : "Enter patient login details."
+        );
       }
       await completeLogin(loginIdentifier, password, loginCategory);
     } catch (err) {
@@ -227,14 +298,17 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthCard wide panelClassName="login-auth-panel">
+    <AuthCard wide panelClassName="login-auth-panel auth-stage-panel">
       <div className="login-shell">
-        <section className="doctor-panel">
-          <img src="/doctor-3d.svg" alt="3D doctor illustration" className="doctor-image" />
-          <p className="doctor-caption">Rural Health Network</p>
-          <Link className="tab-item mt-3 inline-block" to="/login/super-admin">
-            Super Admin Login
-          </Link>
+        <section className="doctor-panel auth-mascot-stage">
+          <AuthMascot imageClassName="auth-mascot-image auth-mascot-image-large" />
+          {!isSuperAdminLogin && (
+            <div className="doctor-panel-actions auth-mascot-actions">
+              <Link className="tab-item inline-block" to="/login/super-admin">
+                Super Admin Login
+              </Link>
+            </div>
+          )}
         </section>
 
         <section className="tabs-panel">
@@ -251,6 +325,14 @@ const LoginPage = () => {
               <>
                 <h1 className="login-title">Super Admin Login</h1>
                 <p className="login-subtitle">Access system administration dashboard.</p>
+                <div className="doctor-panel-actions">
+                  <Link className="tab-item inline-block" to="/login">
+                    General Login
+                  </Link>
+                  <Link className="tab-item inline-block" to="/signup">
+                    Create New Account
+                  </Link>
+                </div>
 
                 <form className="mt-4 space-y-3" onSubmit={onSubmit}>
                   <input
@@ -308,7 +390,24 @@ const LoginPage = () => {
                   </>
                 )}
 
-                {activeCategory !== "hospital" && (
+                {activeCategory === "pharmacy" && (
+                  <>
+                    <select className="login-input" value={selectedPharmacyDistrict} onChange={(event) => setSelectedPharmacyDistrict(event.target.value)}>
+                      {pharmacyDistrictOptions.map((district) => (
+                        <option key={district} value={district}>{district}</option>
+                      ))}
+                    </select>
+                    <select className="login-input" value={selectedPharmacyUid} onChange={(event) => setSelectedPharmacyUid(event.target.value)}>
+                      {pharmaciesInDistrict.map((pharmacy) => (
+                        <option key={pharmacy.uid} value={pharmacy.uid}>
+                          {pharmacy.pharmacyName ?? pharmacy.displayName}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+
+                {activeCategory !== "hospital" && activeCategory !== "pharmacy" && (
                   <input
                     className="login-input"
                     placeholder={activeCategory === "patient" ? "Patient mobile number (or email)" : "Phone number (or email)"}
@@ -458,109 +557,77 @@ const SignUpPage = () => {
   };
 
   return (
-    <AuthCard>
-      <h1 className="text-2xl font-semibold text-slate-800">Create Account</h1>
-      <p className="mt-1 text-sm text-slate-500">Phone number acts as login ID and SMS contact.</p>
+    <AuthCard wide panelClassName="login-auth-panel auth-stage-panel">
+      <div className="login-shell">
+        <section className="doctor-panel auth-mascot-stage" aria-hidden="true">
+          <AuthMascot imageClassName="auth-mascot-image auth-mascot-image-large" />
+        </section>
 
-      <form onSubmit={onSubmit} className="mt-4 space-y-3">
-        <input className="input" placeholder="Phone number (+91...)" value={phone} onChange={(event) => setPhone(event.target.value)} />
-        {role !== "patient" && <input className="input" placeholder="Full name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} />}
+        <section className="tabs-panel signup-panel">
+          <div className="tab-content signup-content">
+            <h1 className="login-title">Create Account</h1>
+            <p className="login-subtitle">Phone number acts as the login ID and the SMS delivery contact.</p>
 
-        <select className="input" value={role} onChange={(event) => setRole(event.target.value as Exclude<UserRole, "super_admin">)}>
-          <option value="patient">Patient</option>
-          <option value="doctor">Doctor</option>
-          <option value="pharmacy">Pharmacy</option>
-        </select>
+            <form onSubmit={onSubmit} className="mt-4 space-y-3">
+              <input className="input" placeholder="Phone number (+91...)" value={phone} onChange={(event) => setPhone(event.target.value)} />
+              {role !== "patient" && <input className="input" placeholder="Full name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} />}
 
-        {role === "doctor" && (
-          <>
-            <select className="input" value={specialization} onChange={(event) => setSpecialization(event.target.value)}>
-              <option value="general">General Medicine</option>
-              <option value="cardiology">Cardiology</option>
-              <option value="pediatrics">Pediatrics</option>
-            </select>
-            <select className="input" value={hospital} onChange={(event) => onChangeHospital(event.target.value)}>
-              {hospitalOptions.map((item) => (
-                <option key={item.hospitalName} value={item.hospitalName}>
-                  {item.hospitalName}
-                </option>
-              ))}
-            </select>
-            <input className="input" value={district} readOnly aria-label="District" />
-          </>
-        )}
+              <select className="input" value={role} onChange={(event) => setRole(event.target.value as Exclude<UserRole, "super_admin">)}>
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+                <option value="pharmacy">Pharmacy</option>
+              </select>
 
-        {role === "patient" && (
-          <>
-            <select className="input" value={patientDistrict} onChange={(event) => setPatientDistrict(event.target.value)}>
-              {districts.map((districtOption) => (
-                <option key={districtOption} value={districtOption}>
-                  {districtOption}
-                </option>
-              ))}
-            </select>
-            <input className="input" type="number" min={1} max={120} value={age} onChange={(event) => setAge(Number(event.target.value))} />
-            <select className="input" value={gender} onChange={(event) => setGender(event.target.value as "male" | "female" | "other")}> 
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </>
-        )}
+              {role === "doctor" && (
+                <>
+                  <select className="input" value={specialization} onChange={(event) => setSpecialization(event.target.value)}>
+                    <option value="general">General Medicine</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="pediatrics">Pediatrics</option>
+                  </select>
+                  <select className="input" value={hospital} onChange={(event) => onChangeHospital(event.target.value)}>
+                    {hospitalOptions.map((item) => (
+                      <option key={item.hospitalName} value={item.hospitalName}>
+                        {item.hospitalName}
+                      </option>
+                    ))}
+                  </select>
+                  <input className="input" value={district} readOnly aria-label="District" />
+                </>
+              )}
 
-        {role === "patient" || role === "doctor" ? (
-          <input className="input" type="text" readOnly value={sharedPassword} aria-label="Shared password" />
-        ) : (
-          <input className="input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-        )}
-        <button className="btn-primary w-full" disabled={loading}>{loading ? "Creating..." : "Sign Up"}</button>
-      </form>
+              {role === "patient" && (
+                <>
+                  <select className="input" value={patientDistrict} onChange={(event) => setPatientDistrict(event.target.value)}>
+                    {districts.map((districtOption) => (
+                      <option key={districtOption} value={districtOption}>
+                        {districtOption}
+                      </option>
+                    ))}
+                  </select>
+                  <input className="input" type="number" min={1} max={120} value={age} onChange={(event) => setAge(Number(event.target.value))} />
+                  <select className="input" value={gender} onChange={(event) => setGender(event.target.value as "male" | "female" | "other")}> 
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </>
+              )}
 
-      {error && <p className="mt-2 text-xs text-rose-700">{error}</p>}
-      <p className="mt-3 text-xs text-slate-600">Already registered? <Link className="font-semibold text-[#2BB673]" to="/login">Login</Link></p>
+              {role === "patient" || role === "doctor" ? (
+                <input className="input" type="text" readOnly value={sharedPassword} aria-label="Shared password" />
+              ) : (
+                <input className="input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
+              )}
+              <button className="btn-primary w-full" disabled={loading}>{loading ? "Creating..." : "Sign Up"}</button>
+            </form>
+
+            {error && <p className="mt-2 text-xs text-rose-300">{error}</p>}
+            <p className="mt-3 text-xs text-slate-300">Already registered? <Link className="login-link" to="/login">Login</Link></p>
+          </div>
+        </section>
+      </div>
     </AuthCard>
-  );
-};
-
-const HomePage = () => {
-  const { user } = useAuth();
-  const [seedStatus, setSeedStatus] = useState("");
-
-  const onSeedDoctors = async () => {
-    try {
-      await seedChennaiDoctors();
-      setSeedStatus("Doctors seeded successfully.");
-    } catch (error) {
-      setSeedStatus((error as Error).message);
-    }
-  };
-
-  return (
-    <main className="mx-auto max-w-5xl p-5">
-      <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="bg-medical-gradient p-5 text-white">
-          <h1 className="text-2xl font-semibold">Offline-First Rural Telehealth</h1>
-          <p className="mt-1 text-sm text-emerald-50">Modern, reliable care workflows with low-bandwidth support.</p>
-        </div>
-        <div className="space-y-4 p-5">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <Link className="btn-primary flex items-center justify-center gap-2" to="/patient"><UserRoundCheck className="h-4 w-4" /> Patient</Link>
-            <Link className="btn-primary flex items-center justify-center gap-2" to="/doctor"><Stethoscope className="h-4 w-4" /> Doctor</Link>
-            <Link className="btn-primary flex items-center justify-center gap-2" to="/pharmacy"><ShieldPlus className="h-4 w-4" /> Pharmacy</Link>
-            <Link className="btn-primary flex items-center justify-center gap-2" to="/super-admin"><ShieldPlus className="h-4 w-4" /> Super Admin</Link>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Link className="btn-muted" to="/login">Open Login</Link>
-            <button className="btn-muted" onClick={() => void logout()}>Logout</button>
-            {user && isFirebaseConfigured && <button className="btn-muted" onClick={() => void onSeedDoctors()}>Seed Doctors</button>}
-          </div>
-
-          {user && <p className="text-sm text-slate-700">Logged in as {user.displayName} ({prettyRole(user.role)})</p>}
-          {seedStatus && <p className="text-xs text-slate-600">{seedStatus}</p>}
-        </div>
-      </section>
-    </main>
   );
 };
 
@@ -568,10 +635,10 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="sync">
       <motion.div key={location.pathname} variants={pageTransition} initial="initial" animate="animate" exit="exit">
         <Routes location={location}>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login/super-admin" element={<LoginPage />} />
           <Route path="/login/hospital/:hospitalSlug" element={<LoginPage />} />
@@ -638,6 +705,7 @@ const AnimatedRoutes = () => {
             <Route path="users" element={<UserManagementPage />} />
             <Route path="hospitals" element={<HospitalManagementPage />} />
             <Route path="patients" element={<PatientManagementPage />} />
+            <Route path="pharmacies" element={<PharmacyManagementPage />} />
             <Route path="triage-rules" element={<TriageRuleViewPage />} />
             <Route path="medicines" element={<MedicineDatabaseViewPage />} />
             <Route path="sms-logs" element={<SmsLogsViewPage />} />
@@ -663,7 +731,7 @@ const App = () => {
             Demo mode: Firebase env values are missing. Add keys in .env to enable Auth and Firestore.
           </div>
         )}
-        <Suspense fallback={<MedicalSpinner />}>
+        <Suspense fallback={<MedicalSpinner fullScreen label="Opening page" message="Syncing the next care view" />}>
           <AnimatedRoutes />
         </Suspense>
       </ToastProvider>

@@ -11,7 +11,7 @@ import { deleteMyDoctorAccount } from "../../services/authService";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { sendPrescriptionSMSNow } from "../../services/functionService";
 import { hospitalNameToSlug, hospitalSlugToName } from "../../data/hospitalDoctors";
-import { buildPrescriptionSmsTemplate, runClinicalDecisionSupport } from "../../services/clinicalDecisionService";
+import { buildClinicalDecisionSummary, buildPrescriptionSmsTemplate, runClinicalDecisionSupport } from "../../services/clinicalDecisionService";
 import { useBusinessDate } from "../../hooks/useBusinessDate";
 import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 
@@ -121,6 +121,47 @@ export const DoctorDashboard = () => {
     return acc;
   }, {});
 
+  const buildPrescriptionDraft = () => {
+    const parsedOverride = overrideText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [medicine, dosage] = line.split("|").map((item) => item.trim());
+        return {
+          medicine,
+          dosage: dosage || editableDosage[medicine] || "As advised"
+        };
+      })
+      .filter((entry) => entry.medicine);
+
+    const cdsBasedDraft = (cdsOutput?.medicines ?? []).map((item) => {
+      const selectedMedicine = item.inStock
+        ? item.medicineName
+        : item.alternativeMedicineNames[0] || item.medicineName;
+      return {
+        medicine: selectedMedicine,
+        dosage: editableDosage[selectedMedicine] || item.suggestedDosage
+      };
+    });
+
+    const fallbackDraft = prescriptionAgent(notes);
+
+    return overrideEnabled && parsedOverride.length > 0
+      ? parsedOverride
+      : cdsBasedDraft.length > 0
+        ? cdsBasedDraft
+        : fallbackDraft.medicines.map((medicine, index) => ({
+            medicine,
+            dosage: fallbackDraft.dosageInstructions[index] || "As advised"
+          }));
+  };
+
+  const prescriptionPreview = useMemo(
+    () => buildPrescriptionDraft(),
+    [cdsOutput, editableDosage, notes, overrideEnabled, overrideText]
+  );
+
   const submitConsultation = async () => {
     if (!notes.trim()) {
       setStatusText("Enter consultation notes before generating prescription.");
@@ -154,57 +195,38 @@ export const DoctorDashboard = () => {
       patients.find((patient) => patient.userId === session.patientId)?.phone ??
       "+910000000000";
 
-    const consultationId = await createDocument("consultations", {
-      triageSessionId: session.id,
-      patientId: session.patientId,
-      doctorId: effectiveDoctorId,
-      notes,
-      createdAt: nowIso()
-    });
-
-    const parsedOverride = overrideText
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const [medicine, dosage] = line.split("|").map((item) => item.trim());
-        return {
-          medicine,
-          dosage: dosage || editableDosage[medicine] || "As advised"
-        };
-      })
-      .filter((entry) => entry.medicine);
-
-    const cdsBasedDraft = (cdsOutput?.medicines ?? []).map((item) => {
-      const selectedMedicine = item.inStock
-        ? item.medicineName
-        : item.alternativeMedicineNames[0] || item.medicineName;
-      return {
-        medicine: selectedMedicine,
-        dosage: editableDosage[selectedMedicine] || item.suggestedDosage
-      };
-    });
-
-    const fallbackDraft = prescriptionAgent(notes);
-
-    const finalDraft = overrideEnabled && parsedOverride.length > 0
-      ? parsedOverride
-      : cdsBasedDraft.length > 0
-        ? cdsBasedDraft
-        : fallbackDraft.medicines.map((medicine, index) => ({
-            medicine,
-            dosage: fallbackDraft.dosageInstructions[index] || "As advised"
-          }));
+    const finalDraft = buildPrescriptionDraft();
 
     if (finalDraft.length === 0) {
       setStatusText("No medicines selected. Add override entries or include Med:/Dose: lines.");
       return;
     }
 
+    const clinicalDecision = cdsOutput
+      ? buildClinicalDecisionSummary({
+          session,
+          notes,
+          feverDays,
+          reviewAfterDays,
+          output: cdsOutput,
+          prescribedMedicines: finalDraft
+        })
+      : undefined;
+
+    const consultationId = await createDocument("consultations", {
+      triageSessionId: session.id,
+      patientId: session.patientId,
+      doctorId: effectiveDoctorId,
+      notes,
+      clinicalDecision,
+      createdAt: nowIso()
+    });
+
     const generated = {
       medicines: finalDraft.map((entry) => entry.medicine),
       dosageInstructions: finalDraft.map((entry) => entry.dosage),
-      notes
+      notes,
+      clinicalDecision
     };
     const prescriptionId = await createDocument("prescriptions", {
       consultationId,
@@ -213,39 +235,46 @@ export const DoctorDashboard = () => {
       medicines: generated.medicines,
       dosageInstructions: generated.dosageInstructions,
       notes: generated.notes,
+      clinicalDecision: generated.clinicalDecision,
       createdAt: nowIso()
     });
 
+    const prescriptionRecord = {
+      id: prescriptionId,
+      consultationId,
+      patientId: session.patientId,
+      doctorId: effectiveDoctorId,
+      medicines: generated.medicines,
+      dosageInstructions: generated.dosageInstructions,
+      notes: generated.notes,
+      clinicalDecision: generated.clinicalDecision,
+      createdAt: nowIso()
+    };
+
+    const smsBody = buildPrescriptionSmsTemplate({
+      medicines: finalDraft,
+      reviewAfterDays,
+      clinicalDecision
+    });
+
     const pharmacyRequestId = await createPharmacyRequest(
-      {
-        id: prescriptionId,
-        consultationId,
-        patientId: session.patientId,
-        doctorId: effectiveDoctorId,
-        medicines: generated.medicines,
-        dosageInstructions: generated.dosageInstructions,
-        notes: generated.notes,
-        createdAt: nowIso()
-      },
+      prescriptionRecord,
       resolvedPatientPhone,
-      activeDoctor?.name
+      activeDoctor?.name,
+      smsBody
     );
 
     setNotes("");
     setConfirmSendOpen(false);
     setStatusText("Generating prescription and sending SMS...");
     try {
-      const smsBody = buildPrescriptionSmsTemplate({
-        medicines: finalDraft,
-        reviewAfterDays
-      });
-
       const smsResult = await sendPrescriptionSMSNow({
         patientPhone: resolvedPatientPhone,
         medicines: generated.medicines,
         dosageInstructions: generated.dosageInstructions,
         reviewAfterDays,
         customMessage: smsBody,
+        clinicalDecision,
         requestId: pharmacyRequestId,
         doctorName: activeDoctor?.name ?? "Doctor"
       });
@@ -431,9 +460,26 @@ export const DoctorDashboard = () => {
       </section>
 
       <section className="card">
-        {cdsOutput && (
+        <h2 className="mb-2 text-base font-semibold">Consultation & Clinical Decision Support</h2>
+        {!selectedSession ? (
+          <p className="text-sm text-slate-600">Select an appointment token or triage session to review CDS details and submit the consultation.</p>
+        ) : (
           <div className="mb-4 rounded-md bg-slate-50 p-3 ring-1 ring-slate-200">
             <h3 className="text-sm font-semibold text-slate-900">Clinical Decision Support</h3>
+            <p className="mt-1 text-xs text-slate-700">
+              Patient: <span className="font-semibold">{selectedPatient?.name ?? selectedSession.patientName ?? selectedSession.patientId}</span>
+            </p>
+            <p className="text-xs text-slate-700">
+              Symptoms: <span className="font-semibold">{selectedSession.symptoms.join(", ")}</span>
+            </p>
+            <p className="text-xs text-slate-700">
+              Triage severity: <span className="font-semibold">{selectedSession.result.severityLevel.toUpperCase()} ({selectedSession.result.severityScore})</span>
+            </p>
+            <p className="text-xs text-slate-700">
+              Recommended action: <span className="font-semibold">{selectedSession.result.recommendedAction}</span>
+            </p>
+            {cdsOutput && (
+              <>
             <p className="mt-1 text-xs text-slate-700">
               Condition: <span className="font-semibold">{cdsOutput.match?.condition ?? "No >=70% rule match"}</span>
             </p>
@@ -451,6 +497,18 @@ export const DoctorDashboard = () => {
                   <li key={reason}>{reason}</li>
                 ))}
               </ul>
+            )}
+            {cdsOutput.allMatches.length > 1 && (
+              <div className="mt-2 text-xs text-slate-700">
+                <p className="font-semibold text-slate-800">Additional rule matches</p>
+                <ul className="mt-1 list-disc pl-5">
+                  {cdsOutput.allMatches.slice(1, 4).map((match) => (
+                    <li key={match.ruleId}>{match.condition} ({match.matchPercent}% {match.triageOption})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+              </>
             )}
 
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -478,7 +536,7 @@ export const DoctorDashboard = () => {
 
             <div className="mt-3 space-y-2">
               <p className="text-xs font-semibold text-slate-800">Suggested Medicines (stock-aware)</p>
-              {cdsOutput.medicines.length === 0 ? (
+              {!cdsOutput || cdsOutput.medicines.length === 0 ? (
                 <p className="text-xs text-slate-600">No non-allergic medicines matched current rules.</p>
               ) : (
                 cdsOutput.medicines.map((item) => (
@@ -519,10 +577,30 @@ export const DoctorDashboard = () => {
                 onChange={(event) => setOverrideText(event.target.value)}
               />
             )}
+
+            <div className="mt-3 rounded-md bg-white p-3 ring-1 ring-slate-200">
+              <p className="text-xs font-semibold text-slate-800">Consultation notes</p>
+              <textarea
+                className="input mt-2 min-h-32"
+                placeholder="Assessment, counselling, follow-up instructions, contraindications, and any custom prescription notes"
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+              />
+            </div>
+
+            {prescriptionPreview.length > 0 && (
+              <div className="mt-3 rounded-md bg-white p-3 ring-1 ring-slate-200">
+                <p className="text-xs font-semibold text-slate-800">Prescription preview</p>
+                <ul className="mt-2 space-y-1 text-xs text-slate-700">
+                  {prescriptionPreview.map((item) => (
+                    <li key={`${item.medicine}-${item.dosage}`}>{item.medicine} - {item.dosage}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
-        <h2 className="mb-2 text-base font-semibold">Consultation Form</h2>
         <form
           className="space-y-3"
           onSubmit={(event) => {
@@ -530,12 +608,6 @@ export const DoctorDashboard = () => {
             setConfirmSendOpen(true);
           }}
         >
-          <textarea
-            className="input min-h-32"
-            placeholder="Example: Med: Paracetamol 500mg&#10;Dose: 1 tab twice daily for 3 days"
-            value={notes}
-            onChange={(event) => setNotes(event.target.value)}
-          />
           <button className="btn-primary">Approve & Send SMS</button>
         </form>
         {statusText && <p className="mt-2 text-xs text-teal-700">{statusText}</p>}

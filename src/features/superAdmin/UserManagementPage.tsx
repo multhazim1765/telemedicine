@@ -67,7 +67,7 @@ export const UserManagementPage = () => {
         return true;
       }
 
-      return [user.displayName, user.email, user.phone ?? "", user.hospitalName ?? ""]
+      return [user.displayName, user.email, user.phone ?? "", user.hospitalName ?? "", user.pharmacyName ?? "", user.district ?? ""]
         .some((value) => value.toLowerCase().includes(normalizedSearch));
     });
   }, [users, category, search]);
@@ -153,6 +153,9 @@ export const UserManagementPage = () => {
               <p className="truncate text-sm font-medium text-slate-800">{user.displayName}</p>
               <p className="truncate text-xs text-slate-500">{user.email}</p>
               {user.phone && <p className="truncate text-xs text-slate-500">{user.phone}</p>}
+              {user.role === "doctor" && user.hospitalName && <p className="truncate text-xs text-slate-500">Hospital: {user.hospitalName}</p>}
+              {user.role === "pharmacy" && user.pharmacyName && <p className="truncate text-xs text-slate-500">Pharmacy: {user.pharmacyName}</p>}
+              {user.district && <p className="truncate text-xs text-slate-500">District: {user.district}</p>}
             </div>
             <Chip size="small" color={roleColor[user.role]} label={user.role === "doctor" ? "hospital" : user.role} />
             <Button color="error" onClick={() => setConfirmDeleteUid(user.uid)} startIcon={<Trash2 size={14} />}>
