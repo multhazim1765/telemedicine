@@ -132,103 +132,12 @@
 			"isBackground": false
 		},
 		{
-			"label": "Inspect Git State",
+			"label": "Build Telemedicine App",
 			"type": "shell",
-			"command": "git",
+			"command": "npm",
 			"args": [
-				"status",
-				"--short",
-				"--branch"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Inspect Git Remote",
-			"type": "shell",
-			"command": "git",
-			"args": [
-				"remote",
-				"-v"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Git Status Snapshot 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git status --short --branch"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Git Remote Snapshot 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git remote -v"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Commit Telemedicine Changes 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git add src/App.tsx src/agents/pharmacyAgent.ts src/components/ProtectedRoute.tsx src/components/layout/DashboardShell.tsx src/components/layout/Sidebar.tsx src/components/layout/TopNavbar.tsx src/components/ui/DashboardCard.tsx src/components/ui/Feedback.tsx src/config/theme.ts src/data/demoPharmacies.ts src/features/doctor/DoctorDashboard.tsx src/features/patient/PatientDashboard.tsx src/features/superAdmin/PharmacyManagementPage.tsx src/features/superAdmin/UserManagementPage.tsx src/index.css src/services/authService.ts src/services/clinicalDecisionService.ts src/services/firestoreService.ts src/services/functionService.ts src/types/models.ts && git commit -m \"Revamp auth flow and integrate clinical decision support\""
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Push Telemedicine Main 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git push origin main"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Git Status Snapshot Push All 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git status --short --branch"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Git Remote Snapshot Push All 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git remote -v"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "GH Auth Status Snapshot 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"command -v gh >/dev/null 2>&1 && gh auth status || echo 'gh-not-installed'"
-			],
-			"isBackground": false
-		},
-		{
-			"label": "Commit Remaining Git Changes 20260307",
-			"type": "shell",
-			"command": "zsh",
-			"args": [
-				"-lc",
-				"git add .vscode/tasks.json && git commit -m \"Update local VS Code task definitions\""
+				"run",
+				"build"
 			],
 			"isBackground": false
 		}
