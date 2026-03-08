@@ -1,3 +1,5 @@
+import indiaMedicineCatalogJson from "./indiaMedicineCatalog.json";
+
 export type TriageOption = "Emergency" | "Urgent" | "Moderate" | "Mild" | "Routine";
 
 export interface MedicineRule {
@@ -22,62 +24,182 @@ export interface RiskRule {
   escalatesTo?: "low" | "moderate" | "high";
 }
 
-export const medicineRules: MedicineRule[] = [
-  { id: "M016", medicineName: "Adrenaline Injection", category: "Anaphylaxis", triageOption: "Emergency" },
-  { id: "M017", medicineName: "Atropine Injection", category: "Cardiac Emergency", triageOption: "Emergency" },
-  { id: "M018", medicineName: "Dopamine Injection", category: "Shock", triageOption: "Emergency" },
-  { id: "M019", medicineName: "Ceftriaxone Injection", category: "Severe Infection", triageOption: "Emergency" },
-  { id: "M020", medicineName: "Nitroglycerin", category: "Cardiac", triageOption: "Emergency" },
-  { id: "M021", medicineName: "Streptokinase", category: "Heart Attack", triageOption: "Emergency" },
-  { id: "M022", medicineName: "Diazepam Injection", category: "Seizures", triageOption: "Emergency" },
-  { id: "M023", medicineName: "Magnesium Sulphate", category: "Eclampsia", triageOption: "Emergency" },
-  { id: "M024", medicineName: "Insulin", category: "Diabetes", triageOption: "Urgent" },
-  { id: "M025", medicineName: "Salbutamol Inhaler", category: "Asthma", triageOption: "Urgent" },
-  { id: "M026", medicineName: "Amoxicillin 500mg", category: "Antibiotic", triageOption: "Urgent" },
-  { id: "M027", medicineName: "Azithromycin", category: "Antibiotic", triageOption: "Urgent" },
-  { id: "M028", medicineName: "Metronidazole", category: "Infection", triageOption: "Urgent" },
-  { id: "M029", medicineName: "Prednisolone", category: "Inflammation", triageOption: "Urgent" },
-  { id: "M030", medicineName: "Furosemide", category: "Cardiac / Kidney", triageOption: "Urgent" },
-  { id: "M031", medicineName: "Tramadol", category: "Severe Pain", triageOption: "Urgent" },
-  { id: "M032", medicineName: "Metformin 500mg", category: "Diabetes", triageOption: "Moderate" },
-  { id: "M033", medicineName: "Atorvastatin 10mg", category: "Cholesterol", triageOption: "Moderate" },
-  { id: "M034", medicineName: "Diclofenac", category: "Pain Relief", triageOption: "Moderate" },
-  { id: "M035", medicineName: "Amlodipine", category: "Hypertension", triageOption: "Moderate" },
-  { id: "M036", medicineName: "Losartan", category: "Hypertension", triageOption: "Moderate" },
-  { id: "M037", medicineName: "Levothyroxine", category: "Thyroid", triageOption: "Moderate" },
-  { id: "M038", medicineName: "Clopidogrel", category: "Cardiac", triageOption: "Moderate" },
-  { id: "M039", medicineName: "Pantoprazole 40mg", category: "Gastric", triageOption: "Moderate" },
-  { id: "M040", medicineName: "Paracetamol 500mg", category: "Fever", triageOption: "Mild" },
-  { id: "M041", medicineName: "Cetirizine", category: "Allergy", triageOption: "Mild" },
-  { id: "M042", medicineName: "ORS", category: "Dehydration", triageOption: "Mild" },
-  { id: "M043", medicineName: "Zinc Tablets", category: "Immunity", triageOption: "Mild" },
-  { id: "M044", medicineName: "Vitamin C", category: "Supplement", triageOption: "Mild" },
-  { id: "M045", medicineName: "Ondansetron", category: "Vomiting", triageOption: "Mild" },
-  { id: "M046", medicineName: "Antacid Syrup", category: "Gastric", triageOption: "Mild" },
-  { id: "M047", medicineName: "Cough Syrup", category: "Respiratory", triageOption: "Mild" },
-  { id: "M048", medicineName: "Vitamin D", category: "Supplement", triageOption: "Routine" },
-  { id: "M049", medicineName: "Calcium Tablets", category: "Supplement", triageOption: "Routine" },
-  { id: "M050", medicineName: "Iron Tablets", category: "Anemia", triageOption: "Routine" },
-  { id: "M051", medicineName: "Folic Acid", category: "Pregnancy", triageOption: "Routine" },
-  { id: "M052", medicineName: "Multivitamin", category: "Supplement", triageOption: "Routine" },
-  { id: "M053", medicineName: "Omega-3", category: "Cardiac Prevention", triageOption: "Routine" },
-  { id: "M054", medicineName: "Probiotics", category: "Digestive Health", triageOption: "Routine" }
+const normalizeToken = (value: string): string => value.trim().toLowerCase();
+const MEDICINE_RULE_LIMIT = 2500;
+
+interface CatalogRow {
+  id: string;
+  medicineName: string;
+  therapeuticClass: string;
+  uses: string[];
+  substitutes: string[];
+}
+
+const toSafeString = (value: unknown): string => {
+  if (typeof value === "string") {
+    return value.trim();
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value).trim();
+  }
+  return "";
+};
+
+const toSafeArray = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value.map((item) => toSafeString(item)).filter(Boolean);
+  }
+  const single = toSafeString(value);
+  return single ? [single] : [];
+};
+
+const normalizeCatalogRows = (rows: unknown[]): CatalogRow[] =>
+  rows
+    .map((raw, index) => {
+      const record = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+      return {
+        id: toSafeString(record.id) || `IND-${index + 1}`,
+        medicineName: toSafeString(record.medicineName) || `Unknown Medicine ${index + 1}`,
+        therapeuticClass: toSafeString(record.therapeuticClass) || "General",
+        uses: toSafeArray(record.uses),
+        substitutes: toSafeArray(record.substitutes)
+      };
+    })
+    .filter((row) => Boolean(row.medicineName));
+
+const catalogRows: CatalogRow[] = normalizeCatalogRows(indiaMedicineCatalogJson as unknown[]).slice(0, MEDICINE_RULE_LIMIT);
+
+const inferCategory = (useText: string, therapeuticClass: string): string => {
+  const combined = `${useText} ${therapeuticClass}`.toLowerCase();
+
+  if (combined.includes("infection") || combined.includes("anti infective")) return "Infection";
+  if (combined.includes("cough") || combined.includes("respiratory") || combined.includes("asthma")) return "Respiratory";
+  if (combined.includes("fever") || combined.includes("viral")) return "Fever";
+  if (combined.includes("cardiac") || combined.includes("heart") || combined.includes("chest")) return "Cardiac";
+  if (combined.includes("diabetes") || combined.includes("insulin")) return "Diabetes";
+  if (combined.includes("pain") || combined.includes("analgesic")) return "Pain Relief";
+  if (combined.includes("gastric") || combined.includes("acidity") || combined.includes("stomach")) return "Gastric";
+  if (combined.includes("allergy") || combined.includes("rash")) return "Allergy";
+  return therapeuticClass || "General";
+};
+
+const inferTriageOption = (useText: string, therapeuticClass: string): TriageOption => {
+  const combined = `${useText} ${therapeuticClass}`.toLowerCase();
+
+  if (/(anaphylaxis|shock|seizure|stroke|heart attack|myocardial|intensive)/.test(combined)) {
+    return "Emergency";
+  }
+  if (/(severe|acute|infection|antibiotic|respiratory|asthma|breathing)/.test(combined)) {
+    return "Urgent";
+  }
+  if (/(hypertension|diabetes|thyroid|cardiac|cholesterol|gastric|bp)/.test(combined)) {
+    return "Moderate";
+  }
+  if (/(fever|allergy|cough|cold|vomiting|nausea|pain)/.test(combined)) {
+    return "Mild";
+  }
+  return "Routine";
+};
+
+export const medicineRules: MedicineRule[] = catalogRows.map((entry) => {
+  const useText = `${entry.therapeuticClass} ${entry.uses.join(" ")}`.trim();
+  const category = inferCategory(useText, entry.therapeuticClass);
+  return {
+    id: entry.id,
+    medicineName: entry.medicineName,
+    category,
+    triageOption: inferTriageOption(useText, entry.therapeuticClass)
+  } as MedicineRule;
+});
+
+const symptomKeywordMap: Array<{ pattern: RegExp; symptom: string }> = [
+  { pattern: /(fever|pyrexia|viral)/i, symptom: "fever" },
+  { pattern: /(pain|analgesic|arthritis|myalgia)/i, symptom: "body pain" },
+  { pattern: /(headache|migraine)/i, symptom: "headache" },
+  { pattern: /(cough|cold|bronch|respiratory)/i, symptom: "cough" },
+  { pattern: /(breath|asthma|wheez|dyspnea)/i, symptom: "breathing difficulty" },
+  { pattern: /(throat|pharyng|tonsil)/i, symptom: "sore throat" },
+  { pattern: /(allergy|allergic|rash|itch|urticaria)/i, symptom: "rash" },
+  { pattern: /(swelling|edema)/i, symptom: "swelling" },
+  { pattern: /(vomit|nausea|emesis)/i, symptom: "nausea" },
+  { pattern: /(diarrhea|loose stool|gastro|acidity|gastric|indigestion)/i, symptom: "stomach discomfort" },
+  { pattern: /(cardiac|heart|hypertension|bp|angina|chest)/i, symptom: "chest pain" },
+  { pattern: /(weakness|fatigue|supplement|nutrition)/i, symptom: "weakness" },
+  { pattern: /(dizziness|vertigo)/i, symptom: "dizziness" }
 ];
 
-export const triageRules: TriageRule[] = [
-  { id: "TR001", condition: "Anaphylaxis", category: "Anaphylaxis", triageOption: "Emergency", requiredSymptoms: ["rash", "swelling", "breathing difficulty"] },
-  { id: "TR002", condition: "Cardiac Emergency", category: "Cardiac Emergency", triageOption: "Emergency", requiredSymptoms: ["chest pain", "breathing difficulty", "sweating"] },
-  { id: "TR003", condition: "Shock", category: "Shock", triageOption: "Emergency", requiredSymptoms: ["low bp", "dizziness", "cold skin"] },
-  { id: "TR004", condition: "Severe Infection", category: "Severe Infection", triageOption: "Emergency", requiredSymptoms: ["high fever", "chills", "weakness"] },
-  { id: "TR005", condition: "Asthma Exacerbation", category: "Asthma", triageOption: "Urgent", requiredSymptoms: ["wheezing", "breathing difficulty", "cough"] },
-  { id: "TR006", condition: "Acute Infection", category: "Infection", triageOption: "Urgent", requiredSymptoms: ["fever", "body pain", "sore throat"] },
-  { id: "TR007", condition: "Hypertension", category: "Hypertension", triageOption: "Moderate", requiredSymptoms: ["headache", "giddiness", "high bp"] },
-  { id: "TR008", condition: "Gastritis", category: "Gastric", triageOption: "Moderate", requiredSymptoms: ["acidity", "burning stomach", "nausea"] },
-  { id: "TR009", condition: "Viral Fever", category: "Fever", triageOption: "Mild", requiredSymptoms: ["fever", "body pain", "fatigue"] },
-  { id: "TR010", condition: "Common Allergy", category: "Allergy", triageOption: "Mild", requiredSymptoms: ["sneezing", "itching", "rash"] },
-  { id: "TR011", condition: "Nutritional Support", category: "Supplement", triageOption: "Routine", requiredSymptoms: ["fatigue", "weakness", "poor appetite"] },
-  { id: "TR012", condition: "Digestive Support", category: "Digestive Health", triageOption: "Routine", requiredSymptoms: ["bloating", "indigestion", "loose stools"] }
-];
+const fallbackSymptomsByCategory: Record<string, string[]> = {
+  Infection: ["fever", "weakness", "body pain"],
+  Respiratory: ["cough", "breathing difficulty", "sore throat"],
+  Fever: ["fever", "body pain", "weakness"],
+  Cardiac: ["chest pain", "breathing difficulty", "dizziness"],
+  Diabetes: ["weakness", "dizziness", "fatigue"],
+  "Pain Relief": ["body pain", "headache", "weakness"],
+  Gastric: ["stomach discomfort", "nausea", "weakness"],
+  Allergy: ["rash", "swelling", "itching"],
+  General: ["weakness", "fatigue", "body pain"]
+};
+
+const triagePriority: Record<TriageOption, number> = {
+  Emergency: 5,
+  Urgent: 4,
+  Moderate: 3,
+  Mild: 2,
+  Routine: 1
+};
+
+const toTitleCase = (value: string): string =>
+  value
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+
+const extractSymptoms = (text: string, category: string): string[] => {
+  const matches = symptomKeywordMap
+    .filter((entry) => entry.pattern.test(text))
+    .map((entry) => entry.symptom);
+
+  const unique = Array.from(new Set(matches));
+  if (unique.length >= 3) {
+    return unique.slice(0, 4);
+  }
+
+  const fallback = fallbackSymptomsByCategory[category] ?? fallbackSymptomsByCategory.General;
+  return Array.from(new Set([...unique, ...fallback])).slice(0, 4);
+};
+
+const triageRuleMap = new Map<string, TriageRule>();
+
+for (const row of catalogRows) {
+  const useText = `${row.therapeuticClass} ${row.uses.join(" ")}`.trim();
+  const category = inferCategory(useText, row.therapeuticClass);
+  const triageOption = inferTriageOption(useText, row.therapeuticClass);
+  const condition = toTitleCase(row.therapeuticClass || category || row.medicineName);
+  const requiredSymptoms = extractSymptoms(useText, category);
+
+  const key = `${normalizeToken(condition)}|${triageOption}|${requiredSymptoms.map(normalizeToken).join("|")}`;
+  const existing = triageRuleMap.get(key);
+  if (existing) {
+    continue;
+  }
+
+  triageRuleMap.set(key, {
+    id: `TR-${String(triageRuleMap.size + 1).padStart(4, "0")}`,
+    condition,
+    category,
+    triageOption,
+    requiredSymptoms
+  });
+}
+
+export const triageRules: TriageRule[] = Array.from(triageRuleMap.values()).sort((a, b) => {
+  const triageDiff = triagePriority[b.triageOption] - triagePriority[a.triageOption];
+  if (triageDiff !== 0) {
+    return triageDiff;
+  }
+  return a.condition.localeCompare(b.condition);
+});
 
 export const riskRules: RiskRule[] = [
   { id: "RR001", description: "Symptoms match >= 70% of a triage rule", weight: 20 },
@@ -94,13 +216,17 @@ export const defaultDosageByTriage: Record<TriageOption, string> = {
   Routine: "1 tablet daily"
 };
 
-export const medicineAlternatives: Record<string, string[]> = {
-  M026: ["M027"],
-  M027: ["M026"],
-  M035: ["M036"],
-  M036: ["M035"],
-  M044: ["M052"],
-  M052: ["M044"],
-  M048: ["M049"],
-  M049: ["M048"]
-};
+export const medicineAlternatives: Record<string, string[]> = {};
+
+const medicineIdByName = new Map(
+  medicineRules.map((rule) => [normalizeToken(rule.medicineName), rule.id])
+);
+
+for (const entry of catalogRows) {
+  if (entry.substitutes.length > 0) {
+    medicineAlternatives[entry.id] = entry.substitutes
+      .map((name) => medicineIdByName.get(normalizeToken(name)))
+      .filter((value): value is string => Boolean(value))
+      .slice(0, 3)
+  }
+}

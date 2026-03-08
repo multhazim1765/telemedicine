@@ -45,6 +45,55 @@ export interface HospitalCatalog {
   id: string;
   hospitalName: string;
   district: string;
+  ivrDigit?: string;
+}
+
+export interface IvrMenuMapping {
+  digit: string;
+  hospitalName: string;
+  doctorId?: string;
+  doctorName?: string;
+  priority: number;
+  active: boolean;
+}
+
+export interface IvrMenuConfig {
+  id: string;
+  active: boolean;
+  menuVersion: number;
+  defaultHospitalName?: string;
+  mappings: IvrMenuMapping[];
+  updatedBy?: string;
+  updatedAt: string;
+  createdAt?: string;
+}
+
+export interface SmsBooking {
+  id: string;
+  smsMessageId: string;
+  senderPhone: string;
+  normalizedSenderPhone: string;
+  messageStatus?: string;
+  parsedCommand?: string;
+  smsText?: string;
+  selectedHospitalName?: string;
+  menuVersion?: number;
+  patientId?: string;
+  patientName?: string;
+  doctorId?: string;
+  doctorName?: string;
+  slot?: string;
+  appointmentDate?: string;
+  tokenNumber?: number;
+  triageSessionId?: string;
+  appointmentId?: string;
+  status: "received" | "booked" | "failed";
+  smsStatus?: "queued" | "failed" | "not_sent";
+  smsDeliveryMessageId?: string;
+  smsError?: string;
+  failureReason?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface TriageResult {

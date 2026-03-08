@@ -12,24 +12,13 @@ import { CalendarClock, ClipboardList, ShieldAlert, Syringe } from "lucide-react
 import { useBusinessDate } from "../../hooks/useBusinessDate";
 import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
 import { districts } from "../../constants/districts";
-
-const symptomOptions = [
-  "chest_pain",
-  "breathlessness",
-  "high_fever",
-  "prolonged_fever",
-  "vomiting",
-  "severe_headache",
-  "bleeding",
-  "weakness",
-  "cough",
-  "sore_throat"
-];
+import { triageRules } from "../../data/medicineTriageDataset";
 
 export const PatientDashboard = () => {
   const { user } = useAuth();
   const businessDate = useBusinessDate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [manualSymptom, setManualSymptom] = useState("");
   const [result, setResult] = useState<TriageResult | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [specialization, setSpecialization] = useState("general");
@@ -43,6 +32,14 @@ export const PatientDashboard = () => {
   const [bookingMessage, setBookingMessage] = useState("");
   const [myRequests, setMyRequests] = useState<PharmacyRequest[]>([]);
   const [resendState, setResendState] = useState<Record<string, boolean>>({});
+
+  const symptomOptions = useMemo(
+    () =>
+      Array.from(new Set(triageRules.flatMap((rule) => rule.requiredSymptoms)))
+        .filter(Boolean)
+        .slice(0, 30),
+    []
+  );
 
   useEffect(() => {
     const unsubDoctors = subscribeCollection("doctors", setDoctors);
@@ -104,6 +101,15 @@ export const PatientDashboard = () => {
     setSymptoms((prev) =>
       prev.includes(symptom) ? prev.filter((item) => item !== symptom) : [...prev, symptom]
     );
+  };
+
+  const addManualSymptom = () => {
+    const trimmed = manualSymptom.trim().toLowerCase();
+    if (!trimmed) {
+      return;
+    }
+    setSymptoms((prev) => (prev.includes(trimmed) ? prev : [...prev, trimmed]));
+    setManualSymptom("");
   };
 
   const submitTriage = async (event: FormEvent) => {
@@ -226,9 +232,21 @@ export const PatientDashboard = () => {
                   checked={symptoms.includes(symptom)}
                   onChange={() => toggleSymptom(symptom)}
                 />
-                {symptom.replace("_", " ")}
+                {symptom}
               </label>
             ))}
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+            <input
+              className="input"
+              placeholder="Type additional symptom (e.g. breathing difficulty)"
+              value={manualSymptom}
+              onChange={(event) => setManualSymptom(event.target.value)}
+            />
+            <button type="button" className="btn-muted" onClick={addManualSymptom}>
+              Add Symptom
+            </button>
           </div>
 
           <select
@@ -442,16 +460,16 @@ export const PatientDashboard = () => {
         <h2 className="mb-2 text-base font-semibold">My Appointments</h2>
         <ul className="space-y-2 text-sm">
           {myAppointments.map((appointment) => {
-              const doctor = doctors.find((item) => item.id === appointment.doctorId);
-              return (
-                <li key={appointment.id} className="rounded-md bg-slate-100 p-2">
-                  <p>Doctor: {doctor?.name ?? appointment.doctorId}</p>
-                  <p>Date: {appointment.appointmentDate}</p>
-                  <p>Slot: {appointment.slot}</p>
-                  <p>Token: {appointment.tokenNumber}</p>
-                </li>
-              );
-            })}
+            const doctor = doctors.find((item) => item.id === appointment.doctorId);
+            return (
+              <li key={appointment.id} className="rounded-md bg-slate-100 p-2">
+                <p>Doctor: {doctor?.name ?? appointment.doctorId}</p>
+                <p>Date: {appointment.appointmentDate}</p>
+                <p>Slot: {appointment.slot}</p>
+                <p>Token: {appointment.tokenNumber}</p>
+              </li>
+            );
+          })}
         </ul>
       </section>
     </DashboardLayout>

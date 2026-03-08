@@ -1,17 +1,30 @@
 import { TriageResult } from "../types/models";
+import { triageRules, TriageOption } from "../data/medicineTriageDataset";
 
-const symptomRiskMap: Record<string, number> = {
-  chest_pain: 5,
-  breathlessness: 5,
-  high_fever: 3,
-  prolonged_fever: 3,
-  vomiting: 2,
-  severe_headache: 2,
-  bleeding: 5,
+const triageWeight: Record<TriageOption, number> = {
+  Emergency: 5,
+  Urgent: 4,
+  Moderate: 3,
+  Mild: 2,
+  Routine: 1
+};
+
+const normalizeSymptom = (symptom: string): string =>
+  symptom.trim().toLowerCase().replace(/\s+/g, "_");
+
+const symptomRiskMap: Record<string, number> = triageRules.reduce<Record<string, number>>((acc, rule) => {
+  for (const symptom of rule.requiredSymptoms) {
+    const normalized = normalizeSymptom(symptom);
+    acc[normalized] = Math.max(acc[normalized] ?? 0, triageWeight[rule.triageOption]);
+  }
+  return acc;
+}, {
+  fever: 3,
   weakness: 2,
   cough: 1,
-  sore_throat: 1
-};
+  "body_pain": 2,
+  "breathing_difficulty": 4
+});
 
 const classify = (score: number): TriageResult["severityLevel"] => {
   if (score >= 7) {
@@ -34,7 +47,16 @@ const actionByLevel = (level: TriageResult["severityLevel"]): string => {
 };
 
 const scoreSymptomsOffline = (symptoms: string[]): number =>
-  symptoms.reduce((sum, symptom) => sum + (symptomRiskMap[symptom] ?? 1), 0);
+  symptoms.reduce((sum, symptom) => {
+    const normalized = normalizeSymptom(symptom);
+    const directScore = symptomRiskMap[normalized];
+    if (directScore) {
+      return sum + directScore;
+    }
+
+    const matchedEntry = Object.entries(symptomRiskMap).find(([token]) => normalized.includes(token));
+    return sum + (matchedEntry?.[1] ?? 1);
+  }, 0);
 
 const triageWithOpenAI = async (symptoms: string[]): Promise<TriageResult | null> => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;

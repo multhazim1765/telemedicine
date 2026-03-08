@@ -22,10 +22,12 @@ export const formatPharmacyRequest = (
   prescription: Prescription,
   patientPhone: string,
   doctorName?: string,
-  smsContent?: string
+  smsContent?: string,
+  pharmacyId?: string
 ): Omit<PharmacyRequest, "id"> => ({
   prescriptionId: prescription.id,
   patientId: prescription.patientId,
+  pharmacyId,
   doctorId: prescription.doctorId,
   doctorName,
   medicines: prescription.medicines,
@@ -44,9 +46,10 @@ export const createPharmacyRequest = async (
   prescription: Prescription,
   patientPhone: string,
   doctorName?: string,
-  smsContent?: string
+  smsContent?: string,
+  pharmacyId?: string
 ): Promise<string> => {
-  const request = formatPharmacyRequest(prescription, patientPhone, doctorName, smsContent);
+  const request = formatPharmacyRequest(prescription, patientPhone, doctorName, smsContent, pharmacyId);
   return createDocument("pharmacy_requests", request);
 };
 

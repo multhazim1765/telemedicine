@@ -30,6 +30,7 @@ const MedicineDatabaseViewPage = lazy(() => import("./features/superAdmin/Medici
 const SmsLogsViewPage = lazy(() => import("./features/superAdmin/SmsLogsViewPage").then((module) => ({ default: module.SmsLogsViewPage })));
 const AnalyticsPage = lazy(() => import("./features/superAdmin/AnalyticsPage").then((module) => ({ default: module.AnalyticsPage })));
 const SystemSettingsPage = lazy(() => import("./features/superAdmin/SystemSettingsPage").then((module) => ({ default: module.SystemSettingsPage })));
+const SmsBookingDeskPage = lazy(() => import("./features/superAdmin/SmsBookingDeskPage").then((module) => ({ default: module.SmsBookingDeskPage })));
 
 const dashboardPathByRole: Record<Exclude<UserRole, "doctor">, string> = {
   patient: "/patient",
@@ -357,120 +358,120 @@ const LoginPage = () => {
               </>
             ) : (
               <>
-              <h1 className="login-title">
-                {activeCategory === "patient" && "Patient Login"}
-                {activeCategory === "hospital" && "Hospital Login"}
-                {activeCategory === "pharmacy" && "Pharmacy Login"}
-              </h1>
-              <p className="login-subtitle">Secure access with role-based medical dashboards.</p>
-              <p className="mt-1 text-xs text-slate-300">
-                Patient username: mobile number. Patient/Hospital shared password: <span className="font-semibold">{sharedPassword}</span>
-              </p>
+                <h1 className="login-title">
+                  {activeCategory === "patient" && "Patient Login"}
+                  {activeCategory === "hospital" && "Hospital Login"}
+                  {activeCategory === "pharmacy" && "Pharmacy Login"}
+                </h1>
+                <p className="login-subtitle">Secure access with role-based medical dashboards.</p>
+                <p className="mt-1 text-xs text-slate-300">
+                  Patient username: mobile number. Patient/Hospital shared password: <span className="font-semibold">{sharedPassword}</span>
+                </p>
 
-              <form className="mt-4 space-y-3" onSubmit={onSubmit}>
-                {activeCategory === "hospital" && (
-                  <>
-                    <select className="login-input" value={selectedDistrict} onChange={(event) => setSelectedDistrict(event.target.value)}>
-                      {districtOptions.map((district) => (
-                        <option key={district} value={district}>{district}</option>
-                      ))}
-                    </select>
-                    <select className="login-input" value={selectedHospital} onChange={(event) => setSelectedHospital(event.target.value)}>
-                      {hospitalsInDistrict.map((hospital) => (
-                        <option key={hospital.id} value={hospital.hospitalName}>{hospital.hospitalName}</option>
-                      ))}
-                    </select>
-                    <select className="login-input" value={selectedDoctorUid} onChange={(event) => setSelectedDoctorUid(event.target.value)}>
-                      {filteredDoctorCredentials.map((doctor) => (
-                        <option key={doctor.uid} value={doctor.uid}>
-                          {doctor.displayName} ({doctor.uid.toUpperCase()})
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
+                <form className="mt-4 space-y-3" onSubmit={onSubmit}>
+                  {activeCategory === "hospital" && (
+                    <>
+                      <select className="login-input" value={selectedDistrict} onChange={(event) => setSelectedDistrict(event.target.value)}>
+                        {districtOptions.map((district) => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
+                      <select className="login-input" value={selectedHospital} onChange={(event) => setSelectedHospital(event.target.value)}>
+                        {hospitalsInDistrict.map((hospital) => (
+                          <option key={hospital.id} value={hospital.hospitalName}>{hospital.hospitalName}</option>
+                        ))}
+                      </select>
+                      <select className="login-input" value={selectedDoctorUid} onChange={(event) => setSelectedDoctorUid(event.target.value)}>
+                        {filteredDoctorCredentials.map((doctor) => (
+                          <option key={doctor.uid} value={doctor.uid}>
+                            {doctor.displayName} ({doctor.uid.toUpperCase()})
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
 
-                {activeCategory === "pharmacy" && (
-                  <>
-                    <select className="login-input" value={selectedPharmacyDistrict} onChange={(event) => setSelectedPharmacyDistrict(event.target.value)}>
-                      {pharmacyDistrictOptions.map((district) => (
-                        <option key={district} value={district}>{district}</option>
-                      ))}
-                    </select>
-                    <select className="login-input" value={selectedPharmacyUid} onChange={(event) => setSelectedPharmacyUid(event.target.value)}>
-                      {pharmaciesInDistrict.map((pharmacy) => (
-                        <option key={pharmacy.uid} value={pharmacy.uid}>
-                          {pharmacy.pharmacyName ?? pharmacy.displayName}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
+                  {activeCategory === "pharmacy" && (
+                    <>
+                      <select className="login-input" value={selectedPharmacyDistrict} onChange={(event) => setSelectedPharmacyDistrict(event.target.value)}>
+                        {pharmacyDistrictOptions.map((district) => (
+                          <option key={district} value={district}>{district}</option>
+                        ))}
+                      </select>
+                      <select className="login-input" value={selectedPharmacyUid} onChange={(event) => setSelectedPharmacyUid(event.target.value)}>
+                        {pharmaciesInDistrict.map((pharmacy) => (
+                          <option key={pharmacy.uid} value={pharmacy.uid}>
+                            {pharmacy.pharmacyName ?? pharmacy.displayName}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
 
-                {activeCategory !== "hospital" && activeCategory !== "pharmacy" && (
-                  <input
-                    className="login-input"
-                    placeholder={activeCategory === "patient" ? "Patient mobile number (or email)" : "Phone number (or email)"}
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                  />
-                )}
-                <input className="login-input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
-                <button className="login-action" type="submit">
-                  {activeCategory === "patient" && "Login as Patient"}
-                  {activeCategory === "hospital" && "Login as Hospital"}
-                  {activeCategory === "pharmacy" && "Login as Pharmacy"}
+                  {activeCategory !== "hospital" && activeCategory !== "pharmacy" && (
+                    <input
+                      className="login-input"
+                      placeholder={activeCategory === "patient" ? "Patient mobile number (or email)" : "Phone number (or email)"}
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                    />
+                  )}
+                  <input className="login-input" type="password" placeholder="Password" value={password} onChange={(event) => setPassword(event.target.value)} />
+                  <button className="login-action" type="submit">
+                    {activeCategory === "patient" && "Login as Patient"}
+                    {activeCategory === "hospital" && "Login as Hospital"}
+                    {activeCategory === "pharmacy" && "Login as Pharmacy"}
+                  </button>
+                </form>
+
+                <button className="login-link mt-2" onClick={() => setShowResetHint((value) => !value)}>
+                  Reset password help
                 </button>
-              </form>
+                <AnimatePresence>
+                  {showResetHint && (
+                    <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="login-hint">
+                      Admin can reset from Security section. Firebase users also support email reset.
+                    </motion.p>
+                  )}
+                </AnimatePresence>
 
-              <button className="login-link mt-2" onClick={() => setShowResetHint((value) => !value)}>
-                Reset password help
-              </button>
-              <AnimatePresence>
-                {showResetHint && (
-                  <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="login-hint">
-                    Admin can reset from Security section. Firebase users also support email reset.
+                <p className="mt-3 text-xs text-slate-300">
+                  New user? <Link className="login-link" to="/signup">Create account</Link>
+                </p>
+
+                <div className="mt-3 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8dffbf]">Demo Accounts</p>
+                  {!isFirebaseConfigured ? (
+                    <div className="grid gap-2">
+                      {demoCredentials.map((demoUser) => (
+                        <button
+                          key={demoUser.email}
+                          className="tab-item w-full text-left"
+                          type="button"
+                          onClick={() => {
+                            setEmail(demoUser.phone ?? demoUser.email);
+                            setPassword(demoUser.password);
+                            if (activeCategory === "hospital") {
+                              setSelectedDoctorUid(demoUser.uid);
+                            }
+                            const identifier = activeCategory === "hospital" ? demoUser.email : (demoUser.phone ?? demoUser.email);
+                            void completeLogin(identifier, demoUser.password, activeCategory).catch((err) => setError((err as Error).message));
+                          }}
+                        >
+                          {prettyRole(demoUser.role)} · {activeCategory === "hospital" ? `${demoUser.displayName} (${demoUser.uid.toUpperCase()})` : (demoUser.phone ?? demoUser.email)}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-300">Demo access is hidden when Firebase is configured.</p>
+                  )}
+                </div>
+
+                {error && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-300">
+                    {error}
                   </motion.p>
                 )}
-              </AnimatePresence>
-
-              <p className="mt-3 text-xs text-slate-300">
-                New user? <Link className="login-link" to="/signup">Create account</Link>
-              </p>
-
-              <div className="mt-3 space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8dffbf]">Demo Accounts</p>
-                {!isFirebaseConfigured ? (
-                  <div className="grid gap-2">
-                    {demoCredentials.map((demoUser) => (
-                      <button
-                        key={demoUser.email}
-                        className="tab-item w-full text-left"
-                        type="button"
-                        onClick={() => {
-                          setEmail(demoUser.phone ?? demoUser.email);
-                          setPassword(demoUser.password);
-                          if (activeCategory === "hospital") {
-                            setSelectedDoctorUid(demoUser.uid);
-                          }
-                          const identifier = activeCategory === "hospital" ? demoUser.email : (demoUser.phone ?? demoUser.email);
-                          void completeLogin(identifier, demoUser.password, activeCategory).catch((err) => setError((err as Error).message));
-                        }}
-                      >
-                        {prettyRole(demoUser.role)} · {activeCategory === "hospital" ? `${demoUser.displayName} (${demoUser.uid.toUpperCase()})` : (demoUser.phone ?? demoUser.email)}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-slate-300">Demo access is hidden when Firebase is configured.</p>
-                )}
-              </div>
-
-              {error && (
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs text-rose-300">
-                  {error}
-                </motion.p>
-              )}
               </>
             )}
           </div>
@@ -606,7 +607,7 @@ const SignUpPage = () => {
                     ))}
                   </select>
                   <input className="input" type="number" min={1} max={120} value={age} onChange={(event) => setAge(Number(event.target.value))} />
-                  <select className="input" value={gender} onChange={(event) => setGender(event.target.value as "male" | "female" | "other")}> 
+                  <select className="input" value={gender} onChange={(event) => setGender(event.target.value as "male" | "female" | "other")}>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
@@ -706,6 +707,7 @@ const AnimatedRoutes = () => {
             <Route path="hospitals" element={<HospitalManagementPage />} />
             <Route path="patients" element={<PatientManagementPage />} />
             <Route path="pharmacies" element={<PharmacyManagementPage />} />
+            <Route path="sms-booking" element={<SmsBookingDeskPage />} />
             <Route path="triage-rules" element={<TriageRuleViewPage />} />
             <Route path="medicines" element={<MedicineDatabaseViewPage />} />
             <Route path="sms-logs" element={<SmsLogsViewPage />} />

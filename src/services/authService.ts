@@ -26,10 +26,43 @@ const DEMO_USERS_KEY = "telehealth-demo-users";
 const PATIENT_HOSPITAL_PASSWORD_KEY = "telehealth-patient-hospital-login-password";
 const DEFAULT_PATIENT_HOSPITAL_PASSWORD = "am9790";
 
+const memoryStorage = new Map<string, string>();
+
+const safeStorageGet = (key: string): string | null => {
+  try {
+    const value = localStorage.getItem(key);
+    if (value !== null) {
+      memoryStorage.set(key, value);
+      return value;
+    }
+  } catch {
+    // Fall through to in-memory cache.
+  }
+  return memoryStorage.get(key) ?? null;
+};
+
+const safeStorageSet = (key: string, value: string): void => {
+  memoryStorage.set(key, value);
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Keep in-memory value when browser storage is unavailable/full.
+  }
+};
+
+const safeStorageRemove = (key: string): void => {
+  memoryStorage.delete(key);
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Ignore storage removal failures.
+  }
+};
+
 const isPatientOrHospitalRole = (role: UserRole): boolean => role === "patient" || role === "doctor";
 
 export const getPatientHospitalLoginPassword = (): string => {
-  const configured = localStorage.getItem(PATIENT_HOSPITAL_PASSWORD_KEY)?.trim();
+  const configured = safeStorageGet(PATIENT_HOSPITAL_PASSWORD_KEY)?.trim();
   return configured || DEFAULT_PATIENT_HOSPITAL_PASSWORD;
 };
 
@@ -38,9 +71,9 @@ const applyManagedPassword = (users: DemoUser[]): DemoUser[] => {
   return users.map((user) =>
     isPatientOrHospitalRole(user.role)
       ? {
-          ...user,
-          password: managedPassword
-        }
+        ...user,
+        password: managedPassword
+      }
       : user
   );
 };
@@ -51,7 +84,7 @@ export const setPatientHospitalLoginPassword = (password: string): void => {
     throw new Error("Password must be at least 4 characters.");
   }
 
-  localStorage.setItem(PATIENT_HOSPITAL_PASSWORD_KEY, nextPassword);
+  safeStorageSet(PATIENT_HOSPITAL_PASSWORD_KEY, nextPassword);
   const updatedUsers = applyManagedPassword(getDemoUsers());
   setDemoUsers(updatedUsers);
   broadcastDemoAuthChange();
@@ -125,32 +158,32 @@ const mergeDefaultDemoUsers = (users: DemoUser[]): DemoUser[] => {
 
 const getDemoUsers = (): DemoUser[] => {
   const DEFAULT_DEMO_USERS = buildDefaultDemoUsers();
-  const raw = localStorage.getItem(DEMO_USERS_KEY);
+  const raw = safeStorageGet(DEMO_USERS_KEY);
   if (!raw) {
     const managedDefaults = applyManagedPassword(DEFAULT_DEMO_USERS);
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
+    safeStorageSet(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
     return managedDefaults;
   }
 
   try {
     const parsed = JSON.parse(raw) as DemoUser[];
     if (!Array.isArray(parsed)) {
-      localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(DEFAULT_DEMO_USERS));
+      safeStorageSet(DEMO_USERS_KEY, JSON.stringify(DEFAULT_DEMO_USERS));
       return [...DEFAULT_DEMO_USERS];
     }
     const merged = mergeDefaultDemoUsers(parsed);
     const managed = applyManagedPassword(merged);
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managed));
+    safeStorageSet(DEMO_USERS_KEY, JSON.stringify(managed));
     return managed;
   } catch {
     const managedDefaults = applyManagedPassword(DEFAULT_DEMO_USERS);
-    localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
+    safeStorageSet(DEMO_USERS_KEY, JSON.stringify(managedDefaults));
     return managedDefaults;
   }
 };
 
 const setDemoUsers = (users: DemoUser[]) => {
-  localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(users));
+  safeStorageSet(DEMO_USERS_KEY, JSON.stringify(users));
 };
 
 const findDemoUserByUid = (uid: string): AppUser | null => {
@@ -200,7 +233,7 @@ export const loginWithEmail = (
       return Promise.reject(new Error("Invalid credentials. Try demo accounts listed below."));
     }
 
-    localStorage.setItem(DEMO_SESSION_KEY, matchedUser.uid);
+    safeStorageSet(DEMO_SESSION_KEY, matchedUser.uid);
     broadcastDemoAuthChange();
 
     const { password: _password, ...profile } = matchedUser;
@@ -305,7 +338,7 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
       });
     }
 
-    localStorage.setItem(DEMO_SESSION_KEY, created.uid);
+    safeStorageSet(DEMO_SESSION_KEY, created.uid);
     broadcastDemoAuthChange();
 
     const { password: _password, ...profile } = created;
@@ -338,7 +371,7 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
 
 export const logout = (): Promise<void> => {
   if (!isFirebaseConfigured) {
-    localStorage.removeItem(DEMO_SESSION_KEY);
+    safeStorageRemove(DEMO_SESSION_KEY);
     broadcastDemoAuthChange();
     return Promise.resolve();
   }
@@ -347,7 +380,7 @@ export const logout = (): Promise<void> => {
 
 export const observeAuth = (callback: (uid: string | null) => void): (() => void) => {
   if (!isFirebaseConfigured) {
-    const run = () => callback(localStorage.getItem(DEMO_SESSION_KEY));
+    const run = () => callback(safeStorageGet(DEMO_SESSION_KEY));
     run();
     window.addEventListener("telehealth-demo-auth-changed", run);
     return () => window.removeEventListener("telehealth-demo-auth-changed", run);
@@ -446,7 +479,7 @@ export const changeCurrentPassword = async (newPassword: string): Promise<void> 
   }
 
   if (!isFirebaseConfigured) {
-    const uid = localStorage.getItem(DEMO_SESSION_KEY);
+    const uid = safeStorageGet(DEMO_SESSION_KEY);
     if (!uid) {
       throw new Error("Not signed in.");
     }
@@ -455,9 +488,9 @@ export const changeCurrentPassword = async (newPassword: string): Promise<void> 
     const updated = users.map((user) =>
       user.uid === uid
         ? {
-            ...user,
-            password: newPassword
-          }
+          ...user,
+          password: newPassword
+        }
         : user
     );
     setDemoUsers(updated);
@@ -474,7 +507,7 @@ export const changeCurrentPassword = async (newPassword: string): Promise<void> 
 
 export const isJwtSessionValid = async (): Promise<boolean> => {
   if (!isFirebaseConfigured) {
-    return Boolean(localStorage.getItem(DEMO_SESSION_KEY));
+    return Boolean(safeStorageGet(DEMO_SESSION_KEY));
   }
 
   const currentUser = auth.currentUser;
@@ -539,9 +572,9 @@ export const deleteDemoUser = (uid: string): void => {
   const users = getDemoUsers();
   setDemoUsers(users.filter((user) => user.uid !== uid));
 
-  const currentUid = localStorage.getItem(DEMO_SESSION_KEY);
+  const currentUid = safeStorageGet(DEMO_SESSION_KEY);
   if (currentUid === uid) {
-    localStorage.removeItem(DEMO_SESSION_KEY);
+    safeStorageRemove(DEMO_SESSION_KEY);
   }
 
   broadcastDemoAuthChange();
@@ -576,7 +609,7 @@ export const updateDemoUser = (uid: string, input: {
     (user) =>
       user.uid !== uid
       && (user.email.toLowerCase() === nextEmail.toLowerCase()
-      || (nextPhone && user.phone === nextPhone))
+        || (nextPhone && user.phone === nextPhone))
   );
   if (duplicate) {
     throw new Error("Another user already exists with this email/phone.");
@@ -618,7 +651,7 @@ export const upsertDemoUserByUid = (uid: string, input: {
   const duplicate = users.some(
     (user) => user.uid !== uid
       && (user.email.toLowerCase() === resolvedEmail.toLowerCase()
-      || (normalizedPhone && user.phone === normalizedPhone))
+        || (normalizedPhone && user.phone === normalizedPhone))
   );
   if (duplicate) {
     throw new Error("Another user already exists with this email/phone.");

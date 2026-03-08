@@ -35,6 +35,25 @@ const coll = <K extends CollectionName>(name: K): CollectionReference<DocumentDa
 
 type DemoStore = Record<CollectionName, CollectionRecord[]>;
 
+let inMemoryDemoStore: DemoStore | null = null;
+
+const safeGetLocalStorageItem = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const safeSetLocalStorageItem = (key: string, value: string): boolean => {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const seedStore = (): DemoStore => ({
   users: [
     {
@@ -93,7 +112,25 @@ const seedStore = (): DemoStore => ({
   consultations: [],
   prescriptions: [],
   pharmacy_requests: [],
-  medicine_stock: medicineRules.map((rule, index) => ({
+  sms_bookings: [],
+  ivr_menu_config: [
+    {
+      id: "active",
+      active: true,
+      menuVersion: 1,
+      defaultHospitalName: defaultHospitalCatalog[0]?.hospitalName ?? "Shifa Hospital",
+      mappings: defaultHospitalCatalog.slice(0, 9).map((hospital, index) => ({
+        digit: String(index + 1),
+        hospitalName: hospital.hospitalName,
+        priority: index + 1,
+        active: true
+      })),
+      updatedBy: "seed",
+      updatedAt: nowIso(),
+      createdAt: nowIso()
+    }
+  ],
+  medicine_stock: medicineRules.slice(0, 700).map((rule, index) => ({
     id: `stock-${rule.id.toLowerCase()}`,
     medicineId: rule.id,
     medicineName: rule.medicineName,
@@ -109,10 +146,15 @@ const emitDemoStoreUpdated = () => {
 };
 
 const loadDemoStore = (): DemoStore => {
-  const serialized = localStorage.getItem(DEMO_STORE_KEY);
+  if (inMemoryDemoStore) {
+    return inMemoryDemoStore;
+  }
+
+  const serialized = safeGetLocalStorageItem(DEMO_STORE_KEY);
   if (!serialized) {
     const initialStore = seedStore();
-    localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(initialStore));
+    inMemoryDemoStore = initialStore;
+    safeSetLocalStorageItem(DEMO_STORE_KEY, JSON.stringify(initialStore));
     return initialStore;
   }
 
@@ -133,9 +175,25 @@ const loadDemoStore = (): DemoStore => {
     const parsedDoctorsById = new Map(parsedDoctorsTyped.map((doctor) => [doctor.id, doctor]));
     const seededDoctorIds = new Set(seededDoctors.map((doctor) => doctor.id));
 
-    const mergedSeededDoctors = seededDoctors.map(
-      (seedDoctor) => parsedDoctorsById.get(seedDoctor.id) ?? seedDoctor
-    );
+    const mergedSeededDoctors = seededDoctors.map((seedDoctor) => {
+      const cachedDoctor = parsedDoctorsById.get(seedDoctor.id);
+      if (!cachedDoctor) {
+        return seedDoctor;
+      }
+
+      // Keep runtime-edited operational fields, but always refresh canonical seeded identity fields.
+      return {
+        ...cachedDoctor,
+        doctorCode: seedDoctor.doctorCode,
+        name: seedDoctor.name,
+        hospitalName: seedDoctor.hospitalName,
+        place: seedDoctor.place,
+        district: seedDoctor.district,
+        designation: seedDoctor.designation,
+        specialization: seedDoctor.specialization,
+        city: seedDoctor.city
+      };
+    });
 
     const customParsedDoctors = parsedDoctorsTyped.filter(
       (doctor) => !seededDoctorIds.has(doctor.id)
@@ -162,7 +220,11 @@ const loadDemoStore = (): DemoStore => {
     const seededUserIds = new Set(seededUsers.map((user) => user.uid));
     const customUsers = parsedUsers.filter((user) => !seededUserIds.has(user.uid));
 
-    return {
+    const parsedMedicineStock = (parsed.medicine_stock ?? []) as FirestoreCollections["medicine_stock"][];
+    const hasIndiaDatasetStock = parsedMedicineStock.some((item) => String(item.medicineId).startsWith("IND-"));
+    const stockLooksOversized = parsedMedicineStock.length > 850;
+
+    const mergedStore = {
       users: [...mergedSeededUsers, ...customUsers],
       patients: parsed.patients ?? seeded.patients,
       doctors: migratedDoctors,
@@ -172,17 +234,23 @@ const loadDemoStore = (): DemoStore => {
       consultations: parsed.consultations ?? seeded.consultations,
       prescriptions: parsed.prescriptions ?? seeded.prescriptions,
       pharmacy_requests: parsed.pharmacy_requests ?? seeded.pharmacy_requests,
-      medicine_stock: parsed.medicine_stock ?? seeded.medicine_stock
+      sms_bookings: parsed.sms_bookings ?? seeded.sms_bookings,
+      ivr_menu_config: parsed.ivr_menu_config ?? seeded.ivr_menu_config,
+      medicine_stock: hasIndiaDatasetStock && !stockLooksOversized ? parsedMedicineStock : seeded.medicine_stock
     };
+    inMemoryDemoStore = mergedStore;
+    return mergedStore;
   } catch {
     const initialStore = seedStore();
-    localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(initialStore));
+    inMemoryDemoStore = initialStore;
+    safeSetLocalStorageItem(DEMO_STORE_KEY, JSON.stringify(initialStore));
     return initialStore;
   }
 };
 
 const saveDemoStore = (store: DemoStore) => {
-  localStorage.setItem(DEMO_STORE_KEY, JSON.stringify(store));
+  inMemoryDemoStore = store;
+  safeSetLocalStorageItem(DEMO_STORE_KEY, JSON.stringify(store));
   emitDemoStoreUpdated();
 };
 
@@ -257,10 +325,10 @@ export const updateDocumentById = async <K extends CollectionName>(
     store[collectionName] = list.map((item) =>
       item.id === id
         ? ({
-            ...item,
-            ...data,
-            updatedAt: nowIso()
-          } as FirestoreCollections[K])
+          ...item,
+          ...data,
+          updatedAt: nowIso()
+        } as FirestoreCollections[K])
         : item
     ) as CollectionRecord[];
     saveDemoStore(store);

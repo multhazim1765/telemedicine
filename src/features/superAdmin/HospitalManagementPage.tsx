@@ -437,7 +437,15 @@ export const HospitalManagementPage = () => {
         throw new Error("Doctor name is required.");
       }
       const generatedCode = newDoctor.doctorCode.trim() || `D${Date.now().toString().slice(-4)}`;
-      const doctorId = generatedCode.toLowerCase().replace(/[^a-z0-9]/g, "");
+      let doctorId = generatedCode.toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (!doctorId) {
+        doctorId = `d${Date.now().toString().slice(-6)}`;
+      }
+
+      const existingDoctorIds = new Set(doctors.map((doctor) => doctor.id));
+      if (existingDoctorIds.has(doctorId)) {
+        doctorId = `${doctorId}${Date.now().toString().slice(-3)}`;
+      }
       const slotList = parseSlots(newDoctor.availabilitySlots);
 
       await setDocumentById("doctors", doctorId, {

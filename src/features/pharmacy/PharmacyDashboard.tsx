@@ -6,9 +6,11 @@ import { MedicineStock, PharmacyRequest, Prescription } from "../../types/models
 import { updatePharmacyAvailability } from "../../agents/pharmacyAgent";
 import { useBusinessDate } from "../../hooks/useBusinessDate";
 import { BusinessDateBadge } from "../../components/ui/BusinessDateBadge";
+import { useAuth } from "../../hooks/useAuth";
 
 export const PharmacyDashboard = () => {
   const businessDate = useBusinessDate();
+  const { user } = useAuth();
   const [requests, setRequests] = useState<PharmacyRequest[]>([]);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [stocks, setStocks] = useState<MedicineStock[]>([]);
@@ -29,12 +31,15 @@ export const PharmacyDashboard = () => {
 
   const filteredRequests = useMemo(() => {
     const requestsForDate = requests.filter((request) => String(request.updatedAt ?? "").startsWith(businessDate));
+    const requestsForThisPharmacy = requestsForDate.filter(
+      (request) => !request.pharmacyId || request.pharmacyId === user?.uid
+    );
 
     if (!phoneFilter.trim()) {
-      return requestsForDate;
+      return requestsForThisPharmacy;
     }
-    return requestsForDate.filter((request) => request.patientPhone.includes(phoneFilter.trim()));
-  }, [phoneFilter, requests, businessDate]);
+    return requestsForThisPharmacy.filter((request) => request.patientPhone.includes(phoneFilter.trim()));
+  }, [phoneFilter, requests, businessDate, user?.uid]);
 
   const getPrescription = (prescriptionId: string): Prescription | undefined =>
     prescriptions.find((item) => item.id === prescriptionId);
@@ -74,7 +79,7 @@ export const PharmacyDashboard = () => {
             value={stockSearch}
             onChange={(event) => setStockSearch(event.target.value)}
           />
-          <select className="input md:w-44" value={stockFilter} onChange={(event) => setStockFilter(event.target.value as "all" | "in" | "out") }>
+          <select className="input md:w-44" value={stockFilter} onChange={(event) => setStockFilter(event.target.value as "all" | "in" | "out")}>
             <option value="all">All stock</option>
             <option value="in">In stock</option>
             <option value="out">Out of stock</option>
@@ -134,26 +139,26 @@ export const PharmacyDashboard = () => {
           {filteredRequests.map((request) => {
             const prescription = getPrescription(request.prescriptionId);
             return (
-            <article key={request.id} className="rounded-md bg-slate-100 p-3 text-sm">
-              <p>Patient Mobile: <span className="font-medium">{request.patientPhone}</span></p>
-              <p className="font-medium">Medicines: {request.medicines.join(", ") || "N/A"}</p>
-              <p>Prescription Notes: {prescription?.notes ?? "N/A"}</p>
-              <p>Current SMS status: {request.smsStatus}</p>
-              <div className="mt-2 flex gap-2">
-                <button
-                  className="btn-primary"
-                  onClick={() => void updatePharmacyAvailability(request.id, true)}
-                >
-                  Mark Available
-                </button>
-                <button
-                  className="btn-muted"
-                  onClick={() => void updatePharmacyAvailability(request.id, false)}
-                >
-                  Mark Not Available
-                </button>
-              </div>
-            </article>
+              <article key={request.id} className="rounded-md bg-slate-100 p-3 text-sm">
+                <p>Patient Mobile: <span className="font-medium">{request.patientPhone}</span></p>
+                <p className="font-medium">Medicines: {request.medicines.join(", ") || "N/A"}</p>
+                <p>Prescription Notes: {prescription?.notes ?? "N/A"}</p>
+                <p>Current SMS status: {request.smsStatus}</p>
+                <div className="mt-2 flex gap-2">
+                  <button
+                    className="btn-primary"
+                    onClick={() => void updatePharmacyAvailability(request.id, true)}
+                  >
+                    Mark Available
+                  </button>
+                  <button
+                    className="btn-muted"
+                    onClick={() => void updatePharmacyAvailability(request.id, false)}
+                  >
+                    Mark Not Available
+                  </button>
+                </div>
+              </article>
             );
           })}
         </div>

@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "firebase-admin": "^13.5.0",
-    "firebase-functions": "^6.6.0"
+    "firebase-functions": "^6.6.0",
+    "multo-2": "file:.."
   },
   "devDependencies": {
     "typescript": "^5.9.3"

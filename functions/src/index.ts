@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, HttpsError, onRequest } from "firebase-functions/v2/https";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -78,12 +78,364 @@ const sendTextbeltSMS = async (phone: string, message: string): Promise<{ textId
   };
 };
 
+type ExotelRequestLike = {
+  body?: unknown;
+  query?: Record<string, unknown>;
+  rawBody?: Buffer;
+  headers?: Record<string, unknown>;
+};
+
+const getRawBodyParams = (request: ExotelRequestLike): URLSearchParams | null => {
+  const rawBody = request.rawBody?.toString("utf8") ?? "";
+  if (!rawBody) {
+    return null;
+  }
+  return new URLSearchParams(rawBody);
+};
+
+const getInboundField = (request: ExotelRequestLike, key: string): string => {
+  const body = request.body;
+  if (body && typeof body === "object" && !Array.isArray(body)) {
+    const value = (body as Record<string, unknown>)[key];
+    if (typeof value === "string" && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  const rawParams = getRawBodyParams(request);
+  const rawValue = rawParams?.get(key);
+  if (rawValue?.trim()) {
+    return rawValue.trim();
+  }
+
+  const queryValue = request.query?.[key];
+  if (typeof queryValue === "string" && queryValue.trim()) {
+    return queryValue.trim();
+  }
+
+  return "";
+};
+
+const appointmentDateIst = (): string =>
+  new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+
+const resolveSlotByIstTime = (currentDate = new Date()): "Morning" | "Afternoon" | "Evening" => {
+  const istHour = Number(
+    currentDate.toLocaleString("en-US", {
+      hour: "numeric",
+      hour12: false,
+      timeZone: "Asia/Kolkata"
+    })
+  );
+
+  if (istHour >= 6 && istHour < 9) {
+    return "Morning";
+  }
+  if (istHour >= 9 && istHour < 12) {
+    return "Afternoon";
+  }
+  if (istHour >= 12 && istHour < 15) {
+    return "Evening";
+  }
+
+  // Outside configured ranges, keep deterministic fallback order.
+  if (istHour < 6) {
+    return "Morning";
+  }
+  return "Evening";
+};
+
+const toPhoneDigits = (value: string): string => value.replace(/\D/g, "");
+
+export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
+  response.set("Cache-Control", "no-store");
+
+  if (request.method !== "POST" && request.method !== "GET") {
+    response.status(405).json({ success: false, error: "Method not allowed" });
+    return;
+  }
+
+  const configuredToken = process.env.EXOTEL_WEBHOOK_TOKEN?.trim() ?? "";
+  const incomingToken =
+    getInboundField(request, "token") ||
+    String(request.headers["x-exotel-token"] ?? "").trim();
+
+  if (configuredToken && incomingToken !== configuredToken) {
+    response.status(403).json({ success: false, error: "Unauthorized webhook token" });
+    return;
+  }
+
+  const inboundSmsMessageId =
+    getInboundField(request, "MessageSid") ||
+    getInboundField(request, "MessageId") ||
+    getInboundField(request, "Sid");
+  const from =
+    getInboundField(request, "From") ||
+    getInboundField(request, "Sender") ||
+    getInboundField(request, "FromNumber");
+  const smsText =
+    getInboundField(request, "Body") ||
+    getInboundField(request, "Text") ||
+    "";
+  const parsedCommand = toPhoneDigits(smsText);
+  const messageStatus =
+    getInboundField(request, "SmsStatus") ||
+    getInboundField(request, "Status") ||
+    "received";
+
+  if (!inboundSmsMessageId || !from) {
+    response.status(400).json({ success: false, error: "Missing MessageSid/MessageId or sender phone" });
+    return;
+  }
+
+  const normalizedPhone = normalizePhoneForSms(from);
+  const smsRef = db.collection("sms_bookings").doc(inboundSmsMessageId);
+  const existingSms = await smsRef.get();
+  const existingData = existingSms.data() as { appointmentId?: string } | undefined;
+
+  if (existingData?.appointmentId) {
+    response.status(200).json({ success: true, status: "duplicate", smsMessageId: inboundSmsMessageId, appointmentId: existingData.appointmentId });
+    return;
+  }
+
+  const menuSnapshot = await db.collection("ivr_menu_config").doc("active").get();
+  const menuData = menuSnapshot.data() as {
+    menuVersion?: number;
+    defaultHospitalName?: string;
+    mappings?: Array<{ digit?: string; hospitalName?: string; doctorId?: string; doctorName?: string; priority?: number; active?: boolean }>;
+  } | undefined;
+
+  const selectedMapping = (menuData?.mappings ?? [])
+    .filter((entry) => toPhoneDigits(String(entry.digit ?? "").trim()) === parsedCommand && entry.active !== false)
+    .sort((a, b) => (a.priority ?? Number.MAX_SAFE_INTEGER) - (b.priority ?? Number.MAX_SAFE_INTEGER))[0];
+  const selectedHospitalName =
+    selectedMapping?.hospitalName?.trim() ||
+    menuData?.defaultHospitalName?.trim() ||
+    process.env.EXOTEL_DEFAULT_HOSPITAL?.trim() ||
+    "";
+  const selectedDoctorId = selectedMapping?.doctorId?.trim() || "";
+
+  if (!selectedHospitalName) {
+    await smsRef.set(
+      {
+        smsMessageId: inboundSmsMessageId,
+        senderPhone: from,
+        normalizedSenderPhone: normalizedPhone,
+        parsedCommand,
+        smsText,
+        messageStatus,
+        status: "failed",
+        failureReason: "No SMS command mapping/default hospital found",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+    response.status(200).json({ success: false, status: "failed", reason: "No hospital mapping" });
+    return;
+  }
+
+  const patientsByExactPhone = await db.collection("patients").where("phone", "==", normalizedPhone).limit(1).get();
+  let patientDoc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData> | undefined = patientsByExactPhone.docs[0];
+
+  if (!patientDoc) {
+    const normalizedDigits = toPhoneDigits(normalizedPhone);
+    const patientSnapshot = await db.collection("patients").limit(400).get();
+    patientDoc = patientSnapshot.docs.find((doc) => {
+      const phone = String(doc.data().phone ?? "");
+      const digitsOnly = toPhoneDigits(phone);
+      return digitsOnly.endsWith(normalizedDigits.slice(-10));
+    });
+  }
+
+  if (!patientDoc) {
+    await smsRef.set(
+      {
+        smsMessageId: inboundSmsMessageId,
+        senderPhone: from,
+        normalizedSenderPhone: normalizedPhone,
+        parsedCommand,
+        smsText,
+        selectedHospitalName,
+        menuVersion: menuData?.menuVersion ?? 1,
+        messageStatus,
+        status: "failed",
+        failureReason: "Patient phone not found",
+        smsStatus: "not_sent",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+    response.status(200).json({ success: false, status: "failed", reason: "Patient not found" });
+    return;
+  }
+
+  const patient = patientDoc.data() as {
+    userId?: string;
+    name?: string;
+    phone?: string;
+  };
+
+  let doctorDoc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData> | undefined;
+
+  if (selectedDoctorId) {
+    const doctorByIdSnapshot = await db.collection("doctors").where("id", "==", selectedDoctorId).limit(1).get();
+    doctorDoc = doctorByIdSnapshot.docs[0];
+  }
+
+  if (!doctorDoc) {
+    const doctorsSnapshot = await db.collection("doctors").where("hospitalName", "==", selectedHospitalName).limit(25).get();
+    doctorDoc = doctorsSnapshot.docs[0];
+  }
+
+  if (!doctorDoc) {
+    await smsRef.set(
+      {
+        smsMessageId: inboundSmsMessageId,
+        senderPhone: from,
+        normalizedSenderPhone: normalizedPhone,
+        parsedCommand,
+        smsText,
+        selectedHospitalName,
+        patientId: patient.userId ?? patientDoc.id,
+        patientName: patient.name ?? "Unknown Patient",
+        menuVersion: menuData?.menuVersion ?? 1,
+        messageStatus,
+        status: "failed",
+        failureReason: "No doctor found for selected hospital",
+        smsStatus: "not_sent",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+    response.status(200).json({ success: false, status: "failed", reason: "No doctor available" });
+    return;
+  }
+
+  const doctor = doctorDoc.data() as {
+    name?: string;
+    specialization?: string;
+    availabilitySlots?: string[];
+  };
+
+  const timeWindowSlot = resolveSlotByIstTime();
+  const selectedSlot = Array.isArray(doctor.availabilitySlots)
+    ? doctor.availabilitySlots.find((slot) => slot.trim().toLowerCase() === timeWindowSlot.toLowerCase()) ?? timeWindowSlot
+    : timeWindowSlot;
+  const appointmentDate = appointmentDateIst();
+
+  const existingSlotAppointments = await db
+    .collection("appointments")
+    .where("doctorId", "==", doctorDoc.id)
+    .where("appointmentDate", "==", appointmentDate)
+    .where("slot", "==", selectedSlot)
+    .where("status", "==", "booked")
+    .get();
+  const tokenNumber = existingSlotAppointments.size + 1;
+
+  const triageRef = await db.collection("triage_sessions").add({
+    patientId: patient.userId ?? patientDoc.id,
+    patientName: patient.name ?? "Unknown Patient",
+    patientPhone: patient.phone ?? normalizedPhone,
+    symptoms: ["sms booking"],
+    result: {
+      severityScore: 2,
+      severityLevel: "low",
+      recommendedAction: "Routine teleconsultation"
+    },
+    preferredSpecialization: doctor.specialization ?? "general",
+    assignedDoctorId: doctorDoc.id,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  const appointmentRef = await db.collection("appointments").add({
+    patientId: patient.userId ?? patientDoc.id,
+    patientName: patient.name ?? "Unknown Patient",
+    patientPhone: patient.phone ?? normalizedPhone,
+    triageSessionId: triageRef.id,
+    doctorId: doctorDoc.id,
+    doctorName: doctor.name ?? "Doctor",
+    specialization: doctor.specialization ?? "general",
+    slot: selectedSlot,
+    appointmentDate,
+    tokenNumber,
+    status: "booked",
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp()
+  });
+
+  const confirmationSms = [
+    "Civil Hospital PHC:",
+    `Appointment booked at ${selectedHospitalName}.`,
+    `Doctor: ${doctor.name ?? "Doctor"}`,
+    `Date: ${appointmentDate}`,
+    `Slot: ${selectedSlot}`,
+    `Token: #${tokenNumber}`,
+    "Please arrive 10 minutes early."
+  ].join("\n");
+
+  let smsStatus: "queued" | "failed" | "not_sent" = "not_sent";
+  let outboundSmsMessageId = "";
+  let smsError = "";
+
+  try {
+    const smsResult = await sendTextbeltSMS(normalizedPhone, confirmationSms);
+    smsStatus = "queued";
+    outboundSmsMessageId = smsResult.textId;
+  } catch (error) {
+    smsStatus = "failed";
+    smsError = error instanceof Error ? error.message : "Unknown SMS error";
+  }
+
+  await smsRef.set(
+    {
+      smsMessageId: inboundSmsMessageId,
+      senderPhone: from,
+      normalizedSenderPhone: normalizedPhone,
+      parsedCommand,
+      smsText,
+      messageStatus,
+      selectedHospitalName,
+      menuVersion: menuData?.menuVersion ?? 1,
+      patientId: patient.userId ?? patientDoc.id,
+      patientName: patient.name ?? "Unknown Patient",
+      doctorId: doctorDoc.id,
+      doctorName: doctor.name ?? "Doctor",
+      slot: selectedSlot,
+      appointmentDate,
+      tokenNumber,
+      triageSessionId: triageRef.id,
+      appointmentId: appointmentRef.id,
+      status: "booked",
+      smsStatus,
+      smsDeliveryMessageId: outboundSmsMessageId,
+      smsError,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+
+  response.status(200).json({
+    success: true,
+    smsMessageId: inboundSmsMessageId,
+    smsDeliveryMessageId: outboundSmsMessageId,
+    appointmentId: appointmentRef.id,
+    triageSessionId: triageRef.id,
+    tokenNumber,
+    smsStatus
+  });
+});
+
 const hospitalSeedDoctors = [
   {
     id: "d001",
     userId: "d001",
     doctorCode: "D001",
-    name: "Dr. Ashok Kumar",
+    name: "Dr. ABDUL ADHIL T",
     hospitalName: "Shifa Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -97,7 +449,7 @@ const hospitalSeedDoctors = [
     id: "d002",
     userId: "d002",
     doctorCode: "D002",
-    name: "Dr. Ghulam Mohideen",
+    name: "Dr. ABDUL MALIK B J",
     hospitalName: "Shifa Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -111,7 +463,7 @@ const hospitalSeedDoctors = [
     id: "d003",
     userId: "d003",
     doctorCode: "D003",
-    name: "Dr. K. Muthu Selvan",
+    name: "Dr. ABU AASEEM K",
     hospitalName: "Shifa Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -125,7 +477,7 @@ const hospitalSeedDoctors = [
     id: "d004",
     userId: "d004",
     doctorCode: "D004",
-    name: "Dr. Geetha Saravanan",
+    name: "Dr. ADHRA K M",
     hospitalName: "Shifa Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -139,7 +491,7 @@ const hospitalSeedDoctors = [
     id: "d005",
     userId: "d005",
     doctorCode: "D005",
-    name: "Dr. Mohamed Shafi Abdulla",
+    name: "Dr. AFRAA K S",
     hospitalName: "Shifa Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -153,7 +505,7 @@ const hospitalSeedDoctors = [
     id: "d006",
     userId: "d006",
     doctorCode: "D006",
-    name: "Dr. Prasanna P",
+    name: "Dr. AHAMED MULTHAZIM A",
     hospitalName: "Meenakshi Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -167,7 +519,7 @@ const hospitalSeedDoctors = [
     id: "d007",
     userId: "d007",
     doctorCode: "D007",
-    name: "Dr. R. V. Shivakumar",
+    name: "Dr. AKHIL HUSSAIN A",
     hospitalName: "Meenakshi Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -181,7 +533,7 @@ const hospitalSeedDoctors = [
     id: "d008",
     userId: "d008",
     doctorCode: "D008",
-    name: "Dr. Shivkumar Rathinam Venkatesan",
+    name: "Dr. ASIL JAMESHA T",
     hospitalName: "Meenakshi Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -195,7 +547,7 @@ const hospitalSeedDoctors = [
     id: "d009",
     userId: "d009",
     doctorCode: "D009",
-    name: "Dr. Sasikumar Sambasivam",
+    name: "Dr. ATHIFA FAREEZA A",
     hospitalName: "Meenakshi Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -209,7 +561,7 @@ const hospitalSeedDoctors = [
     id: "d010",
     userId: "d010",
     doctorCode: "D010",
-    name: "Dr. R. Anbarasu",
+    name: "Dr. DELLI GANESH J",
     hospitalName: "A to Z Speciality Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -223,7 +575,7 @@ const hospitalSeedDoctors = [
     id: "d011",
     userId: "d011",
     doctorCode: "D011",
-    name: "Dr. S. Balaji Prathep",
+    name: "Dr. DIVYA K",
     hospitalName: "A to Z Speciality Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -237,7 +589,7 @@ const hospitalSeedDoctors = [
     id: "d012",
     userId: "d012",
     doctorCode: "D012",
-    name: "Dr. R. VijaiAnanth",
+    name: "Dr. FAHEEN ASHAR N",
     hospitalName: "A to Z Speciality Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -251,7 +603,7 @@ const hospitalSeedDoctors = [
     id: "d013",
     userId: "d013",
     doctorCode: "D013",
-    name: "Dr. M. S. Rubini",
+    name: "Dr. GOPINATHAN S",
     hospitalName: "A to Z Speciality Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",
@@ -265,7 +617,7 @@ const hospitalSeedDoctors = [
     id: "d014",
     userId: "d014",
     doctorCode: "D014",
-    name: "Dr. K. Saranyadevi",
+    name: "Dr. GOWTHAM T",
     hospitalName: "A to Z Speciality Hospital",
     place: "Thanjavur District",
     district: "Thanjavur District",

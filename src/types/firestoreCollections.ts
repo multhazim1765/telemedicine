@@ -4,10 +4,12 @@ import {
   Consultation,
   Doctor,
   HospitalCatalog,
+  IvrMenuConfig,
   MedicineStock,
   Patient,
   PharmacyRequest,
   Prescription,
+  SmsBooking,
   TriageSession
 } from "./models";
 
@@ -22,4 +24,6 @@ export interface FirestoreCollections {
   prescriptions: Prescription;
   pharmacy_requests: PharmacyRequest;
   medicine_stock: MedicineStock;
+  sms_bookings: SmsBooking;
+  ivr_menu_config: IvrMenuConfig;
 }

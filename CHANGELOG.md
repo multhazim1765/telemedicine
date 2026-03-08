@@ -2,6 +2,38 @@
 
 All notable changes made to this project are documented in this file.
 
+## [2026-03-09]
+
+### Added
+- Added SMS booking desk route/page integration using `src/features/superAdmin/SmsBookingDeskPage.tsx` and updated super admin navigation to include SMS Booking access.
+- Added Exotel inbound SMS webhook flow in `functions/src/index.ts` with Firestore persistence to `sms_bookings` and appointment creation pipeline.
+
+### Changed
+- Migrated booking terminology and data model from call booking to SMS booking across frontend/backend:
+  - Updated `src/types/models.ts` and `src/types/firestoreCollections.ts` with `SmsBooking` and `sms_bookings` collection typing.
+  - Updated `src/services/firestoreService.ts` seed and local/demo store handling to include `sms_bookings` and `ivr_menu_config`.
+  - Updated routing in `src/App.tsx` to use `/super-admin/sms-booking` as the active booking desk entry.
+- Updated doctor seed and catalog naming to align with provided doctor list and hospital management edits:
+  - Refreshed doctor names in `src/data/doctors.json`.
+  - Synced seeded doctor names in `functions/src/index.ts`.
+- Updated SMS booking slot assignment logic in backend (`functions/src/index.ts`) to time-window based IST mapping:
+  - `06:00-09:00 -> Morning`
+  - `09:00-12:00 -> Afternoon`
+  - `12:00-15:00 -> Evening`
+- Updated SMS booking auto-sync behavior in `src/features/superAdmin/SmsBookingDeskPage.tsx`:
+  - Prevents destructive mapping loss when doctors are added.
+  - Auto-resequences priorities in strict order.
+
+### Fixed
+- Fixed doctor dashboard visibility for SMS-created appointments by aligning date filtering behavior so token/mobile records are visible for both SMS and web booking flows.
+- Fixed hospital management doctor add flow to avoid accidental doctor ID collisions that could overwrite existing doctor records.
+- Fixed duplicate SMS identifier handling in `functions/src/index.ts` by separating inbound booking message ID and outbound delivery message ID fields.
+
+### Validation
+- Verified successful builds after updates:
+  - `npm run build`
+  - `npm run build --prefix functions`
+
 ## [2026-03-07]
 
 ### Added
