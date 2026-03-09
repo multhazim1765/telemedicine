@@ -1,0 +1,140 @@
+﻿{
+    "total":  256476,
+    "chunks":  [
+                   {
+                       "letter":  "#",
+                       "file":  "/data/india-medicines/other.json",
+                       "count":  null
+                   },
+                   {
+                       "letter":  "A",
+                       "file":  "/data/india-medicines/A.json",
+                       "count":  26200
+                   },
+                   {
+                       "letter":  "B",
+                       "file":  "/data/india-medicines/B.json",
+                       "count":  8303
+                   },
+                   {
+                       "letter":  "C",
+                       "file":  "/data/india-medicines/C.json",
+                       "count":  24650
+                   },
+                   {
+                       "letter":  "D",
+                       "file":  "/data/india-medicines/D.json",
+                       "count":  14197
+                   },
+                   {
+                       "letter":  "E",
+                       "file":  "/data/india-medicines/E.json",
+                       "count":  11788
+                   },
+                   {
+                       "letter":  "F",
+                       "file":  "/data/india-medicines/F.json",
+                       "count":  10173
+                   },
+                   {
+                       "letter":  "G",
+                       "file":  "/data/india-medicines/G.json",
+                       "count":  9584
+                   },
+                   {
+                       "letter":  "H",
+                       "file":  "/data/india-medicines/H.json",
+                       "count":  4075
+                   },
+                   {
+                       "letter":  "I",
+                       "file":  "/data/india-medicines/I.json",
+                       "count":  6206
+                   },
+                   {
+                       "letter":  "J",
+                       "file":  "/data/india-medicines/J.json",
+                       "count":  1780
+                   },
+                   {
+                       "letter":  "K",
+                       "file":  "/data/india-medicines/K.json",
+                       "count":  5214
+                   },
+                   {
+                       "letter":  "L",
+                       "file":  "/data/india-medicines/L.json",
+                       "count":  12816
+                   },
+                   {
+                       "letter":  "M",
+                       "file":  "/data/india-medicines/M.json",
+                       "count":  17029
+                   },
+                   {
+                       "letter":  "N",
+                       "file":  "/data/india-medicines/N.json",
+                       "count":  11501
+                   },
+                   {
+                       "letter":  "O",
+                       "file":  "/data/india-medicines/O.json",
+                       "count":  12033
+                   },
+                   {
+                       "letter":  "P",
+                       "file":  "/data/india-medicines/P.json",
+                       "count":  9314
+                   },
+                   {
+                       "letter":  "Q",
+                       "file":  "/data/india-medicines/Q.json",
+                       "count":  1298
+                   },
+                   {
+                       "letter":  "R",
+                       "file":  "/data/india-medicines/R.json",
+                       "count":  15479
+                   },
+                   {
+                       "letter":  "S",
+                       "file":  "/data/india-medicines/S.json",
+                       "count":  15337
+                   },
+                   {
+                       "letter":  "T",
+                       "file":  "/data/india-medicines/T.json",
+                       "count":  15481
+                   },
+                   {
+                       "letter":  "U",
+                       "file":  "/data/india-medicines/U.json",
+                       "count":  3045
+                   },
+                   {
+                       "letter":  "V",
+                       "file":  "/data/india-medicines/V.json",
+                       "count":  8266
+                   },
+                   {
+                       "letter":  "W",
+                       "file":  "/data/india-medicines/W.json",
+                       "count":  2377
+                   },
+                   {
+                       "letter":  "X",
+                       "file":  "/data/india-medicines/X.json",
+                       "count":  2017
+                   },
+                   {
+                       "letter":  "Y",
+                       "file":  "/data/india-medicines/Y.json",
+                       "count":  622
+                   },
+                   {
+                       "letter":  "Z",
+                       "file":  "/data/india-medicines/Z.json",
+                       "count":  7690
+                   }
+               ]
+}

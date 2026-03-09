@@ -24,7 +24,7 @@ const normalizePhoneForSms = (phone: string): string => {
   return cleaned;
 };
 
-const sendTextbeltSMS = async (phone: string, message: string): Promise<{ textId: string; status: string }> => {
+const sendSmsMobileSMS = async (phone: string, message: string): Promise<{ textId: string; status: string }> => {
   const response = await fetch(smsMobileApiUrl, {
     method: "POST",
     headers: {
@@ -78,14 +78,14 @@ const sendTextbeltSMS = async (phone: string, message: string): Promise<{ textId
   };
 };
 
-type ExotelRequestLike = {
+type SmsMobileRequestLike = {
   body?: unknown;
   query?: Record<string, unknown>;
   rawBody?: Buffer;
   headers?: Record<string, unknown>;
 };
 
-const getRawBodyParams = (request: ExotelRequestLike): URLSearchParams | null => {
+const getRawBodyParams = (request: SmsMobileRequestLike): URLSearchParams | null => {
   const rawBody = request.rawBody?.toString("utf8") ?? "";
   if (!rawBody) {
     return null;
@@ -93,7 +93,7 @@ const getRawBodyParams = (request: ExotelRequestLike): URLSearchParams | null =>
   return new URLSearchParams(rawBody);
 };
 
-const getInboundField = (request: ExotelRequestLike, key: string): string => {
+const getInboundField = (request: SmsMobileRequestLike, key: string): string => {
   const body = request.body;
   if (body && typeof body === "object" && !Array.isArray(body)) {
     const value = (body as Record<string, unknown>)[key];
@@ -114,6 +114,36 @@ const getInboundField = (request: ExotelRequestLike, key: string): string => {
   }
 
   return "";
+};
+
+const getInboundFieldAny = (request: SmsMobileRequestLike, keys: string[]): string => {
+  for (const key of keys) {
+    const value = getInboundField(request, key);
+    if (value) {
+      return value;
+    }
+  }
+  return "";
+};
+
+const resolveInboundMessageId = (request: SmsMobileRequestLike, from: string): string => {
+  const explicitId = getInboundFieldAny(request, [
+    "id",
+    "message_id",
+    "messageId",
+    "sms_id",
+    "sid",
+    "MessageSid",
+    "MessageId",
+    "Sid"
+  ]);
+
+  if (explicitId) {
+    return explicitId;
+  }
+
+  const phoneKey = toPhoneDigits(from).slice(-10) || "unknown";
+  return `smsm-${Date.now()}-${phoneKey}`;
 };
 
 const appointmentDateIst = (): string =>
@@ -147,7 +177,44 @@ const resolveSlotByIstTime = (currentDate = new Date()): "Morning" | "Afternoon"
 
 const toPhoneDigits = (value: string): string => value.replace(/\D/g, "");
 
-export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
+const parseSmsBookingCommand = (rawText: string): string => {
+  const text = String(rawText ?? "").trim();
+  if (!text) {
+    return "";
+  }
+
+  // Supports: BOOK3812, BOOK 3812, BOOK(3812), plain 3812
+  const bookingMatch = text.match(/book\s*\(?\s*(\d{2,8})\s*\)?/i);
+  if (bookingMatch?.[1]) {
+    return bookingMatch[1];
+  }
+
+  const anyDigits = toPhoneDigits(text);
+  return anyDigits;
+};
+
+const decodeBasicAuth = (authorizationHeader: string): { username: string; password: string } | null => {
+  const [scheme, encoded] = authorizationHeader.split(" ");
+  if (!scheme || !encoded || scheme.toLowerCase() !== "basic") {
+    return null;
+  }
+
+  try {
+    const decoded = Buffer.from(encoded, "base64").toString("utf8");
+    const separatorIndex = decoded.indexOf(":");
+    if (separatorIndex < 0) {
+      return null;
+    }
+    return {
+      username: decoded.slice(0, separatorIndex),
+      password: decoded.slice(separatorIndex + 1)
+    };
+  } catch {
+    return null;
+  }
+};
+
+export const smsMobileInboundWebhook = onRequest(async (request, response) => {
   response.set("Cache-Control", "no-store");
 
   if (request.method !== "POST" && request.method !== "GET") {
@@ -155,36 +222,67 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
     return;
   }
 
-  const configuredToken = process.env.EXOTEL_WEBHOOK_TOKEN?.trim() ?? "";
+  const configuredToken = process.env.SMS_MOBILE_WEBHOOK_TOKEN?.trim() ?? "";
+  const configuredApiKey = process.env.SMS_MOBILE_INBOUND_API_KEY?.trim() ?? "";
+  const configuredApiToken = process.env.SMS_MOBILE_INBOUND_API_TOKEN?.trim() ?? "";
+  const incomingApiKey =
+    getInboundFieldAny(request, ["apikey", "api_key", "apiKey"]) ||
+    String(request.headers["x-api-key"] ?? "").trim();
   const incomingToken =
-    getInboundField(request, "token") ||
-    String(request.headers["x-exotel-token"] ?? "").trim();
+    getInboundFieldAny(request, ["token", "webhook_token", "auth_token"]) ||
+    String(request.headers["x-smsmobile-token"] ?? request.headers["x-webhook-token"] ?? "").trim();
+
+  const authHeader = String(request.headers["authorization"] ?? "").trim();
+  const basicAuth = authHeader ? decodeBasicAuth(authHeader) : null;
+  const hasConfiguredBasicAuth = Boolean(configuredApiKey && configuredApiToken);
+
+  if (
+    hasConfiguredBasicAuth &&
+    (!basicAuth || basicAuth.username !== configuredApiKey || basicAuth.password !== configuredApiToken)
+  ) {
+    response.status(403).json({ success: false, error: "Unauthorized SMS Mobile API credentials" });
+    return;
+  }
 
   if (configuredToken && incomingToken !== configuredToken) {
     response.status(403).json({ success: false, error: "Unauthorized webhook token" });
     return;
   }
 
-  const inboundSmsMessageId =
-    getInboundField(request, "MessageSid") ||
-    getInboundField(request, "MessageId") ||
-    getInboundField(request, "Sid");
-  const from =
-    getInboundField(request, "From") ||
-    getInboundField(request, "Sender") ||
-    getInboundField(request, "FromNumber");
-  const smsText =
-    getInboundField(request, "Body") ||
-    getInboundField(request, "Text") ||
-    "";
-  const parsedCommand = toPhoneDigits(smsText);
-  const messageStatus =
-    getInboundField(request, "SmsStatus") ||
-    getInboundField(request, "Status") ||
-    "received";
+  if (configuredApiKey && incomingApiKey && incomingApiKey !== configuredApiKey) {
+    response.status(403).json({ success: false, error: "Unauthorized SMS Mobile API key" });
+    return;
+  }
 
-  if (!inboundSmsMessageId || !from) {
-    response.status(400).json({ success: false, error: "Missing MessageSid/MessageId or sender phone" });
+  const from = getInboundFieldAny(request, ["from", "sender", "phone", "msisdn", "From", "Sender", "FromNumber"]);
+  const inboundSmsMessageId = resolveInboundMessageId(request, from);
+  const smsText = getInboundFieldAny(request, ["message", "body", "text", "Body", "Text"]);
+  const parsedCommand = parseSmsBookingCommand(smsText);
+  const messageStatus = getInboundFieldAny(request, ["status", "sms_status", "SmsStatus", "Status"]) || "received";
+
+  if (!from) {
+    response.status(400).json({ success: false, error: "Missing sender phone" });
+    return;
+  }
+
+  if (!parsedCommand) {
+    await db.collection("sms_bookings").doc(inboundSmsMessageId).set(
+      {
+        smsMessageId: inboundSmsMessageId,
+        senderPhone: from,
+        normalizedSenderPhone: normalizePhoneForSms(from),
+        parsedCommand: "",
+        smsText,
+        messageStatus,
+        status: "failed",
+        failureReason: "Invalid SMS command. Use format BOOK<doctor_ivr_number>",
+        smsStatus: "not_sent",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+    response.status(200).json({ success: false, status: "failed", reason: "Invalid command" });
     return;
   }
 
@@ -211,7 +309,7 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   const selectedHospitalName =
     selectedMapping?.hospitalName?.trim() ||
     menuData?.defaultHospitalName?.trim() ||
-    process.env.EXOTEL_DEFAULT_HOSPITAL?.trim() ||
+    process.env.SMS_MOBILE_DEFAULT_HOSPITAL?.trim() ||
     "";
   const selectedDoctorId = selectedMapping?.doctorId?.trim() || "";
 
@@ -248,34 +346,41 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
     });
   }
 
-  if (!patientDoc) {
-    await smsRef.set(
-      {
-        smsMessageId: inboundSmsMessageId,
-        senderPhone: from,
-        normalizedSenderPhone: normalizedPhone,
-        parsedCommand,
-        smsText,
-        selectedHospitalName,
-        menuVersion: menuData?.menuVersion ?? 1,
-        messageStatus,
-        status: "failed",
-        failureReason: "Patient phone not found",
-        smsStatus: "not_sent",
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      },
-      { merge: true }
-    );
-    response.status(200).json({ success: false, status: "failed", reason: "Patient not found" });
-    return;
-  }
-
-  const patient = patientDoc.data() as {
+  let patient = (patientDoc?.data() ?? {}) as {
     userId?: string;
     name?: string;
     phone?: string;
   };
+  let resolvedPatientId = patient.userId ?? patientDoc?.id ?? "";
+
+  if (!resolvedPatientId) {
+    const phoneDigits = toPhoneDigits(normalizedPhone);
+    const inferredPatientId = `sms-${phoneDigits.slice(-10) || Date.now().toString()}`;
+    const inferredName = `SMS Patient ${phoneDigits.slice(-4) || "0000"}`;
+
+    await db.collection("patients").doc(inferredPatientId).set(
+      {
+        id: inferredPatientId,
+        userId: inferredPatientId,
+        name: inferredName,
+        age: 30,
+        gender: "other",
+        district: selectedHospitalName,
+        village: selectedHospitalName,
+        phone: normalizedPhone,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    patient = {
+      userId: inferredPatientId,
+      name: inferredName,
+      phone: normalizedPhone
+    };
+    resolvedPatientId = inferredPatientId;
+  }
 
   let doctorDoc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData> | undefined;
 
@@ -285,8 +390,14 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   }
 
   if (!doctorDoc) {
-    const doctorsSnapshot = await db.collection("doctors").where("hospitalName", "==", selectedHospitalName).limit(25).get();
-    doctorDoc = doctorsSnapshot.docs[0];
+    const doctorsSnapshot = await db.collection("doctors").where("hospitalName", "==", selectedHospitalName).limit(100).get();
+    const byCommand = doctorsSnapshot.docs.find((entry) => {
+      const data = entry.data() as { doctorCode?: string; id?: string; ivrDigit?: string };
+      const codeDigits = toPhoneDigits(String(data.doctorCode ?? data.id ?? ""));
+      const ivrDigits = toPhoneDigits(String(data.ivrDigit ?? ""));
+      return codeDigits === parsedCommand || ivrDigits === parsedCommand;
+    });
+    doctorDoc = byCommand ?? doctorsSnapshot.docs[0];
   }
 
   if (!doctorDoc) {
@@ -298,7 +409,7 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
         parsedCommand,
         smsText,
         selectedHospitalName,
-        patientId: patient.userId ?? patientDoc.id,
+        patientId: resolvedPatientId,
         patientName: patient.name ?? "Unknown Patient",
         menuVersion: menuData?.menuVersion ?? 1,
         messageStatus,
@@ -315,10 +426,12 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   }
 
   const doctor = doctorDoc.data() as {
+    id?: string;
     name?: string;
     specialization?: string;
     availabilitySlots?: string[];
   };
+  const resolvedDoctorId = String(doctor.id ?? "").trim() || doctorDoc.id;
 
   const timeWindowSlot = resolveSlotByIstTime();
   const selectedSlot = Array.isArray(doctor.availabilitySlots)
@@ -328,7 +441,7 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
 
   const existingSlotAppointments = await db
     .collection("appointments")
-    .where("doctorId", "==", doctorDoc.id)
+    .where("doctorId", "==", resolvedDoctorId)
     .where("appointmentDate", "==", appointmentDate)
     .where("slot", "==", selectedSlot)
     .where("status", "==", "booked")
@@ -336,7 +449,7 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   const tokenNumber = existingSlotAppointments.size + 1;
 
   const triageRef = await db.collection("triage_sessions").add({
-    patientId: patient.userId ?? patientDoc.id,
+    patientId: resolvedPatientId,
     patientName: patient.name ?? "Unknown Patient",
     patientPhone: patient.phone ?? normalizedPhone,
     symptoms: ["sms booking"],
@@ -352,11 +465,11 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   });
 
   const appointmentRef = await db.collection("appointments").add({
-    patientId: patient.userId ?? patientDoc.id,
+    patientId: resolvedPatientId,
     patientName: patient.name ?? "Unknown Patient",
     patientPhone: patient.phone ?? normalizedPhone,
     triageSessionId: triageRef.id,
-    doctorId: doctorDoc.id,
+    doctorId: resolvedDoctorId,
     doctorName: doctor.name ?? "Doctor",
     specialization: doctor.specialization ?? "general",
     slot: selectedSlot,
@@ -382,7 +495,7 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
   let smsError = "";
 
   try {
-    const smsResult = await sendTextbeltSMS(normalizedPhone, confirmationSms);
+    const smsResult = await sendSmsMobileSMS(normalizedPhone, confirmationSms);
     smsStatus = "queued";
     outboundSmsMessageId = smsResult.textId;
   } catch (error) {
@@ -400,9 +513,9 @@ export const exotelSmsInboundWebhook = onRequest(async (request, response) => {
       messageStatus,
       selectedHospitalName,
       menuVersion: menuData?.menuVersion ?? 1,
-      patientId: patient.userId ?? patientDoc.id,
+      patientId: resolvedPatientId,
       patientName: patient.name ?? "Unknown Patient",
-      doctorId: doctorDoc.id,
+      doctorId: resolvedDoctorId,
       doctorName: doctor.name ?? "Doctor",
       slot: selectedSlot,
       appointmentDate,
@@ -769,7 +882,7 @@ export const sendPrescriptionSMSNow = onCall(
     ].join("\n");
 
     try {
-      const message = await sendTextbeltSMS(normalizedPhone, body);
+      const message = await sendSmsMobileSMS(normalizedPhone, body);
 
       await db.collection("sms_logs").add({
         type: "prescription_created",
@@ -830,7 +943,7 @@ export const sendSMSOnPharmacyUpdate = onDocumentUpdated(
     }
 
     try {
-      const message = await sendTextbeltSMS(normalizedPhone, body);
+      const message = await sendSmsMobileSMS(normalizedPhone, body);
 
       await db.collection("sms_logs").add({
         type: "pharmacy_status_update",

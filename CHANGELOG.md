@@ -34,6 +34,27 @@ All notable changes made to this project are documented in this file.
   - `npm run build`
   - `npm run build --prefix functions`
 
+### Added
+- Added full A-Z medicine chunk dataset assets under `public/data/india-medicines/`:
+  - `index.json` chunk index metadata.
+  - Per-letter files `A.json` to `Z.json` and `other.json` for non-alphabetic entries.
+- Added script support in `scripts/import-india-medicines.ps1` to regenerate chunked A-Z medicine files and index from the source CSV.
+
+### Changed
+- Updated `src/data/indiaMedicineCatalog.ts` full-search behavior to use chunk-indexed remote loading (`/data/india-medicines/index.json`) instead of loading a single monolithic file.
+- Updated `src/features/doctor/DoctorDashboard.tsx` manual medicine suggestions to use the full dataset with chunked loading for typed queries.
+- Updated `src/features/superAdmin/MedicineDatabaseViewPage.tsx` to support chunk-aware pagination and letter filtering for large medicine datasets.
+
+### Fixed
+- Fixed issue where medicine suggestions appeared biased to `A`-starting entries by routing full search to the correct letter chunk.
+- Fixed chunk parsing edge case where single-object JSON payloads could break array-based processing.
+- Fixed TypeScript implicit `any` diagnostics in `src/data/indiaMedicineCatalog.ts` (`loadRemoteIndex` map/filter callbacks).
+
+### Validation
+- Verified project health after medicine dataset and TypeScript updates:
+  - `npm test` passed.
+  - `npm run build` passed.
+
 ## [2026-03-07]
 
 ### Added

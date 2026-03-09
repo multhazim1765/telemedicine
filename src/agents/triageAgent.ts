@@ -9,8 +9,26 @@ const triageWeight: Record<TriageOption, number> = {
   Routine: 1
 };
 
-const normalizeSymptom = (symptom: string): string =>
-  symptom.trim().toLowerCase().replace(/\s+/g, "_");
+const symptomAliasMap: Record<string, string> = {
+  breathlessness: "breathing_difficulty",
+  shortness_of_breath: "breathing_difficulty",
+  sob: "breathing_difficulty",
+  chestpain: "chest_pain"
+};
+
+const normalizeSymptom = (symptom: string): string => {
+  const normalized = symptom.trim().toLowerCase().replace(/\s+/g, "_");
+  return symptomAliasMap[normalized] ?? normalized;
+};
+
+const criticalSymptoms = new Set([
+  "chest_pain",
+  "breathing_difficulty",
+  "seizure",
+  "stroke",
+  "unconsciousness",
+  "heart_attack"
+]);
 
 const symptomRiskMap: Record<string, number> = triageRules.reduce<Record<string, number>>((acc, rule) => {
   for (const symptom of rule.requiredSymptoms) {
@@ -108,10 +126,16 @@ export const triageAgent = async (symptoms: string[]): Promise<TriageResult> => 
     }
   }
 
-  const severityScore = scoreSymptomsOffline(symptoms);
-  const severityLevel = classify(severityScore);
+  const normalizedSymptoms = symptoms.map(normalizeSymptom);
+  const severityScore = scoreSymptomsOffline(normalizedSymptoms);
+  const hasCriticalSymptom = normalizedSymptoms.some((symptom) => criticalSymptoms.has(symptom));
+  const adjustedSeverityScore =
+    normalizedSymptoms.length === 1 && !hasCriticalSymptom
+      ? Math.min(severityScore, 3)
+      : severityScore;
+  const severityLevel = classify(adjustedSeverityScore);
   return {
-    severityScore,
+    severityScore: adjustedSeverityScore,
     severityLevel,
     recommendedAction: actionByLevel(severityLevel)
   };

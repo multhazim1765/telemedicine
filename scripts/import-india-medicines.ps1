@@ -3,6 +3,7 @@ param(
   [string]$TargetJson = "c:\Users\User\OneDrive\Desktop\telemedicine\src\data\indiaMedicineCatalog.json",
   [string]$TargetAllJson = "c:\Users\User\OneDrive\Desktop\telemedicine\public\data\india-all-medicines.min.json",
   [string]$TargetTabletJson = "c:\Users\User\OneDrive\Desktop\telemedicine\public\data\india-tablets.min.json",
+  [string]$TargetChunkDirectory = "c:\Users\User\OneDrive\Desktop\telemedicine\public\data\india-medicines",
   [int]$Limit = 2500
 )
 
@@ -11,6 +12,18 @@ function SafeTrim([object]$value, [string]$fallback = "") {
   $text = [string]$value
   if ([string]::IsNullOrWhiteSpace($text)) { return $fallback }
   return $text.Trim()
+}
+
+function NormalizeLetter([string]$value) {
+  if ([string]::IsNullOrWhiteSpace($value)) {
+    return "#"
+  }
+
+  $token = $value.Substring(0, 1).ToUpperInvariant()
+  if ($token -match "^[A-Z]$") {
+    return $token
+  }
+  return "#"
 }
 
 if (-not (Test-Path $SourceCsv)) {
@@ -129,6 +142,49 @@ if (-not (Test-Path $tabletDirectory)) {
 $allCatalog | ConvertTo-Json -Depth 6 | Set-Content -Path $TargetAllJson -Encoding utf8
 $tabletCatalog | ConvertTo-Json -Depth 6 | Set-Content -Path $TargetTabletJson -Encoding utf8
 
+if (-not (Test-Path $TargetChunkDirectory)) {
+  New-Item -Path $TargetChunkDirectory -ItemType Directory -Force | Out-Null
+}
+
+$chunkGroups = $allCatalog | Group-Object {
+  NormalizeLetter (SafeTrim $_.medicineName)
+}
+
+$chunkEntries = @()
+
+foreach ($group in $chunkGroups) {
+  $letter = $group.Name
+  $fileName = if ($letter -eq "#") { "other.json" } else { "$letter.json" }
+  $filePath = Join-Path $TargetChunkDirectory $fileName
+  $webPath = "/data/india-medicines/$fileName"
+
+  @($group.Group) | ConvertTo-Json -Depth 6 | Set-Content -Path $filePath -Encoding utf8
+
+  $chunkEntries += [PSCustomObject]@{
+    letter = $letter
+    file = $webPath
+    count = $group.Count
+  }
+}
+
+$orderedChunkEntries = @()
+if ($chunkEntries | Where-Object { $_.letter -eq "#" }) {
+  $orderedChunkEntries += $chunkEntries | Where-Object { $_.letter -eq "#" }
+}
+
+$orderedChunkEntries += $chunkEntries |
+  Where-Object { $_.letter -ne "#" } |
+  Sort-Object letter
+
+$indexPayload = [PSCustomObject]@{
+  total = $allCatalog.Count
+  chunks = $orderedChunkEntries
+}
+
+$indexPath = Join-Path $TargetChunkDirectory "index.json"
+$indexPayload | ConvertTo-Json -Depth 6 | Set-Content -Path $indexPath -Encoding utf8
+
 Write-Output "Imported limited $($catalog.Count) medicines -> $TargetJson"
 Write-Output "Imported full all rows $($allCatalog.Count) medicines -> $TargetAllJson"
 Write-Output "Imported full tablet rows $($tabletCatalog.Count) tablets -> $TargetTabletJson"
+Write-Output "Imported chunked A-Z rows -> $TargetChunkDirectory"

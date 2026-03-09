@@ -1,4 +1,4 @@
-import catalogJson from "./indiaMedicineCatalogSeed.json";
+import catalogJson from "./indiaMedicineCatalog.json";
 
 export interface IndiaMedicineCatalogItem {
     id: string;
@@ -21,8 +21,6 @@ type RawCatalogItem = Omit<IndiaMedicineCatalogItem, "uses" | "substitutes" | "c
     sideEffects: unknown;
 };
 
-const RUNTIME_MEDICINE_LIMIT = 220;
-
 const toSafeString = (value: unknown): string => {
     if (typeof value === "string") {
         return value.trim();
@@ -35,7 +33,10 @@ const toSafeString = (value: unknown): string => {
 
 const toArray = (value: unknown): string[] => {
     if (Array.isArray(value)) {
-        return value
+        return value.map((entry) => toSafeString(entry)).filter(Boolean);
+    }
+    if (value && typeof value === "object") {
+        return Object.values(value as Record<string, unknown>)
             .map((entry) => toSafeString(entry))
             .filter(Boolean);
     }
@@ -45,12 +46,11 @@ const toArray = (value: unknown): string[] => {
 
 const normalizeToken = (value: unknown): string => toSafeString(value).toLowerCase();
 
-const normalizeCatalog = (items: RawCatalogItem[], limit?: number): IndiaMedicineCatalogItem[] => {
-    const source = typeof limit === "number" ? items.slice(0, limit) : items;
-    return source.map((item) => ({
-        id: toSafeString(item.id),
-        medicineName: toSafeString(item.medicineName),
-        therapeuticClass: toSafeString(item.therapeuticClass),
+const normalizeCatalog = (items: RawCatalogItem[]): IndiaMedicineCatalogItem[] => {
+    return items.map((item, index) => ({
+        id: toSafeString(item.id) || `IND-${index + 1}`,
+        medicineName: toSafeString(item.medicineName) || `Medicine ${index + 1}`,
+        therapeuticClass: toSafeString(item.therapeuticClass) || "General",
         actionClass: toSafeString(item.actionClass),
         manufacturer: toSafeString(item.manufacturer),
         packSize: toSafeString(item.packSize),
@@ -62,8 +62,56 @@ const normalizeCatalog = (items: RawCatalogItem[], limit?: number): IndiaMedicin
     }));
 };
 
+const FULL_CATALOG: IndiaMedicineCatalogItem[] = normalizeCatalog(catalogJson as RawCatalogItem[]);
+
+interface RemoteChunkMeta {
+    letter: string;
+    file: string;
+    count: number | null;
+}
+
+interface RemoteChunkIndex {
+    total: number;
+    chunks: RemoteChunkMeta[];
+}
+
+let remoteIndexCache: RemoteChunkIndex | null = null;
+let remoteIndexPromise: Promise<RemoteChunkIndex | null> | null = null;
+const remoteChunkCache = new Map<string, IndiaMedicineCatalogItem[]>();
+const remoteChunkPromiseCache = new Map<string, Promise<IndiaMedicineCatalogItem[]>>();
+
+type SearchRow = {
+    entry: IndiaMedicineCatalogItem;
+    name: string;
+    therapeuticClass: string;
+    usesText: string;
+    substituteText: string;
+    compositionText: string;
+};
+
+const SEARCH_ROWS: SearchRow[] = FULL_CATALOG.map((entry) => ({
+    entry,
+    name: normalizeToken(entry.medicineName),
+    therapeuticClass: normalizeToken(entry.therapeuticClass),
+    usesText: normalizeToken(entry.uses.join(" ")),
+    substituteText: normalizeToken(entry.substitutes.join(" ")),
+    compositionText: normalizeToken(entry.compositions.join(" "))
+}));
+
+const buildSearchRows = (catalog: IndiaMedicineCatalogItem[]): SearchRow[] =>
+    catalog.map((entry) => ({
+        entry,
+        name: normalizeToken(entry.medicineName),
+        therapeuticClass: normalizeToken(entry.therapeuticClass),
+        usesText: normalizeToken(entry.uses.join(" ")),
+        substituteText: normalizeToken(entry.substitutes.join(" ")),
+        compositionText: normalizeToken(entry.compositions.join(" "))
+    }));
+
+let remoteSearchRowsCache: SearchRow[] | null = null;
+
 const runSearch = (
-    catalog: IndiaMedicineCatalogItem[],
+    rows: SearchRow[],
     input: {
         query?: string;
         symptomHints?: string[];
@@ -74,114 +122,197 @@ const runSearch = (
     const symptomHints = (input.symptomHints ?? []).map(normalizeToken).filter(Boolean);
     const limit = input.limit ?? 20;
 
-    const scored = catalog
-        .map((entry) => {
-            const name = normalizeToken(entry.medicineName);
-            const therapeuticClass = normalizeToken(entry.therapeuticClass);
-            const usesText = normalizeToken(entry.uses.join(" "));
-            const substituteText = normalizeToken(entry.substitutes.join(" "));
-            const compositionText = normalizeToken(entry.compositions.join(" "));
-
-            let score = 0;
-            if (query) {
-                const nameStartsWith = name.startsWith(query);
-                const nameIncludes = name.includes(query);
-                const substituteIncludes = substituteText.includes(query);
-                const compositionIncludes = compositionText.includes(query);
-
-                // For typed medicine search, require match in name/substitute/composition.
-                if (!nameIncludes && !substituteIncludes && !compositionIncludes) {
-                    return { entry, score: 0 };
-                }
-
-                if (nameStartsWith) {
-                    score += 140;
-                } else if (nameIncludes) {
-                    score += 100;
-                }
-
-                if (substituteIncludes) {
-                    score += 45;
-                }
-                if (compositionIncludes) {
-                    score += 35;
-                }
-
-                // Uses/class are secondary relevance signals only.
-                if (name.includes(query)) {
-                    score += 20;
-                }
-                if (usesText.includes(query)) {
-                    score += 8;
-                }
-                if (therapeuticClass.includes(query)) {
-                    score += 8;
-                }
-                if (substituteText.includes(query)) {
-                    score += 10;
-                }
-            }
-
-            for (const hint of symptomHints) {
-                if (usesText.includes(hint)) {
-                    score += 25;
-                }
-                if (therapeuticClass.includes(hint)) {
-                    score += 10;
-                }
-            }
-
-            return { entry, score };
-        })
-        .filter(({ score }) => (query || symptomHints.length > 0 ? score > 0 : true))
-        .sort((a, b) => b.score - a.score || a.entry.medicineName.localeCompare(b.entry.medicineName));
-
-    return scored.slice(0, limit).map(({ entry }) => entry);
-};
-
-export const indiaMedicineCatalog: IndiaMedicineCatalogItem[] = normalizeCatalog(
-    catalogJson as RawCatalogItem[],
-    RUNTIME_MEDICINE_LIMIT
-);
-
-let fullCatalogCache: IndiaMedicineCatalogItem[] | null = null;
-let fullCatalogPromise: Promise<IndiaMedicineCatalogItem[]> | null = null;
-
-const loadFullCatalog = async (): Promise<IndiaMedicineCatalogItem[]> => {
-    if (fullCatalogCache) {
-        return fullCatalogCache;
+    if (!query && symptomHints.length === 0) {
+        return rows.slice(0, Math.max(1, limit)).map((row) => row.entry);
     }
 
-    if (!fullCatalogPromise) {
-        fullCatalogPromise = fetch("/data/india-tablets.min.json")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Failed to load full tablet catalog: HTTP ${response.status}`);
-                }
-                return response.json() as Promise<RawCatalogItem[]>;
-            })
-            .then((rows) => normalizeCatalog(rows))
-            .then((catalog) => {
-                fullCatalogCache = catalog;
-                return catalog;
-            })
-            .catch(() => indiaMedicineCatalog);
+    const scored: Array<{ entry: IndiaMedicineCatalogItem; score: number }> = [];
+
+    for (const row of rows) {
+        let score = 0;
+
+        if (query) {
+            const nameStartsWith = row.name.startsWith(query);
+            const nameIncludes = row.name.includes(query);
+            const substituteIncludes = row.substituteText.includes(query);
+            const compositionIncludes = row.compositionText.includes(query);
+
+            if (!nameIncludes && !substituteIncludes && !compositionIncludes) {
+                continue;
+            }
+
+            if (nameStartsWith) {
+                score += 140;
+            } else if (nameIncludes) {
+                score += 100;
+            }
+            if (substituteIncludes) {
+                score += 45;
+            }
+            if (compositionIncludes) {
+                score += 35;
+            }
+            if (row.usesText.includes(query)) {
+                score += 8;
+            }
+            if (row.therapeuticClass.includes(query)) {
+                score += 8;
+            }
+        }
+
+        for (const hint of symptomHints) {
+            if (row.usesText.includes(hint)) {
+                score += 25;
+            }
+            if (row.therapeuticClass.includes(hint)) {
+                score += 10;
+            }
+        }
+
+        if (score > 0) {
+            scored.push({ entry: row.entry, score });
+        }
     }
 
-    return fullCatalogPromise;
+    scored.sort((a, b) => b.score - a.score || a.entry.medicineName.localeCompare(b.entry.medicineName));
+
+    return scored.slice(0, Math.max(1, limit)).map(({ entry }) => entry);
 };
+
+export const indiaMedicineCatalog: IndiaMedicineCatalogItem[] = FULL_CATALOG;
 
 export const searchIndiaMedicines = (input: {
     query?: string;
     symptomHints?: string[];
     limit?: number;
-}): IndiaMedicineCatalogItem[] => runSearch(indiaMedicineCatalog, input);
+}): IndiaMedicineCatalogItem[] => {
+    return runSearch(SEARCH_ROWS, input);
+};
+
+const normalizeRemoteRow = (raw: unknown, index: number): IndiaMedicineCatalogItem => {
+    const record = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+    return {
+        id: toSafeString(record.id) || `IND-${index + 1}`,
+        medicineName: toSafeString(record.medicineName) || `Medicine ${index + 1}`,
+        therapeuticClass: toSafeString(record.therapeuticClass) || "General",
+        actionClass: toSafeString(record.actionClass),
+        manufacturer: toSafeString(record.manufacturer),
+        packSize: toSafeString(record.packSize),
+        priceINR: typeof record.priceINR === "number" ? record.priceINR : null,
+        uses: toArray(record.uses),
+        substitutes: toArray(record.substitutes),
+        compositions: toArray(record.compositions),
+        sideEffects: toArray(record.sideEffects)
+    };
+};
+
+const normalizeChunkLetter = (value: string): string => {
+    const token = value.trim().toUpperCase();
+    return /^[A-Z]$/.test(token) ? token : "#";
+};
+
+const loadRemoteIndex = async (): Promise<RemoteChunkIndex | null> => {
+    if (remoteIndexCache) {
+        return remoteIndexCache;
+    }
+
+    if (!remoteIndexPromise) {
+        remoteIndexPromise = fetch("/data/india-medicines/index.json")
+            .then(async (response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const payload = (await response.json()) as Record<string, unknown>;
+                const total = typeof payload.total === "number" ? payload.total : 0;
+                const rawChunks = Array.isArray(payload.chunks) ? payload.chunks : [];
+                const chunks = rawChunks
+                        .map((entry: unknown) => {
+                            const record = entry && typeof entry === "object" ? (entry as Record<string, unknown>) : {};
+                            const letter = normalizeChunkLetter(toSafeString(record.letter));
+                            const file = toSafeString(record.file);
+                            const count = typeof record.count === "number" ? record.count : null;
+                            if (!file) {
+                                return null;
+                            }
+                            return { letter, file, count } as RemoteChunkMeta;
+                        })
+                        .filter((entry: RemoteChunkMeta | null): entry is RemoteChunkMeta => Boolean(entry));
+
+                const normalizedIndex: RemoteChunkIndex = {
+                    total,
+                    chunks
+                };
+                remoteIndexCache = normalizedIndex;
+                return normalizedIndex;
+            })
+            .catch(() => {
+                remoteIndexCache = null;
+                return null;
+            })
+            .finally(() => {
+                remoteIndexPromise = null;
+            });
+    }
+
+    return remoteIndexPromise;
+};
+
+const getChunkByLetter = async (letter: string): Promise<IndiaMedicineCatalogItem[]> => {
+    const normalizedLetter = normalizeChunkLetter(letter);
+    const index = await loadRemoteIndex();
+    const chunkMeta = index?.chunks.find((chunk) => chunk.letter === normalizedLetter);
+    const file = chunkMeta?.file;
+
+    if (!file) {
+        return FULL_CATALOG;
+    }
+
+    const cached = remoteChunkCache.get(file);
+    if (cached) {
+        return cached;
+    }
+
+    const pending = remoteChunkPromiseCache.get(file);
+    if (pending) {
+        return pending;
+    }
+
+    const request = fetch(file)
+        .then(async (response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const payload = await response.json();
+            const rows = Array.isArray(payload) ? payload : [payload];
+            const normalized = rows.map((row, rowIndex) => normalizeRemoteRow(row, rowIndex));
+            remoteChunkCache.set(file, normalized);
+            return normalized;
+        })
+        .catch(() => FULL_CATALOG)
+        .finally(() => {
+            remoteChunkPromiseCache.delete(file);
+        });
+
+    remoteChunkPromiseCache.set(file, request);
+    return request;
+};
 
 export const searchIndiaMedicinesFull = async (input: {
     query?: string;
     symptomHints?: string[];
     limit?: number;
 }): Promise<IndiaMedicineCatalogItem[]> => {
-    const fullCatalog = await loadFullCatalog();
-    return runSearch(fullCatalog, input);
+    const query = normalizeToken(input.query ?? "");
+    const chunkLetter = query ? query.charAt(0) : "A";
+    const chunkCatalog = await getChunkByLetter(chunkLetter);
+    remoteSearchRowsCache = buildSearchRows(chunkCatalog);
+    return runSearch(remoteSearchRowsCache, input);
+};
+
+export const getIndiaMedicinesFullCount = async (): Promise<number> => {
+    const index = await loadRemoteIndex();
+    if (index?.total) {
+        return index.total;
+    }
+    return FULL_CATALOG.length;
 };

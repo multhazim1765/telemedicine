@@ -19,10 +19,12 @@ import { demoPharmacies } from "../data/demoPharmacies";
 
 interface DemoUser extends AppUser {
   password: string;
+  doctorCode?: string;
 }
 
 const DEMO_SESSION_KEY = "telehealth-demo-user-id";
 const DEMO_USERS_KEY = "telehealth-demo-users";
+const DEMO_STORE_KEY = "telehealth-demo-store";
 const PATIENT_HOSPITAL_PASSWORD_KEY = "telehealth-patient-hospital-login-password";
 const DEFAULT_PATIENT_HOSPITAL_PASSWORD = "am9790";
 
@@ -122,6 +124,7 @@ const buildDefaultDemoUsers = (): DemoUser[] => [
     email: `${doctor.id}@telehealth.local`,
     password: getPatientHospitalLoginPassword(),
     role: "doctor" as const,
+    doctorCode: doctor.doctorCode,
     displayName: doctor.name,
     phone: `+910001${String(index + 1).padStart(6, "0")}`,
     hospitalName: doctor.hospitalName
@@ -156,6 +159,81 @@ const mergeDefaultDemoUsers = (users: DemoUser[]): DemoUser[] => {
   return Array.from(byUid.values());
 };
 
+const mergeDoctorsFromDemoStore = (users: DemoUser[]): DemoUser[] => {
+  const serializedStore = safeStorageGet(DEMO_STORE_KEY);
+  if (!serializedStore) {
+    return users;
+  }
+
+  type DemoStoreDoctorLike = {
+    id?: unknown;
+    userId?: unknown;
+    doctorCode?: unknown;
+    name?: unknown;
+    phone?: unknown;
+    hospitalName?: unknown;
+  };
+
+  let storeDoctors: DemoStoreDoctorLike[] = [];
+  try {
+    const parsedStore = JSON.parse(serializedStore) as { doctors?: unknown };
+    if (Array.isArray(parsedStore.doctors)) {
+      storeDoctors = parsedStore.doctors as DemoStoreDoctorLike[];
+    }
+  } catch {
+    return users;
+  }
+
+  if (storeDoctors.length === 0) {
+    return users;
+  }
+
+  const managedPassword = getPatientHospitalLoginPassword();
+  const byUid = new Map(users.map((user) => [user.uid, user]));
+  const activeDoctorIds = new Set<string>();
+
+  for (const storeDoctor of storeDoctors) {
+    const uid = String(storeDoctor.userId ?? storeDoctor.id ?? "").trim();
+    if (!uid) {
+      continue;
+    }
+    activeDoctorIds.add(uid);
+
+    const current = byUid.get(uid);
+    const hospitalName = String(storeDoctor.hospitalName ?? current?.hospitalName ?? "").trim();
+    const displayName = String(storeDoctor.name ?? current?.displayName ?? uid).trim() || uid;
+    const doctorCode = String(storeDoctor.doctorCode ?? current?.doctorCode ?? "").trim();
+    const email = String(current?.email ?? `${uid}@hospital.local`).trim() || `${uid}@hospital.local`;
+    const phone = String(storeDoctor.phone ?? current?.phone ?? "").trim();
+
+    byUid.set(uid, {
+      uid,
+      role: "doctor",
+      doctorCode,
+      displayName,
+      email,
+      phone,
+      hospitalName,
+      password: managedPassword
+    });
+  }
+
+  // Remove stale doctor credentials that no longer exist in Hospital Management doctors list.
+  for (const [uid, user] of byUid.entries()) {
+    if (user.role !== "doctor") {
+      continue;
+    }
+    if (!/^d\d+$/i.test(uid)) {
+      continue;
+    }
+    if (!activeDoctorIds.has(uid)) {
+      byUid.delete(uid);
+    }
+  }
+
+  return Array.from(byUid.values());
+};
+
 const getDemoUsers = (): DemoUser[] => {
   const DEFAULT_DEMO_USERS = buildDefaultDemoUsers();
   const raw = safeStorageGet(DEMO_USERS_KEY);
@@ -172,7 +250,8 @@ const getDemoUsers = (): DemoUser[] => {
       return [...DEFAULT_DEMO_USERS];
     }
     const merged = mergeDefaultDemoUsers(parsed);
-    const managed = applyManagedPassword(merged);
+    const mergedWithDoctors = mergeDoctorsFromDemoStore(merged);
+    const managed = applyManagedPassword(mergedWithDoctors);
     safeStorageSet(DEMO_USERS_KEY, JSON.stringify(managed));
     return managed;
   } catch {
@@ -443,16 +522,18 @@ export const getDemoCredentials = (): Array<{
   email: string;
   password: string;
   role: UserRole;
+  doctorCode?: string;
   phone?: string;
   hospitalName?: string;
   pharmacyName?: string;
   district?: string;
-}> => getDemoUsers().map(({ uid, displayName, email, password, role, phone, hospitalName, pharmacyName, district }) => ({
+}> => getDemoUsers().map(({ uid, displayName, email, password, role, doctorCode, phone, hospitalName, pharmacyName, district }) => ({
   uid,
   displayName,
   email,
   password,
   role,
+  doctorCode,
   phone,
   hospitalName,
   pharmacyName,

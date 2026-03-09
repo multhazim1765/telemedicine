@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
-    "import:india-medicines": "powershell -ExecutionPolicy Bypass -File ./scripts/import-india-medicines.ps1"
+    "import:india-medicines": "powershell -ExecutionPolicy Bypass -File ./scripts/import-india-medicines.ps1",
+    "test:sms-booking:webhook": "powershell -ExecutionPolicy Bypass -File ./scripts/test-sms-booking-webhook.ps1"
   },
   "keywords": [],
   "author": "",

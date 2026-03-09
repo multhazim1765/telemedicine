@@ -202,15 +202,34 @@ const LoginPage = () => {
     }
   }, [activeCategory, pharmaciesInDistrict, pharmacyDistrictOptions, selectedPharmacyDistrict, selectedPharmacyUid]);
 
-  const filteredDoctorCredentials = demoCredentials
-    .filter((credential) => credential.role === "doctor" && /^d\d+$/i.test(credential.uid))
-    .sort((a, b) => {
-      const nameOrder = a.displayName.localeCompare(b.displayName);
-      if (nameOrder !== 0) {
-        return nameOrder;
+  const filteredDoctorCredentials = (() => {
+    const candidates = demoCredentials
+      .filter((credential) => credential.role === "doctor" && /^d\d+$/i.test(credential.uid))
+      .sort((a, b) => {
+        const nameOrder = a.displayName.localeCompare(b.displayName);
+        if (nameOrder !== 0) {
+          return nameOrder;
+        }
+        return a.uid.localeCompare(b.uid);
+      });
+
+    const byName = new Map<string, (typeof candidates)[number]>();
+    for (const doctor of candidates) {
+      const key = `${(doctor.hospitalName ?? "").toLowerCase()}::${doctor.displayName.toLowerCase().replace(/[^a-z0-9]/g, "")}`;
+      const existing = byName.get(key);
+      if (!existing) {
+        byName.set(key, doctor);
+        continue;
       }
-      return a.uid.localeCompare(b.uid);
-    });
+
+      // Keep the canonical-looking shorter UID when duplicate names exist.
+      if (doctor.uid.length < existing.uid.length) {
+        byName.set(key, doctor);
+      }
+    }
+
+    return Array.from(byName.values());
+  })();
 
   useEffect(() => {
     if (activeCategory !== "hospital") {
@@ -384,7 +403,7 @@ const LoginPage = () => {
                       <select className="login-input" value={selectedDoctorUid} onChange={(event) => setSelectedDoctorUid(event.target.value)}>
                         {filteredDoctorCredentials.map((doctor) => (
                           <option key={doctor.uid} value={doctor.uid}>
-                            {doctor.displayName} ({doctor.uid.toUpperCase()})
+                            {doctor.displayName} ({(doctor.doctorCode || doctor.uid).toUpperCase()})
                           </option>
                         ))}
                       </select>
@@ -458,7 +477,7 @@ const LoginPage = () => {
                             void completeLogin(identifier, demoUser.password, activeCategory).catch((err) => setError((err as Error).message));
                           }}
                         >
-                          {prettyRole(demoUser.role)} · {activeCategory === "hospital" ? `${demoUser.displayName} (${demoUser.uid.toUpperCase()})` : (demoUser.phone ?? demoUser.email)}
+                          {prettyRole(demoUser.role)} · {activeCategory === "hospital" ? `${demoUser.displayName} (${(demoUser.doctorCode || demoUser.uid).toUpperCase()})` : (demoUser.phone ?? demoUser.email)}
                         </button>
                       ))}
                     </div>

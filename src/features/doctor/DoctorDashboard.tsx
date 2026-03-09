@@ -188,26 +188,35 @@ export const DoctorDashboard = () => {
 
   useEffect(() => {
     let active = true;
-    const symptoms = selectedSession?.symptoms ?? [];
+    const query = manualMedicineName.trim();
 
-    // Show quick local matches first, then replace with full CSV-backed results.
-    setManualMedicineSuggestions(
-      searchIndiaMedicines({ query: manualMedicineName, symptomHints: symptoms, limit: 20 })
-    );
+    if (!query) {
+      setManualMedicineSuggestions([]);
+      return () => {
+        active = false;
+      };
+    }
+
+    // Show local matches instantly while full chunked dataset loads.
+    setManualMedicineSuggestions(searchIndiaMedicines({ query, limit: 20 }));
 
     const timer = window.setTimeout(() => {
-      void searchIndiaMedicinesFull({ query: manualMedicineName, symptomHints: symptoms, limit: 2000 }).then((fullMatches) => {
+      void searchIndiaMedicinesFull({ query, limit: 120 }).then((fullMatches) => {
         if (active) {
           setManualMedicineSuggestions(fullMatches);
         }
+      }).catch(() => {
+        if (active) {
+          setManualMedicineSuggestions([]);
+        }
       });
-    }, 140);
+    }, 120);
 
     return () => {
       active = false;
       window.clearTimeout(timer);
     };
-  }, [manualMedicineName, selectedSession?.symptoms]);
+  }, [manualMedicineName]);
 
   const appendManualMedicine = () => {
     const medicineName = manualMedicineName.trim();
@@ -693,12 +702,12 @@ export const DoctorDashboard = () => {
           )}
 
           <div className="mt-3 rounded-md bg-white p-3 ring-1 ring-slate-200">
-            <p className="text-xs font-semibold text-slate-800">Manual medicine type (CSV-backed suggestions)</p>
+            <p className="text-xs font-semibold text-slate-800">Manual medicine type (full dataset suggestions)</p>
             <div className="mt-2 grid gap-2 sm:grid-cols-[1.3fr_1fr_auto]">
               <input
                 className="input"
                 list="doctor-medicine-suggestions"
-                placeholder="Type medicine name"
+                placeholder="Type at least 1 character"
                 value={manualMedicineName}
                 onChange={(event) => setManualMedicineName(event.target.value)}
               />
@@ -724,6 +733,7 @@ export const DoctorDashboard = () => {
                 Suggested from dataset: {manualMedicineSuggestions.slice(0, 3).map((item) => item.medicineName).join(", ")}
               </p>
             )}
+            <p className="mt-1 text-xs text-slate-500">Medicine suggestions are loaded from the full A-Z dataset with chunked loading.</p>
           </div>
 
           <div className="mt-3 rounded-md bg-white p-3 ring-1 ring-slate-200">

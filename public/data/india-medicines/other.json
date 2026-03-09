@@ -1,0 +1,15 @@
+﻿{
+    "id":  "IND-33849",
+    "medicineName":  "α-Bert 150 Injection",
+    "substitutes":  [
+                        "Arthicod 150mg Injection",
+                        "Betromos 150mg Injection",
+                        "MQ-Ther Injection",
+                        "Malvis 150mg Injection",
+                        "Fevdec 150mg Injection"
+                    ],
+    "uses":  "Malaria",
+    "therapeuticClass":  "ANTI MALARIALS",
+    "isDiscontinued":  "False",
+    "manufacturer":  "Hilbert Healthcare"
+}
