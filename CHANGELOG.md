@@ -2,6 +2,30 @@
 
 All notable changes made to this project are documented in this file.
 
+## [2026-03-10]
+
+### Changed
+- Updated local Firebase project wiring for active development:
+  - Replaced the placeholder default project in `.firebaserc` with the configured Firebase project.
+- Updated super admin login UX in `src/App.tsx`:
+  - Clarified seeded super admin credentials in the login screen.
+  - Expanded the placeholder text to indicate username, email, or phone entry.
+
+### Fixed
+- Hardened SMS booking webhook routing in `functions/src/index.ts`:
+  - Stopped silently falling back to a default hospital/doctor when an IVR code has no explicit mapping.
+  - Added more reliable doctor resolution by checking Firestore document ID, `id`, and `userId`.
+- Fixed prescription send flow in `src/features/doctor/DoctorDashboard.tsx` so doctors can send prescription SMS from an appointment token even when no triage session exists:
+  - Added fallback triage-session creation for appointment-only cases.
+  - Improved patient resolution from either triage-session or appointment context.
+- Improved Firebase Authentication error handling in `src/services/authService.ts`:
+  - Replaced raw Firebase auth errors with actionable setup/login guidance for common cases such as `auth/configuration-not-found`, disabled Email/Password sign-in, and unauthorized localhost domains.
+
+### Validation
+- Verified successful builds after the SMS booking and Firebase auth updates:
+  - `npm run build`
+  - `npm run build --prefix functions`
+
 ## [2026-03-09]
 
 ### Added
