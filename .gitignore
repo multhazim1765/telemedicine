@@ -3,7 +3,6 @@ dist/
 functions/node_modules/
 functions/lib/
 public/data/india-all-medicines.min.json
-.env
 .env.*
 !.env.example
 *.tsbuildinfo
