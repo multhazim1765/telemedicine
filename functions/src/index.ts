@@ -306,14 +306,10 @@ export const smsMobileInboundWebhook = onRequest(async (request, response) => {
   const selectedMapping = (menuData?.mappings ?? [])
     .filter((entry) => toPhoneDigits(String(entry.digit ?? "").trim()) === parsedCommand && entry.active !== false)
     .sort((a, b) => (a.priority ?? Number.MAX_SAFE_INTEGER) - (b.priority ?? Number.MAX_SAFE_INTEGER))[0];
-  const selectedHospitalName =
-    selectedMapping?.hospitalName?.trim() ||
-    menuData?.defaultHospitalName?.trim() ||
-    process.env.SMS_MOBILE_DEFAULT_HOSPITAL?.trim() ||
-    "";
+  const selectedHospitalName = selectedMapping?.hospitalName?.trim() || "";
   const selectedDoctorId = selectedMapping?.doctorId?.trim() || "";
 
-  if (!selectedHospitalName) {
+  if (!selectedMapping || !selectedHospitalName) {
     await smsRef.set(
       {
         smsMessageId: inboundSmsMessageId,
@@ -323,13 +319,14 @@ export const smsMobileInboundWebhook = onRequest(async (request, response) => {
         smsText,
         messageStatus,
         status: "failed",
-        failureReason: "No SMS command mapping/default hospital found",
+        failureReason: `No IVR mapping found for command ${parsedCommand}`,
+        menuVersion: menuData?.menuVersion ?? 1,
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       },
       { merge: true }
     );
-    response.status(200).json({ success: false, status: "failed", reason: "No hospital mapping" });
+    response.status(200).json({ success: false, status: "failed", reason: "No IVR mapping found" });
     return;
   }
 
@@ -382,11 +379,23 @@ export const smsMobileInboundWebhook = onRequest(async (request, response) => {
     resolvedPatientId = inferredPatientId;
   }
 
-  let doctorDoc: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData> | undefined;
+  let doctorDoc: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData> | undefined;
 
   if (selectedDoctorId) {
+    const doctorByDocIdSnapshot = await db.collection("doctors").doc(selectedDoctorId).get();
+    if (doctorByDocIdSnapshot.exists) {
+      doctorDoc = doctorByDocIdSnapshot;
+    }
+  }
+
+  if (!doctorDoc && selectedDoctorId) {
     const doctorByIdSnapshot = await db.collection("doctors").where("id", "==", selectedDoctorId).limit(1).get();
     doctorDoc = doctorByIdSnapshot.docs[0];
+  }
+
+  if (!doctorDoc && selectedDoctorId) {
+    const doctorByUserIdSnapshot = await db.collection("doctors").where("userId", "==", selectedDoctorId).limit(1).get();
+    doctorDoc = doctorByUserIdSnapshot.docs[0];
   }
 
   if (!doctorDoc) {

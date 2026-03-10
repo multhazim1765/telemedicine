@@ -100,8 +100,10 @@ export const DoctorDashboard = () => {
       : triageSessions.find((item) => item.id === selectedSessionId);
 
   const selectedPatient = selectedSession
-    ? patients.find((patient) => patient.userId === selectedSession.patientId)
-    : undefined;
+    ? patients.find((patient) => patient.userId === selectedSession.patientId || patient.id === selectedSession.patientId)
+    : selectedAppointment
+      ? patients.find((patient) => patient.userId === selectedAppointment.patientId || patient.id === selectedAppointment.patientId)
+      : undefined;
 
   useEffect(() => {
     if (!pharmacies.some((pharmacy) => pharmacy.uid === selectedPharmacyId)) {
@@ -244,7 +246,7 @@ export const DoctorDashboard = () => {
     if (selectedAppointmentId && !selectedAppointment) {
       return "Selected appointment token is no longer available.";
     }
-    if (!selectedSession) {
+    if (!selectedSession && !selectedAppointment) {
       return "Unable to find triage session for this prescription.";
     }
     if (!selectedPharmacyId) {
@@ -268,10 +270,52 @@ export const DoctorDashboard = () => {
       return;
     }
 
-    const session = selectedSession;
+    let session = selectedSession;
+    const appointmentContext = selectedAppointment;
+
+    if (!session && !appointmentContext) {
+      setStatusText("Select an appointment token or triage session first.");
+      setConfirmSendOpen(false);
+      return;
+    }
+
+    if (!session && appointmentContext) {
+      const fallbackSessionId = await createDocument("triage_sessions", {
+        patientId: appointmentContext.patientId,
+        patientName: appointmentContext.patientName,
+        patientPhone: appointmentContext.patientPhone,
+        symptoms: ["appointment token only"],
+        result: {
+          severityScore: 0,
+          severityLevel: "low",
+          recommendedAction: "Prescription from appointment token"
+        },
+        preferredSpecialization: appointmentContext.specialization,
+        assignedDoctorId: effectiveDoctorId,
+        createdAt: nowIso()
+      });
+
+      session = {
+        id: fallbackSessionId,
+        patientId: appointmentContext.patientId,
+        patientName: appointmentContext.patientName,
+        patientPhone: appointmentContext.patientPhone,
+        symptoms: ["appointment token only"],
+        result: {
+          severityScore: 0,
+          severityLevel: "low",
+          recommendedAction: "Prescription from appointment token"
+        },
+        preferredSpecialization: appointmentContext.specialization,
+        assignedDoctorId: effectiveDoctorId,
+        createdAt: nowIso()
+      };
+      setSelectedSessionId(fallbackSessionId);
+      setSuppressTokenSession(false);
+    }
 
     if (!session) {
-      setStatusText("Unable to find triage session for this prescription.");
+      setStatusText("Unable to resolve appointment or triage session for this prescription.");
       setConfirmSendOpen(false);
       return;
     }

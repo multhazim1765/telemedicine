@@ -298,6 +298,32 @@ const resolveLoginIdentifierToEmail = (identifier: string): string => {
   return phoneToEmail(trimmed);
 };
 
+const toFriendlyAuthError = (error: unknown, fallbackMessage: string): Error => {
+  const code = typeof error === "object" && error && "code" in error ? String((error as { code?: unknown }).code ?? "") : "";
+
+  if (code === "auth/configuration-not-found") {
+    return new Error("Firebase Authentication is not configured. In Firebase Console, enable Authentication, turn on Email/Password sign-in, and create the required user account.");
+  }
+
+  if (code === "auth/invalid-credential" || code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-login-credentials") {
+    return new Error("Invalid credentials. Check the username/email and password, and make sure the Firebase Auth user exists.");
+  }
+
+  if (code === "auth/operation-not-allowed") {
+    return new Error("Email/Password sign-in is disabled in Firebase Authentication. Enable it in Firebase Console.");
+  }
+
+  if (code === "auth/unauthorized-domain") {
+    return new Error("This domain is not authorized for Firebase Authentication. Add localhost under Authentication > Settings > Authorized domains.");
+  }
+
+  if (error instanceof Error && error.message) {
+    return error;
+  }
+
+  return new Error(fallbackMessage);
+};
+
 export const loginWithEmail = (
   emailOrPhone: string,
   password: string
@@ -321,13 +347,17 @@ export const loginWithEmail = (
 
   const email = resolveLoginIdentifierToEmail(emailOrPhone);
 
-  return signInWithEmailAndPassword(auth, email, password).then(async (credential) => {
-    const profile = await getCurrentUserProfile(credential.user.uid);
-    if (!profile) {
-      throw new Error("User profile not found.");
-    }
-    return profile;
-  });
+  return signInWithEmailAndPassword(auth, email, password)
+    .then(async (credential) => {
+      const profile = await getCurrentUserProfile(credential.user.uid);
+      if (!profile) {
+        throw new Error("User profile not found.");
+      }
+      return profile;
+    })
+    .catch((error) => {
+      throw toFriendlyAuthError(error, "Login failed.");
+    });
 };
 
 interface SignUpInput {
@@ -425,7 +455,12 @@ export const signUpWithPhone = async (input: SignUpInput): Promise<AppUser> => {
   }
 
   const email = phoneToEmail(normalizedPhone);
-  const credential = await createUserWithEmailAndPassword(auth, email, input.password);
+  let credential;
+  try {
+    credential = await createUserWithEmailAndPassword(auth, email, input.password);
+  } catch (error) {
+    throw toFriendlyAuthError(error, "Failed to create account.");
+  }
 
   await assignUserRole({
     role: input.role,

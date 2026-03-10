@@ -345,6 +345,9 @@ const LoginPage = () => {
               <>
                 <h1 className="login-title">Super Admin Login</h1>
                 <p className="login-subtitle">Access system administration dashboard.</p>
+                <p className="mt-1 text-xs text-slate-300">
+                  Super admin username: <span className="font-semibold">am9790</span>. Password: <span className="font-semibold">am9790@@</span>
+                </p>
                 <div className="doctor-panel-actions">
                   <Link className="tab-item inline-block" to="/login">
                     General Login
@@ -357,7 +360,7 @@ const LoginPage = () => {
                 <form className="mt-4 space-y-3" onSubmit={onSubmit}>
                   <input
                     className="login-input"
-                    placeholder="Super admin email or phone"
+                    placeholder="Super admin username, email, or phone"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                   />
