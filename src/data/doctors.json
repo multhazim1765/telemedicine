@@ -1,1353 +1,1353 @@
 [
-  {
-    "hospital": "Ariyalur Apollo Hospital",
-    "doctorName": "Dr. ABDUL ADHIL T",
-    "id": "D1001",
-    "place": "Ariyalur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Ariyalur GH Multispeciality",
-    "doctorName": "Dr. ABDUL MALIK B J",
-    "id": "D1002",
-    "place": "Ariyalur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Ariyalur Aster Care",
-    "doctorName": "Dr. ABU AASEEM K",
-    "id": "D1003",
-    "place": "Ariyalur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Ariyalur City Medical Centre",
-    "doctorName": "Dr. ADHRA K M",
-    "id": "D1004",
-    "place": "Ariyalur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Ariyalur Sunrise Clinic",
-    "doctorName": "Dr. AFRAA K S",
-    "id": "D1005",
-    "place": "Ariyalur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Chengalpattu Apollo Hospital",
-    "doctorName": "Dr. AHAMED MULTHAZIM A",
-    "id": "D1006",
-    "place": "Chengalpattu District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Chengalpattu GH Multispeciality",
-    "doctorName": "Dr. AKHIL HUSSAIN A",
-    "id": "D1007",
-    "place": "Chengalpattu District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Chengalpattu Aster Care",
-    "doctorName": "Dr. ASIL JAMESHA T",
-    "id": "D1008",
-    "place": "Chengalpattu District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Chengalpattu City Medical Centre",
-    "doctorName": "Dr. ATHIFA FAREEZA A",
-    "id": "D1009",
-    "place": "Chengalpattu District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Chengalpattu Sunrise Clinic",
-    "doctorName": "Dr. DELLI GANESH J",
-    "id": "D1010",
-    "place": "Chengalpattu District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Chennai Apollo Hospital",
-    "doctorName": "Dr. DIVYA K",
-    "id": "D1011",
-    "place": "Chennai District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Chennai GH Multispeciality",
-    "doctorName": "Dr. FAHEEN ASHAR N",
-    "id": "D1012",
-    "place": "Chennai District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Chennai Aster Care",
-    "doctorName": "Dr. GOPINATHAN S",
-    "id": "D1013",
-    "place": "Chennai District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Chennai City Medical Centre",
-    "doctorName": "Dr. GOWTHAM T",
-    "id": "D1014",
-    "place": "Chennai District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Chennai Sunrise Clinic",
-    "doctorName": "Dr. HUZAIFA MEHNAZ N",
-    "id": "D1015",
-    "place": "Chennai District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Coimbatore Apollo Hospital",
-    "doctorName": "Dr. IFATH AHAMED P",
-    "id": "D1016",
-    "place": "Coimbatore District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Coimbatore GH Multispeciality",
-    "doctorName": "Dr. IRFAN KHAN J",
-    "id": "D1017",
-    "place": "Coimbatore District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Coimbatore Aster Care",
-    "doctorName": "Dr. JAASIR M",
-    "id": "D1018",
-    "place": "Coimbatore District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Coimbatore City Medical Centre",
-    "doctorName": "Dr. JAGADEESAN K",
-    "id": "D1019",
-    "place": "Coimbatore District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Coimbatore Sunrise Clinic",
-    "doctorName": "Dr. JEEVAN KUMAR S",
-    "id": "D1020",
-    "place": "Coimbatore District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Cuddalore Apollo Hospital",
-    "doctorName": "Dr. KAMALESHKUMAR K",
-    "id": "D1021",
-    "place": "Cuddalore District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Cuddalore GH Multispeciality",
-    "doctorName": "Dr. MANSOOR ALI A",
-    "id": "D1022",
-    "place": "Cuddalore District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Cuddalore Aster Care",
-    "doctorName": "Dr. MARWAN M",
-    "id": "D1023",
-    "place": "Cuddalore District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Cuddalore City Medical Centre",
-    "doctorName": "Dr. MOHAMED AARIF BUHARY H",
-    "id": "D1024",
-    "place": "Cuddalore District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Cuddalore Sunrise Clinic",
-    "doctorName": "Dr. MOHAMED ABDUL FAAZIL.A",
-    "id": "D1025",
-    "place": "Cuddalore District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Dharmapuri Apollo Hospital",
-    "doctorName": "Dr. MOHAMED AFSAR M",
-    "id": "D1026",
-    "place": "Dharmapuri District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Dharmapuri GH Multispeciality",
-    "doctorName": "Dr. MOHAMED ANAS A",
-    "id": "D1027",
-    "place": "Dharmapuri District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Dharmapuri Aster Care",
-    "doctorName": "Dr. MOHAMED ARSHATH S",
-    "id": "D1028",
-    "place": "Dharmapuri District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Dharmapuri City Medical Centre",
-    "doctorName": "Dr. MOHAMED FAIZ S",
-    "id": "D1029",
-    "place": "Dharmapuri District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Dharmapuri Sunrise Clinic",
-    "doctorName": "Dr. MOHAMED HALEEM G",
-    "id": "D1030",
-    "place": "Dharmapuri District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Dindigul Apollo Hospital",
-    "doctorName": "Dr. MOHAMED ISMAIL M",
-    "id": "D1031",
-    "place": "Dindigul District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Dindigul GH Multispeciality",
-    "doctorName": "Dr. MOHAMED MAYISH A",
-    "id": "D1032",
-    "place": "Dindigul District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Dindigul Aster Care",
-    "doctorName": "Dr. MOHAMED MUZZAMMIL M",
-    "id": "D1033",
-    "place": "Dindigul District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Dindigul City Medical Centre",
-    "doctorName": "Dr. MOHAMED SHAFIK S",
-    "id": "D1034",
-    "place": "Dindigul District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Dindigul Sunrise Clinic",
-    "doctorName": "Dr. MOHAMED SIDDIK S",
-    "id": "D1035",
-    "place": "Dindigul District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Erode Apollo Hospital",
-    "doctorName": "Dr. MOHAMED SUHAILU A",
-    "id": "D1036",
-    "place": "Erode District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Erode GH Multispeciality",
-    "doctorName": "Dr. MOHAMED THANISH S",
-    "id": "D1037",
-    "place": "Erode District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Erode Aster Care",
-    "doctorName": "Dr. MOHAMMAD MADINA",
-    "id": "D1038",
-    "place": "Erode District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Erode City Medical Centre",
-    "doctorName": "Dr. MOHAMMED ABZAL M",
-    "id": "D1039",
-    "place": "Erode District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Erode Sunrise Clinic",
-    "doctorName": "Dr. MOHAMMED ASHRAF M A",
-    "id": "D1040",
-    "place": "Erode District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Kallakurichi Apollo Hospital",
-    "doctorName": "Dr. MOHAMMED AYYUB KHAN",
-    "id": "D1041",
-    "place": "Kallakurichi District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Kallakurichi GH Multispeciality",
-    "doctorName": "Dr. MOHAMMED FARHAAD",
-    "id": "D1042",
-    "place": "Kallakurichi District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Kallakurichi Aster Care",
-    "doctorName": "Dr. MOHAMMED FAROOK M",
-    "id": "D1043",
-    "place": "Kallakurichi District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Kallakurichi City Medical Centre",
-    "doctorName": "Dr. MOHAMMED IRFAN S",
-    "id": "D1044",
-    "place": "Kallakurichi District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Kallakurichi Sunrise Clinic",
-    "doctorName": "Dr. MOHAMMED MAFAS A",
-    "id": "D1045",
-    "place": "Kallakurichi District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Kancheepuram Apollo Hospital",
-    "doctorName": "Dr. MOHAMMED RAHUMAN HASALI",
-    "id": "D1046",
-    "place": "Kancheepuram District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Kancheepuram GH Multispeciality",
-    "doctorName": "Dr. MOHAMMED WASHIM MEERAN S M",
-    "id": "D1047",
-    "place": "Kancheepuram District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Kancheepuram Aster Care",
-    "doctorName": "Dr. NIKKITHA R",
-    "id": "D1048",
-    "place": "Kancheepuram District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Kancheepuram City Medical Centre",
-    "doctorName": "Dr. SARA FATHIMA A",
-    "id": "D1049",
-    "place": "Kancheepuram District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Kancheepuram Sunrise Clinic",
-    "doctorName": "Dr. SHAHUL HAMEED M.",
-    "id": "D1050",
-    "place": "Kancheepuram District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Karur Apollo Hospital",
-    "doctorName": "Dr. SHUAYB MOHAMED KHAN F",
-    "id": "D1051",
-    "place": "Karur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Karur GH Multispeciality",
-    "doctorName": "Dr. SOFIYA K",
-    "id": "D1052",
-    "place": "Karur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Karur Aster Care",
-    "doctorName": "Dr. SREEJITH V",
-    "id": "D1053",
-    "place": "Karur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Karur City Medical Centre",
-    "doctorName": "Dr. SYED ABDUR RAHMAN",
-    "id": "D1054",
-    "place": "Karur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Karur Sunrise Clinic",
-    "doctorName": "Dr. SYED SHABEER N",
-    "id": "D1055",
-    "place": "Karur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Krishnagiri Apollo Hospital",
-    "doctorName": "Dr. SYED THAHSIN AGUSAM",
-    "id": "D1056",
-    "place": "Krishnagiri District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Krishnagiri GH Multispeciality",
-    "doctorName": "Dr. SYED UMAR PEERAN K",
-    "id": "D1057",
-    "place": "Krishnagiri District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Krishnagiri Aster Care",
-    "doctorName": "Dr. SYED UNAIS",
-    "id": "D1058",
-    "place": "Krishnagiri District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Krishnagiri City Medical Centre",
-    "doctorName": "Dr. THEANMERCY M",
-    "id": "D1059",
-    "place": "Krishnagiri District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Krishnagiri Sunrise Clinic",
-    "doctorName": "Dr. YAMINI SREE N",
-    "id": "D1060",
-    "place": "Krishnagiri District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Madurai Apollo Hospital",
-    "doctorName": "Dr. AARIF BASHA",
-    "id": "D1061",
-    "place": "Madurai District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Madurai GH Multispeciality",
-    "doctorName": "Dr. SULTHAN HALITH.R",
-    "id": "D1062",
-    "place": "Madurai District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Madurai Aster Care",
-    "doctorName": "Dr. SYED MUZAFFAR HUSSAIN",
-    "id": "D1063",
-    "place": "Madurai District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Madurai City Medical Centre",
-    "doctorName": "Dr. TN 1064",
-    "id": "D1064",
-    "place": "Madurai District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Madurai Sunrise Clinic",
-    "doctorName": "Dr. TN 1065",
-    "id": "D1065",
-    "place": "Madurai District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Mayiladuthurai Apollo Hospital",
-    "doctorName": "Dr. TN 1066",
-    "id": "D1066",
-    "place": "Mayiladuthurai District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Mayiladuthurai GH Multispeciality",
-    "doctorName": "Dr. TN 1067",
-    "id": "D1067",
-    "place": "Mayiladuthurai District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Mayiladuthurai Aster Care",
-    "doctorName": "Dr. TN 1068",
-    "id": "D1068",
-    "place": "Mayiladuthurai District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Mayiladuthurai City Medical Centre",
-    "doctorName": "Dr. TN 1069",
-    "id": "D1069",
-    "place": "Mayiladuthurai District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Mayiladuthurai Sunrise Clinic",
-    "doctorName": "Dr. TN 1070",
-    "id": "D1070",
-    "place": "Mayiladuthurai District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Nagapattinam Apollo Hospital",
-    "doctorName": "Dr. TN 1071",
-    "id": "D1071",
-    "place": "Nagapattinam District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Nagapattinam GH Multispeciality",
-    "doctorName": "Dr. TN 1072",
-    "id": "D1072",
-    "place": "Nagapattinam District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Nagapattinam Aster Care",
-    "doctorName": "Dr. TN 1073",
-    "id": "D1073",
-    "place": "Nagapattinam District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Nagapattinam City Medical Centre",
-    "doctorName": "Dr. TN 1074",
-    "id": "D1074",
-    "place": "Nagapattinam District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Nagapattinam Sunrise Clinic",
-    "doctorName": "Dr. TN 1075",
-    "id": "D1075",
-    "place": "Nagapattinam District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Namakkal Apollo Hospital",
-    "doctorName": "Dr. TN 1076",
-    "id": "D1076",
-    "place": "Namakkal District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Namakkal GH Multispeciality",
-    "doctorName": "Dr. TN 1077",
-    "id": "D1077",
-    "place": "Namakkal District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Namakkal Aster Care",
-    "doctorName": "Dr. TN 1078",
-    "id": "D1078",
-    "place": "Namakkal District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Namakkal City Medical Centre",
-    "doctorName": "Dr. TN 1079",
-    "id": "D1079",
-    "place": "Namakkal District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Namakkal Sunrise Clinic",
-    "doctorName": "Dr. TN 1080",
-    "id": "D1080",
-    "place": "Namakkal District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Nilgiris Apollo Hospital",
-    "doctorName": "Dr. TN 1081",
-    "id": "D1081",
-    "place": "Nilgiris District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Nilgiris GH Multispeciality",
-    "doctorName": "Dr. TN 1082",
-    "id": "D1082",
-    "place": "Nilgiris District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Nilgiris Aster Care",
-    "doctorName": "Dr. TN 1083",
-    "id": "D1083",
-    "place": "Nilgiris District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Nilgiris City Medical Centre",
-    "doctorName": "Dr. TN 1084",
-    "id": "D1084",
-    "place": "Nilgiris District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Nilgiris Sunrise Clinic",
-    "doctorName": "Dr. TN 1085",
-    "id": "D1085",
-    "place": "Nilgiris District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Perambalur Apollo Hospital",
-    "doctorName": "Dr. TN 1086",
-    "id": "D1086",
-    "place": "Perambalur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Perambalur GH Multispeciality",
-    "doctorName": "Dr. TN 1087",
-    "id": "D1087",
-    "place": "Perambalur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Perambalur Aster Care",
-    "doctorName": "Dr. TN 1088",
-    "id": "D1088",
-    "place": "Perambalur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Perambalur City Medical Centre",
-    "doctorName": "Dr. TN 1089",
-    "id": "D1089",
-    "place": "Perambalur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Perambalur Sunrise Clinic",
-    "doctorName": "Dr. TN 1090",
-    "id": "D1090",
-    "place": "Perambalur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Pudukkottai Apollo Hospital",
-    "doctorName": "Dr. TN 1091",
-    "id": "D1091",
-    "place": "Pudukkottai District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Pudukkottai GH Multispeciality",
-    "doctorName": "Dr. TN 1092",
-    "id": "D1092",
-    "place": "Pudukkottai District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Pudukkottai Aster Care",
-    "doctorName": "Dr. TN 1093",
-    "id": "D1093",
-    "place": "Pudukkottai District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Pudukkottai City Medical Centre",
-    "doctorName": "Dr. TN 1094",
-    "id": "D1094",
-    "place": "Pudukkottai District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Pudukkottai Sunrise Clinic",
-    "doctorName": "Dr. TN 1095",
-    "id": "D1095",
-    "place": "Pudukkottai District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Ramanathapuram Apollo Hospital",
-    "doctorName": "Dr. TN 1096",
-    "id": "D1096",
-    "place": "Ramanathapuram District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Ramanathapuram GH Multispeciality",
-    "doctorName": "Dr. TN 1097",
-    "id": "D1097",
-    "place": "Ramanathapuram District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Ramanathapuram Aster Care",
-    "doctorName": "Dr. TN 1098",
-    "id": "D1098",
-    "place": "Ramanathapuram District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Ramanathapuram City Medical Centre",
-    "doctorName": "Dr. TN 1099",
-    "id": "D1099",
-    "place": "Ramanathapuram District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Ramanathapuram Sunrise Clinic",
-    "doctorName": "Dr. TN 1100",
-    "id": "D1100",
-    "place": "Ramanathapuram District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Ranipet Apollo Hospital",
-    "doctorName": "Dr. TN 1101",
-    "id": "D1101",
-    "place": "Ranipet District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Ranipet GH Multispeciality",
-    "doctorName": "Dr. TN 1102",
-    "id": "D1102",
-    "place": "Ranipet District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Ranipet Aster Care",
-    "doctorName": "Dr. TN 1103",
-    "id": "D1103",
-    "place": "Ranipet District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Ranipet City Medical Centre",
-    "doctorName": "Dr. TN 1104",
-    "id": "D1104",
-    "place": "Ranipet District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Ranipet Sunrise Clinic",
-    "doctorName": "Dr. TN 1105",
-    "id": "D1105",
-    "place": "Ranipet District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Salem Apollo Hospital",
-    "doctorName": "Dr. TN 1106",
-    "id": "D1106",
-    "place": "Salem District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Salem GH Multispeciality",
-    "doctorName": "Dr. TN 1107",
-    "id": "D1107",
-    "place": "Salem District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Salem Aster Care",
-    "doctorName": "Dr. TN 1108",
-    "id": "D1108",
-    "place": "Salem District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Salem City Medical Centre",
-    "doctorName": "Dr. TN 1109",
-    "id": "D1109",
-    "place": "Salem District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Salem Sunrise Clinic",
-    "doctorName": "Dr. TN 1110",
-    "id": "D1110",
-    "place": "Salem District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Sivaganga Apollo Hospital",
-    "doctorName": "Dr. TN 1111",
-    "id": "D1111",
-    "place": "Sivaganga District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Sivaganga GH Multispeciality",
-    "doctorName": "Dr. TN 1112",
-    "id": "D1112",
-    "place": "Sivaganga District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Sivaganga Aster Care",
-    "doctorName": "Dr. TN 1113",
-    "id": "D1113",
-    "place": "Sivaganga District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Sivaganga City Medical Centre",
-    "doctorName": "Dr. TN 1114",
-    "id": "D1114",
-    "place": "Sivaganga District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Sivaganga Sunrise Clinic",
-    "doctorName": "Dr. TN 1115",
-    "id": "D1115",
-    "place": "Sivaganga District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tenkasi Apollo Hospital",
-    "doctorName": "Dr. TN 1116",
-    "id": "D1116",
-    "place": "Tenkasi District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tenkasi GH Multispeciality",
-    "doctorName": "Dr. TN 1117",
-    "id": "D1117",
-    "place": "Tenkasi District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tenkasi Aster Care",
-    "doctorName": "Dr. TN 1118",
-    "id": "D1118",
-    "place": "Tenkasi District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tenkasi City Medical Centre",
-    "doctorName": "Dr. TN 1119",
-    "id": "D1119",
-    "place": "Tenkasi District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tenkasi Sunrise Clinic",
-    "doctorName": "Dr. TN 1120",
-    "id": "D1120",
-    "place": "Tenkasi District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Thanjavur Apollo Hospital",
-    "doctorName": "Dr. TN 1121",
-    "id": "D1121",
-    "place": "Thanjavur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Thanjavur GH Multispeciality",
-    "doctorName": "Dr. TN 1122",
-    "id": "D1122",
-    "place": "Thanjavur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Thanjavur Aster Care",
-    "doctorName": "Dr. TN 1123",
-    "id": "D1123",
-    "place": "Thanjavur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Thanjavur City Medical Centre",
-    "doctorName": "Dr. TN 1124",
-    "id": "D1124",
-    "place": "Thanjavur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Thanjavur Sunrise Clinic",
-    "doctorName": "Dr. TN 1125",
-    "id": "D1125",
-    "place": "Thanjavur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Theni Apollo Hospital",
-    "doctorName": "Dr. TN 1126",
-    "id": "D1126",
-    "place": "Theni District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Theni GH Multispeciality",
-    "doctorName": "Dr. TN 1127",
-    "id": "D1127",
-    "place": "Theni District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Theni Aster Care",
-    "doctorName": "Dr. TN 1128",
-    "id": "D1128",
-    "place": "Theni District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Theni City Medical Centre",
-    "doctorName": "Dr. TN 1129",
-    "id": "D1129",
-    "place": "Theni District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Theni Sunrise Clinic",
-    "doctorName": "Dr. TN 1130",
-    "id": "D1130",
-    "place": "Theni District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Thoothukudi Apollo Hospital",
-    "doctorName": "Dr. TN 1131",
-    "id": "D1131",
-    "place": "Thoothukudi District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Thoothukudi GH Multispeciality",
-    "doctorName": "Dr. TN 1132",
-    "id": "D1132",
-    "place": "Thoothukudi District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Thoothukudi Aster Care",
-    "doctorName": "Dr. TN 1133",
-    "id": "D1133",
-    "place": "Thoothukudi District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Thoothukudi City Medical Centre",
-    "doctorName": "Dr. TN 1134",
-    "id": "D1134",
-    "place": "Thoothukudi District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Thoothukudi Sunrise Clinic",
-    "doctorName": "Dr. TN 1135",
-    "id": "D1135",
-    "place": "Thoothukudi District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tiruchirappalli Apollo Hospital",
-    "doctorName": "Dr. TN 1136",
-    "id": "D1136",
-    "place": "Tiruchirappalli District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tiruchirappalli GH Multispeciality",
-    "doctorName": "Dr. TN 1137",
-    "id": "D1137",
-    "place": "Tiruchirappalli District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tiruchirappalli Aster Care",
-    "doctorName": "Dr. TN 1138",
-    "id": "D1138",
-    "place": "Tiruchirappalli District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tiruchirappalli City Medical Centre",
-    "doctorName": "Dr. TN 1139",
-    "id": "D1139",
-    "place": "Tiruchirappalli District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tiruchirappalli Sunrise Clinic",
-    "doctorName": "Dr. TN 1140",
-    "id": "D1140",
-    "place": "Tiruchirappalli District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tirunelveli Apollo Hospital",
-    "doctorName": "Dr. TN 1141",
-    "id": "D1141",
-    "place": "Tirunelveli District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tirunelveli GH Multispeciality",
-    "doctorName": "Dr. TN 1142",
-    "id": "D1142",
-    "place": "Tirunelveli District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tirunelveli Aster Care",
-    "doctorName": "Dr. TN 1143",
-    "id": "D1143",
-    "place": "Tirunelveli District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tirunelveli City Medical Centre",
-    "doctorName": "Dr. TN 1144",
-    "id": "D1144",
-    "place": "Tirunelveli District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tirunelveli Sunrise Clinic",
-    "doctorName": "Dr. TN 1145",
-    "id": "D1145",
-    "place": "Tirunelveli District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tirupathur Apollo Hospital",
-    "doctorName": "Dr. TN 1146",
-    "id": "D1146",
-    "place": "Tirupathur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tirupathur GH Multispeciality",
-    "doctorName": "Dr. TN 1147",
-    "id": "D1147",
-    "place": "Tirupathur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tirupathur Aster Care",
-    "doctorName": "Dr. TN 1148",
-    "id": "D1148",
-    "place": "Tirupathur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tirupathur City Medical Centre",
-    "doctorName": "Dr. TN 1149",
-    "id": "D1149",
-    "place": "Tirupathur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tirupathur Sunrise Clinic",
-    "doctorName": "Dr. TN 1150",
-    "id": "D1150",
-    "place": "Tirupathur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tiruppur Apollo Hospital",
-    "doctorName": "Dr. TN 1151",
-    "id": "D1151",
-    "place": "Tiruppur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tiruppur GH Multispeciality",
-    "doctorName": "Dr. TN 1152",
-    "id": "D1152",
-    "place": "Tiruppur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tiruppur Aster Care",
-    "doctorName": "Dr. TN 1153",
-    "id": "D1153",
-    "place": "Tiruppur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tiruppur City Medical Centre",
-    "doctorName": "Dr. TN 1154",
-    "id": "D1154",
-    "place": "Tiruppur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tiruppur Sunrise Clinic",
-    "doctorName": "Dr. TN 1155",
-    "id": "D1155",
-    "place": "Tiruppur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tiruvallur Apollo Hospital",
-    "doctorName": "Dr. TN 1156",
-    "id": "D1156",
-    "place": "Tiruvallur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tiruvallur GH Multispeciality",
-    "doctorName": "Dr. TN 1157",
-    "id": "D1157",
-    "place": "Tiruvallur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tiruvallur Aster Care",
-    "doctorName": "Dr. TN 1158",
-    "id": "D1158",
-    "place": "Tiruvallur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tiruvallur City Medical Centre",
-    "doctorName": "Dr. TN 1159",
-    "id": "D1159",
-    "place": "Tiruvallur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tiruvallur Sunrise Clinic",
-    "doctorName": "Dr. TN 1160",
-    "id": "D1160",
-    "place": "Tiruvallur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tiruvannamalai Apollo Hospital",
-    "doctorName": "Dr. TN 1161",
-    "id": "D1161",
-    "place": "Tiruvannamalai District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tiruvannamalai GH Multispeciality",
-    "doctorName": "Dr. TN 1162",
-    "id": "D1162",
-    "place": "Tiruvannamalai District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tiruvannamalai Aster Care",
-    "doctorName": "Dr. TN 1163",
-    "id": "D1163",
-    "place": "Tiruvannamalai District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tiruvannamalai City Medical Centre",
-    "doctorName": "Dr. TN 1164",
-    "id": "D1164",
-    "place": "Tiruvannamalai District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tiruvannamalai Sunrise Clinic",
-    "doctorName": "Dr. TN 1165",
-    "id": "D1165",
-    "place": "Tiruvannamalai District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Tiruvarur Apollo Hospital",
-    "doctorName": "Dr. TN 1166",
-    "id": "D1166",
-    "place": "Tiruvarur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Tiruvarur GH Multispeciality",
-    "doctorName": "Dr. TN 1167",
-    "id": "D1167",
-    "place": "Tiruvarur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Tiruvarur Aster Care",
-    "doctorName": "Dr. TN 1168",
-    "id": "D1168",
-    "place": "Tiruvarur District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Tiruvarur City Medical Centre",
-    "doctorName": "Dr. TN 1169",
-    "id": "D1169",
-    "place": "Tiruvarur District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Tiruvarur Sunrise Clinic",
-    "doctorName": "Dr. TN 1170",
-    "id": "D1170",
-    "place": "Tiruvarur District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Vellore Apollo Hospital",
-    "doctorName": "Dr. TN 1171",
-    "id": "D1171",
-    "place": "Vellore District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Vellore GH Multispeciality",
-    "doctorName": "Dr. TN 1172",
-    "id": "D1172",
-    "place": "Vellore District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Vellore Aster Care",
-    "doctorName": "Dr. TN 1173",
-    "id": "D1173",
-    "place": "Vellore District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Vellore City Medical Centre",
-    "doctorName": "Dr. TN 1174",
-    "id": "D1174",
-    "place": "Vellore District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Vellore Sunrise Clinic",
-    "doctorName": "Dr. TN 1175",
-    "id": "D1175",
-    "place": "Vellore District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Viluppuram Apollo Hospital",
-    "doctorName": "Dr. TN 1176",
-    "id": "D1176",
-    "place": "Viluppuram District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Viluppuram GH Multispeciality",
-    "doctorName": "Dr. TN 1177",
-    "id": "D1177",
-    "place": "Viluppuram District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Viluppuram Aster Care",
-    "doctorName": "Dr. TN 1178",
-    "id": "D1178",
-    "place": "Viluppuram District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Viluppuram City Medical Centre",
-    "doctorName": "Dr. TN 1179",
-    "id": "D1179",
-    "place": "Viluppuram District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Viluppuram Sunrise Clinic",
-    "doctorName": "Dr. TN 1180",
-    "id": "D1180",
-    "place": "Viluppuram District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Virudhunagar Apollo Hospital",
-    "doctorName": "Dr. TN 1181",
-    "id": "D1181",
-    "place": "Virudhunagar District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Virudhunagar GH Multispeciality",
-    "doctorName": "Dr. TN 1182",
-    "id": "D1182",
-    "place": "Virudhunagar District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Virudhunagar Aster Care",
-    "doctorName": "Dr. TN 1183",
-    "id": "D1183",
-    "place": "Virudhunagar District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Virudhunagar City Medical Centre",
-    "doctorName": "Dr. TN 1184",
-    "id": "D1184",
-    "place": "Virudhunagar District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Virudhunagar Sunrise Clinic",
-    "doctorName": "Dr. TN 1185",
-    "id": "D1185",
-    "place": "Virudhunagar District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Kanyakumari Apollo Hospital",
-    "doctorName": "Dr. TN 1186",
-    "id": "D1186",
-    "place": "Kanyakumari District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Kanyakumari GH Multispeciality",
-    "doctorName": "Dr. TN 1187",
-    "id": "D1187",
-    "place": "Kanyakumari District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "Kanyakumari Aster Care",
-    "doctorName": "Dr. TN 1188",
-    "id": "D1188",
-    "place": "Kanyakumari District",
-    "designation": "Pediatrician"
-  },
-  {
-    "hospital": "Kanyakumari City Medical Centre",
-    "doctorName": "Dr. TN 1189",
-    "id": "D1189",
-    "place": "Kanyakumari District",
-    "designation": "Neurologist"
-  },
-  {
-    "hospital": "Kanyakumari Sunrise Clinic",
-    "doctorName": "Dr. TN 1190",
-    "id": "D1190",
-    "place": "Kanyakumari District",
-    "designation": "Orthopedic Surgeon"
-  },
-  {
-    "hospital": "Shifa Hospital",
-    "doctorName": "Dr. TN 1191",
-    "id": "D1191",
-    "place": "Thanjavur District",
-    "designation": "General Physician"
-  },
-  {
-    "hospital": "Meenakshi Hospital",
-    "doctorName": "Dr. TN 1192",
-    "id": "D1192",
-    "place": "Thanjavur District",
-    "designation": "Cardiologist"
-  },
-  {
-    "hospital": "A to Z Speciality Hospital",
-    "doctorName": "Dr. TN 1193",
-    "id": "D1193",
-    "place": "Thanjavur District",
-    "designation": "Pediatrician"
-  }
+    {
+        "hospital":  "Ariyalur Apollo Hospital",
+        "doctorName":  "Dr. ABDUL ADHIL T",
+        "id":  "D1101",
+        "place":  "Ariyalur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Ariyalur GH Multispeciality",
+        "doctorName":  "Dr. ABDUL MALIK B J",
+        "id":  "D1102",
+        "place":  "Ariyalur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Ariyalur Aster Care",
+        "doctorName":  "Dr. ABU AASEEM K",
+        "id":  "D1103",
+        "place":  "Ariyalur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Ariyalur City Medical Centre",
+        "doctorName":  "Dr. ADHRA K M",
+        "id":  "D1104",
+        "place":  "Ariyalur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Ariyalur Sunrise Clinic",
+        "doctorName":  "Dr. AFRAAK S",
+        "id":  "D1105",
+        "place":  "Ariyalur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Chengalpattu Apollo Hospital",
+        "doctorName":  "Dr. AHAMED MULTHAZIM A",
+        "id":  "D1106",
+        "place":  "Chengalpattu District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Chengalpattu GH Multispeciality",
+        "doctorName":  "Dr. AKHIL HUSSAIN A",
+        "id":  "D1107",
+        "place":  "Chengalpattu District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Chengalpattu Aster Care",
+        "doctorName":  "Dr. ASIL JAMESHA T",
+        "id":  "D1108",
+        "place":  "Chengalpattu District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Chengalpattu City Medical Centre",
+        "doctorName":  "Dr. ATHIFA FAREEZA A",
+        "id":  "D1109",
+        "place":  "Chengalpattu District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Chengalpattu Sunrise Clinic",
+        "doctorName":  "Dr. DELLI GANESH J",
+        "id":  "D1110",
+        "place":  "Chengalpattu District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Chennai Apollo Hospital",
+        "doctorName":  "Dr. DIVYA K",
+        "id":  "D1111",
+        "place":  "Chennai District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Chennai GH Multispeciality",
+        "doctorName":  "Dr. FAHEEN ASHAR N",
+        "id":  "D1112",
+        "place":  "Chennai District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Chennai Aster Care",
+        "doctorName":  "Dr. GOPINATHAN S",
+        "id":  "D1113",
+        "place":  "Chennai District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Chennai City Medical Centre",
+        "doctorName":  "Dr. GOWTHAM T",
+        "id":  "D1114",
+        "place":  "Chennai District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Chennai Sunrise Clinic",
+        "doctorName":  "Dr. HUZAIFA MEHNAZ N",
+        "id":  "D1115",
+        "place":  "Chennai District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Coimbatore Apollo Hospital",
+        "doctorName":  "Dr. IFATH AHAMED P",
+        "id":  "D1116",
+        "place":  "Coimbatore District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Coimbatore GH Multispeciality",
+        "doctorName":  "Dr. IRFAN KHAN J",
+        "id":  "D1117",
+        "place":  "Coimbatore District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Coimbatore Aster Care",
+        "doctorName":  "Dr. JAASIR M",
+        "id":  "D1118",
+        "place":  "Coimbatore District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Coimbatore City Medical Centre",
+        "doctorName":  "Dr. JAGADEESAN K",
+        "id":  "D1119",
+        "place":  "Coimbatore District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Coimbatore Sunrise Clinic",
+        "doctorName":  "Dr. JEEVAN KUMAR S",
+        "id":  "D1120",
+        "place":  "Coimbatore District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Cuddalore Apollo Hospital",
+        "doctorName":  "Dr. KAMALESH KUMAR K",
+        "id":  "D1121",
+        "place":  "Cuddalore District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Cuddalore GH Multispeciality",
+        "doctorName":  "Dr. MANSOOR ALI A",
+        "id":  "D1122",
+        "place":  "Cuddalore District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Cuddalore Aster Care",
+        "doctorName":  "Dr. MARWAN M",
+        "id":  "D1123",
+        "place":  "Cuddalore District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Cuddalore City Medical Centre",
+        "doctorName":  "Dr. MOHAMED AARIF BUHARY H",
+        "id":  "D1124",
+        "place":  "Cuddalore District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Cuddalore Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED ABDUL FAAZIL A",
+        "id":  "D1125",
+        "place":  "Cuddalore District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Dharmapuri Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED AFSAR M",
+        "id":  "D1126",
+        "place":  "Dharmapuri District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Dharmapuri GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED ANAS A",
+        "id":  "D1127",
+        "place":  "Dharmapuri District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Dharmapuri Aster Care",
+        "doctorName":  "Dr. MOHAMED ARSHATH S",
+        "id":  "D1128",
+        "place":  "Dharmapuri District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Dharmapuri City Medical Centre",
+        "doctorName":  "Dr. MOHAMED FAIZ S",
+        "id":  "D1129",
+        "place":  "Dharmapuri District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Dharmapuri Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED HALEEM G",
+        "id":  "D1130",
+        "place":  "Dharmapuri District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Dindigul Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED ISMAIL M",
+        "id":  "D1131",
+        "place":  "Dindigul District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Dindigul GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED MAYISH A",
+        "id":  "D1132",
+        "place":  "Dindigul District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Dindigul Aster Care",
+        "doctorName":  "Dr. MOHAMED MUZZAMMIL M",
+        "id":  "D1133",
+        "place":  "Dindigul District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Dindigul City Medical Centre",
+        "doctorName":  "Dr. MOHAMED SHAFIK S",
+        "id":  "D1134",
+        "place":  "Dindigul District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Dindigul Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED SIDDIK S",
+        "id":  "D1135",
+        "place":  "Dindigul District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Erode Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED SUHAILU A",
+        "id":  "D1136",
+        "place":  "Erode District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Erode GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED THANISH S",
+        "id":  "D1137",
+        "place":  "Erode District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Erode Aster Care",
+        "doctorName":  "Dr. MOHAMMAD MADINA",
+        "id":  "D1138",
+        "place":  "Erode District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Erode City Medical Centre",
+        "doctorName":  "Dr. MOHAMMED ABZAL M",
+        "id":  "D1139",
+        "place":  "Erode District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Erode Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMMED ASHRAF M A",
+        "id":  "D1140",
+        "place":  "Erode District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Kallakurichi Apollo Hospital",
+        "doctorName":  "Dr. MOHAMMED AYYUB KHAN",
+        "id":  "D1141",
+        "place":  "Kallakurichi District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Kallakurichi GH Multispeciality",
+        "doctorName":  "Dr. MOHAMMED FARHAAD",
+        "id":  "D1142",
+        "place":  "Kallakurichi District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Kallakurichi Aster Care",
+        "doctorName":  "Dr. MOHAMMED FAROOK M",
+        "id":  "D1143",
+        "place":  "Kallakurichi District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Kallakurichi City Medical Centre",
+        "doctorName":  "Dr. MOHAMMED IRFAN S",
+        "id":  "D1144",
+        "place":  "Kallakurichi District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Kallakurichi Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMMED JAFAS A",
+        "id":  "D1145",
+        "place":  "Kallakurichi District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Kancheepuram Apollo Hospital",
+        "doctorName":  "Dr. MOHAMMED RAHUMAN HASALI",
+        "id":  "D1146",
+        "place":  "Kancheepuram District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Kancheepuram GH Multispeciality",
+        "doctorName":  "Dr. MOHAMMED YASHIM MEERAN S M",
+        "id":  "D1147",
+        "place":  "Kancheepuram District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Kancheepuram Aster Care",
+        "doctorName":  "Dr. NIKKITHA R",
+        "id":  "D1148",
+        "place":  "Kancheepuram District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Kancheepuram City Medical Centre",
+        "doctorName":  "Dr. SARA FATHIMA A",
+        "id":  "D1149",
+        "place":  "Kancheepuram District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Kancheepuram Sunrise Clinic",
+        "doctorName":  "Dr. SHAHUL HAMEED M",
+        "id":  "D1150",
+        "place":  "Kancheepuram District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Karur Apollo Hospital",
+        "doctorName":  "Dr. SHUAYB MOHAMED KHAN F",
+        "id":  "D1151",
+        "place":  "Karur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Karur GH Multispeciality",
+        "doctorName":  "Dr. SOFIYA K",
+        "id":  "D1152",
+        "place":  "Karur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Karur Aster Care",
+        "doctorName":  "Dr. SREEJITH V",
+        "id":  "D1153",
+        "place":  "Karur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Karur City Medical Centre",
+        "doctorName":  "Dr. SYED ABDUR RAHMAN",
+        "id":  "D1154",
+        "place":  "Karur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Karur Sunrise Clinic",
+        "doctorName":  "Dr. SYED SHABEER N",
+        "id":  "D1155",
+        "place":  "Karur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Krishnagiri Apollo Hospital",
+        "doctorName":  "Dr. SYED THAHSIN AGUSAM",
+        "id":  "D1156",
+        "place":  "Krishnagiri District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Krishnagiri GH Multispeciality",
+        "doctorName":  "Dr. SYED UMAR PEERAN K",
+        "id":  "D1157",
+        "place":  "Krishnagiri District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Krishnagiri Aster Care",
+        "doctorName":  "Dr. SYED UNAI S",
+        "id":  "D1158",
+        "place":  "Krishnagiri District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Krishnagiri City Medical Centre",
+        "doctorName":  "Dr. THEAN MERCY M",
+        "id":  "D1159",
+        "place":  "Krishnagiri District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Krishnagiri Sunrise Clinic",
+        "doctorName":  "Dr. YAMINI SREE N",
+        "id":  "D1160",
+        "place":  "Krishnagiri District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Madurai Apollo Hospital",
+        "doctorName":  "Dr. ARIF BASHA A",
+        "id":  "D1161",
+        "place":  "Madurai District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Madurai GH Multispeciality",
+        "doctorName":  "Dr. SULTHAN HALITH",
+        "id":  "D1162",
+        "place":  "Madurai District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Madurai Aster Care",
+        "doctorName":  "Dr. SYED MUZAFFAR HUSSAIN",
+        "id":  "D1163",
+        "place":  "Madurai District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Madurai City Medical Centre",
+        "doctorName":  "Dr. AKSHAYA S",
+        "id":  "D1164",
+        "place":  "Madurai District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Madurai Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED MUAZ AL HAKEEM M",
+        "id":  "D1165",
+        "place":  "Madurai District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Mayiladuthurai Apollo Hospital",
+        "doctorName":  "Dr. AASHIQ AHAMAD J",
+        "id":  "D1166",
+        "place":  "Mayiladuthurai District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Mayiladuthurai GH Multispeciality",
+        "doctorName":  "Dr. ABDUL LATHEEF A",
+        "id":  "D1167",
+        "place":  "Mayiladuthurai District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Mayiladuthurai Aster Care",
+        "doctorName":  "Dr. ABDUR RAHMAN KHAJA MOHAIYADEEN",
+        "id":  "D1168",
+        "place":  "Mayiladuthurai District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Mayiladuthurai City Medical Centre",
+        "doctorName":  "Dr. ABDUR RAUF ALWAN A",
+        "id":  "D1169",
+        "place":  "Mayiladuthurai District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Mayiladuthurai Sunrise Clinic",
+        "doctorName":  "Dr. ABUZAR KHAN Z",
+        "id":  "D1170",
+        "place":  "Mayiladuthurai District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Nagapattinam Apollo Hospital",
+        "doctorName":  "Dr. AHAMED A",
+        "id":  "D1171",
+        "place":  "Nagapattinam District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Nagapattinam GH Multispeciality",
+        "doctorName":  "Dr. AHAMED SAFI SHARAAF M S",
+        "id":  "D1172",
+        "place":  "Nagapattinam District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Nagapattinam Aster Care",
+        "doctorName":  "Dr. AHMED MOHIDEEN M",
+        "id":  "D1173",
+        "place":  "Nagapattinam District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Nagapattinam City Medical Centre",
+        "doctorName":  "Dr. AJAYBHARATHI R C S",
+        "id":  "D1174",
+        "place":  "Nagapattinam District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Nagapattinam Sunrise Clinic",
+        "doctorName":  "Dr. AKIF THAHIR S",
+        "id":  "D1175",
+        "place":  "Nagapattinam District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Namakkal Apollo Hospital",
+        "doctorName":  "Dr. AL THAHIRA TASNEEM",
+        "id":  "D1176",
+        "place":  "Namakkal District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Namakkal GH Multispeciality",
+        "doctorName":  "Dr. ARTHI DEVI G",
+        "id":  "D1177",
+        "place":  "Namakkal District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Namakkal Aster Care",
+        "doctorName":  "Dr. DEVA SAKTHI R",
+        "id":  "D1178",
+        "place":  "Namakkal District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Namakkal City Medical Centre",
+        "doctorName":  "Dr. DHALAL MOHAMED M",
+        "id":  "D1179",
+        "place":  "Namakkal District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Namakkal Sunrise Clinic",
+        "doctorName":  "Dr. DHANUSH K",
+        "id":  "D1180",
+        "place":  "Namakkal District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Nilgiris Apollo Hospital",
+        "doctorName":  "Dr. ELANKAVI B",
+        "id":  "D1181",
+        "place":  "Nilgiris District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Nilgiris GH Multispeciality",
+        "doctorName":  "Dr. FARETHA BANU R",
+        "id":  "D1182",
+        "place":  "Nilgiris District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Nilgiris Aster Care",
+        "doctorName":  "Dr. JASIR AHAMED J",
+        "id":  "D1183",
+        "place":  "Nilgiris District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Nilgiris City Medical Centre",
+        "doctorName":  "Dr. JHOTHY SIRI A",
+        "id":  "D1184",
+        "place":  "Nilgiris District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Nilgiris Sunrise Clinic",
+        "doctorName":  "Dr. KARTHIKEYAN V",
+        "id":  "D1185",
+        "place":  "Nilgiris District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Perambalur Apollo Hospital",
+        "doctorName":  "Dr. LAKSHANYA S",
+        "id":  "D1186",
+        "place":  "Perambalur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Perambalur GH Multispeciality",
+        "doctorName":  "Dr. LEPAKSHI BABIAN AMEEN",
+        "id":  "D1187",
+        "place":  "Perambalur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Perambalur Aster Care",
+        "doctorName":  "Dr. MOHAMED ADNAN A",
+        "id":  "D1188",
+        "place":  "Perambalur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Perambalur City Medical Centre",
+        "doctorName":  "Dr. MOHAMED ASKAR N",
+        "id":  "D1189",
+        "place":  "Perambalur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Perambalur Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED FADHIL M",
+        "id":  "D1190",
+        "place":  "Perambalur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Pudukkottai Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED HAJEE M K",
+        "id":  "D1191",
+        "place":  "Pudukkottai District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Pudukkottai GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED HISAM N",
+        "id":  "D1192",
+        "place":  "Pudukkottai District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Pudukkottai Aster Care",
+        "doctorName":  "Dr. MOHAMED IJAZ A",
+        "id":  "D1193",
+        "place":  "Pudukkottai District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Pudukkottai City Medical Centre",
+        "doctorName":  "Dr. MOHAMED JAINUL BAAHIR H",
+        "id":  "D1194",
+        "place":  "Pudukkottai District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Pudukkottai Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED JIBRAN M",
+        "id":  "D1195",
+        "place":  "Pudukkottai District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Ramanathapuram Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED SHAFIQ N",
+        "id":  "D1196",
+        "place":  "Ramanathapuram District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Ramanathapuram GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED SHIHABDEEN S",
+        "id":  "D1197",
+        "place":  "Ramanathapuram District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Ramanathapuram Aster Care",
+        "doctorName":  "Dr. MOHAMED SUHAIL T",
+        "id":  "D1198",
+        "place":  "Ramanathapuram District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Ramanathapuram City Medical Centre",
+        "doctorName":  "Dr. MOHAMED THOUFEEQ R",
+        "id":  "D1199",
+        "place":  "Ramanathapuram District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Ramanathapuram Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMMED MUAAZ K I",
+        "id":  "D1200",
+        "place":  "Ramanathapuram District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Ranipet Apollo Hospital",
+        "doctorName":  "Dr. NASEEM AKTHAR A",
+        "id":  "D1201",
+        "place":  "Ranipet District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Ranipet GH Multispeciality",
+        "doctorName":  "Dr. NIRMALA DEVI P",
+        "id":  "D1202",
+        "place":  "Ranipet District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Ranipet Aster Care",
+        "doctorName":  "Dr. PARTHA SARATHI K",
+        "id":  "D1203",
+        "place":  "Ranipet District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Ranipet City Medical Centre",
+        "doctorName":  "Dr. RIAZKHAN S",
+        "id":  "D1204",
+        "place":  "Ranipet District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Ranipet Sunrise Clinic",
+        "doctorName":  "Dr. RIFATH AHAMED R",
+        "id":  "D1205",
+        "place":  "Ranipet District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Salem Apollo Hospital",
+        "doctorName":  "Dr. SAADH ABDULLAH Z",
+        "id":  "D1206",
+        "place":  "Salem District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Salem GH Multispeciality",
+        "doctorName":  "Dr. SABIHA TAHSEEN M H",
+        "id":  "D1207",
+        "place":  "Salem District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Salem Aster Care",
+        "doctorName":  "Dr. SARAVANAN B",
+        "id":  "D1208",
+        "place":  "Salem District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Salem City Medical Centre",
+        "doctorName":  "Dr. SHAIK ABDUL RAHMAN A",
+        "id":  "D1209",
+        "place":  "Salem District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Salem Sunrise Clinic",
+        "doctorName":  "Dr. SHARAFAH S",
+        "id":  "D1210",
+        "place":  "Salem District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Sivaganga Apollo Hospital",
+        "doctorName":  "Dr. SUFIYAN M",
+        "id":  "D1211",
+        "place":  "Sivaganga District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Sivaganga GH Multispeciality",
+        "doctorName":  "Dr. SUREYA PRAKASH S",
+        "id":  "D1212",
+        "place":  "Sivaganga District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Sivaganga Aster Care",
+        "doctorName":  "Dr. SYED TAWFIQ K",
+        "id":  "D1213",
+        "place":  "Sivaganga District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Sivaganga City Medical Centre",
+        "doctorName":  "Dr. VAIDHAI I",
+        "id":  "D1214",
+        "place":  "Sivaganga District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Sivaganga Sunrise Clinic",
+        "doctorName":  "Dr. VIJAYABHARATHI V",
+        "id":  "D1215",
+        "place":  "Sivaganga District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tenkasi Apollo Hospital",
+        "doctorName":  "Dr. ZAARA MUSKAAN H",
+        "id":  "D1216",
+        "place":  "Tenkasi District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tenkasi GH Multispeciality",
+        "doctorName":  "Dr. ABDUL MUSHRAF M",
+        "id":  "D1217",
+        "place":  "Tenkasi District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tenkasi Aster Care",
+        "doctorName":  "Dr. ABUBAKAR SIDDIQ A",
+        "id":  "D1218",
+        "place":  "Tenkasi District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tenkasi City Medical Centre",
+        "doctorName":  "Dr. N AMANULLAH",
+        "id":  "D1219",
+        "place":  "Tenkasi District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tenkasi Sunrise Clinic",
+        "doctorName":  "Dr. ASKAR BASHA",
+        "id":  "D1220",
+        "place":  "Tenkasi District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Thanjavur Apollo Hospital",
+        "doctorName":  "Dr. A FEROZ KHAN",
+        "id":  "D1221",
+        "place":  "Thanjavur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Thanjavur GH Multispeciality",
+        "doctorName":  "Dr. MEERAN UBAITHULLAH R",
+        "id":  "D1222",
+        "place":  "Thanjavur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Thanjavur Aster Care",
+        "doctorName":  "Dr. MOHAMED JUNAID",
+        "id":  "D1223",
+        "place":  "Thanjavur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Thanjavur City Medical Centre",
+        "doctorName":  "Dr. MOHAMED SALMAN K",
+        "id":  "D1224",
+        "place":  "Thanjavur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Thanjavur Sunrise Clinic",
+        "doctorName":  "Dr. MUHAMMED DHIYAN A E",
+        "id":  "D1225",
+        "place":  "Thanjavur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Shifa Hospital",
+        "doctorName":  "Dr. SYED FURQAN A",
+        "id":  "D1226",
+        "place":  "Thanjavur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Meenakshi Hospital",
+        "doctorName":  "Dr. THOWFIQ RAJA",
+        "id":  "D1227",
+        "place":  "Thanjavur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "A to Z Speciality Hospital",
+        "doctorName":  "Dr. THRISHA JAWHAR J",
+        "id":  "D1228",
+        "place":  "Thanjavur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Theni Apollo Hospital",
+        "doctorName":  "Dr. AFIA A",
+        "id":  "D1229",
+        "place":  "Theni District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Theni GH Multispeciality",
+        "doctorName":  "Dr. ABDUL ADHIL T",
+        "id":  "D1230",
+        "place":  "Theni District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Theni Aster Care",
+        "doctorName":  "Dr. ABDUL MALIK B J",
+        "id":  "D1231",
+        "place":  "Theni District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Theni City Medical Centre",
+        "doctorName":  "Dr. ABU AASEEM K",
+        "id":  "D1232",
+        "place":  "Theni District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Theni Sunrise Clinic",
+        "doctorName":  "Dr. ADHRA K M",
+        "id":  "D1233",
+        "place":  "Theni District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Thoothukudi Apollo Hospital",
+        "doctorName":  "Dr. AFRAAK S",
+        "id":  "D1234",
+        "place":  "Thoothukudi District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Thoothukudi GH Multispeciality",
+        "doctorName":  "Dr. AHAMED MULTHAZIM A",
+        "id":  "D1235",
+        "place":  "Thoothukudi District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Thoothukudi Aster Care",
+        "doctorName":  "Dr. AKHIL HUSSAIN A",
+        "id":  "D1236",
+        "place":  "Thoothukudi District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Thoothukudi City Medical Centre",
+        "doctorName":  "Dr. ASIL JAMESHA T",
+        "id":  "D1237",
+        "place":  "Thoothukudi District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Thoothukudi Sunrise Clinic",
+        "doctorName":  "Dr. ATHIFA FAREEZA A",
+        "id":  "D1238",
+        "place":  "Thoothukudi District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tiruchirappalli Apollo Hospital",
+        "doctorName":  "Dr. DELLI GANESH J",
+        "id":  "D1239",
+        "place":  "Tiruchirappalli District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tiruchirappalli GH Multispeciality",
+        "doctorName":  "Dr. DIVYA K",
+        "id":  "D1240",
+        "place":  "Tiruchirappalli District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tiruchirappalli Aster Care",
+        "doctorName":  "Dr. FAHEEN ASHAR N",
+        "id":  "D1241",
+        "place":  "Tiruchirappalli District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tiruchirappalli City Medical Centre",
+        "doctorName":  "Dr. GOPINATHAN S",
+        "id":  "D1242",
+        "place":  "Tiruchirappalli District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tiruchirappalli Sunrise Clinic",
+        "doctorName":  "Dr. GOWTHAM T",
+        "id":  "D1243",
+        "place":  "Tiruchirappalli District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tirunelveli Apollo Hospital",
+        "doctorName":  "Dr. HUZAIFA MEHNAZ N",
+        "id":  "D1244",
+        "place":  "Tirunelveli District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tirunelveli GH Multispeciality",
+        "doctorName":  "Dr. IFATH AHAMED P",
+        "id":  "D1245",
+        "place":  "Tirunelveli District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tirunelveli Aster Care",
+        "doctorName":  "Dr. IRFAN KHAN J",
+        "id":  "D1246",
+        "place":  "Tirunelveli District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tirunelveli City Medical Centre",
+        "doctorName":  "Dr. JAASIR M",
+        "id":  "D1247",
+        "place":  "Tirunelveli District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tirunelveli Sunrise Clinic",
+        "doctorName":  "Dr. JAGADEESAN K",
+        "id":  "D1248",
+        "place":  "Tirunelveli District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tirupathur Apollo Hospital",
+        "doctorName":  "Dr. JEEVAN KUMAR S",
+        "id":  "D1249",
+        "place":  "Tirupathur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tirupathur GH Multispeciality",
+        "doctorName":  "Dr. KAMALESH KUMAR K",
+        "id":  "D1250",
+        "place":  "Tirupathur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tirupathur Aster Care",
+        "doctorName":  "Dr. MANSOOR ALI A",
+        "id":  "D1251",
+        "place":  "Tirupathur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tirupathur City Medical Centre",
+        "doctorName":  "Dr. MARWAN M",
+        "id":  "D1252",
+        "place":  "Tirupathur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tirupathur Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED AARIF BUHARY H",
+        "id":  "D1253",
+        "place":  "Tirupathur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tiruppur Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED ABDUL FAAZIL A",
+        "id":  "D1254",
+        "place":  "Tiruppur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tiruppur GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED AFSAR M",
+        "id":  "D1255",
+        "place":  "Tiruppur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tiruppur Aster Care",
+        "doctorName":  "Dr. MOHAMED ANAS A",
+        "id":  "D1256",
+        "place":  "Tiruppur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tiruppur City Medical Centre",
+        "doctorName":  "Dr. MOHAMED ARSHATH S",
+        "id":  "D1257",
+        "place":  "Tiruppur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tiruppur Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED FAIZ S",
+        "id":  "D1258",
+        "place":  "Tiruppur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tiruvallur Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED HALEEM G",
+        "id":  "D1259",
+        "place":  "Tiruvallur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tiruvallur GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED ISMAIL M",
+        "id":  "D1260",
+        "place":  "Tiruvallur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tiruvallur Aster Care",
+        "doctorName":  "Dr. MOHAMED MAYISH A",
+        "id":  "D1261",
+        "place":  "Tiruvallur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tiruvallur City Medical Centre",
+        "doctorName":  "Dr. MOHAMED MUZZAMMIL M",
+        "id":  "D1262",
+        "place":  "Tiruvallur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tiruvallur Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMED SHAFIK S",
+        "id":  "D1263",
+        "place":  "Tiruvallur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tiruvannamalai Apollo Hospital",
+        "doctorName":  "Dr. MOHAMED SIDDIK S",
+        "id":  "D1264",
+        "place":  "Tiruvannamalai District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tiruvannamalai GH Multispeciality",
+        "doctorName":  "Dr. MOHAMED SUHAILU A",
+        "id":  "D1265",
+        "place":  "Tiruvannamalai District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tiruvannamalai Aster Care",
+        "doctorName":  "Dr. MOHAMED THANISH S",
+        "id":  "D1266",
+        "place":  "Tiruvannamalai District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tiruvannamalai City Medical Centre",
+        "doctorName":  "Dr. MOHAMMAD MADINA",
+        "id":  "D1267",
+        "place":  "Tiruvannamalai District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tiruvannamalai Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMMED ABZAL M",
+        "id":  "D1268",
+        "place":  "Tiruvannamalai District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Tiruvarur Apollo Hospital",
+        "doctorName":  "Dr. MOHAMMED ASHRAF M A",
+        "id":  "D1269",
+        "place":  "Tiruvarur District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Tiruvarur GH Multispeciality",
+        "doctorName":  "Dr. MOHAMMED AYYUB KHAN",
+        "id":  "D1270",
+        "place":  "Tiruvarur District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Tiruvarur Aster Care",
+        "doctorName":  "Dr. MOHAMMED FARHAAD",
+        "id":  "D1271",
+        "place":  "Tiruvarur District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Tiruvarur City Medical Centre",
+        "doctorName":  "Dr. MOHAMMED FAROOK M",
+        "id":  "D1272",
+        "place":  "Tiruvarur District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Tiruvarur Sunrise Clinic",
+        "doctorName":  "Dr. MOHAMMED IRFAN S",
+        "id":  "D1273",
+        "place":  "Tiruvarur District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Vellore Apollo Hospital",
+        "doctorName":  "Dr. MOHAMMED JAFAS A",
+        "id":  "D1274",
+        "place":  "Vellore District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Vellore GH Multispeciality",
+        "doctorName":  "Dr. MOHAMMED RAHUMAN HASALI",
+        "id":  "D1275",
+        "place":  "Vellore District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Vellore Aster Care",
+        "doctorName":  "Dr. MOHAMMED YASHIM MEERAN S M",
+        "id":  "D1276",
+        "place":  "Vellore District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Vellore City Medical Centre",
+        "doctorName":  "Dr. NIKKITHA R",
+        "id":  "D1277",
+        "place":  "Vellore District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Vellore Sunrise Clinic",
+        "doctorName":  "Dr. SARA FATHIMA A",
+        "id":  "D1278",
+        "place":  "Vellore District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Viluppuram Apollo Hospital",
+        "doctorName":  "Dr. SHAHUL HAMEED M",
+        "id":  "D1279",
+        "place":  "Viluppuram District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Viluppuram GH Multispeciality",
+        "doctorName":  "Dr. SHUAYB MOHAMED KHAN F",
+        "id":  "D1280",
+        "place":  "Viluppuram District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Viluppuram Aster Care",
+        "doctorName":  "Dr. SOFIYA K",
+        "id":  "D1281",
+        "place":  "Viluppuram District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Viluppuram City Medical Centre",
+        "doctorName":  "Dr. SREEJITH V",
+        "id":  "D1282",
+        "place":  "Viluppuram District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Viluppuram Sunrise Clinic",
+        "doctorName":  "Dr. SYED ABDUR RAHMAN",
+        "id":  "D1283",
+        "place":  "Viluppuram District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Virudhunagar Apollo Hospital",
+        "doctorName":  "Dr. SYED SHABEER N",
+        "id":  "D1284",
+        "place":  "Virudhunagar District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Virudhunagar GH Multispeciality",
+        "doctorName":  "Dr. SYED THAHSIN AGUSAM",
+        "id":  "D1285",
+        "place":  "Virudhunagar District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Virudhunagar Aster Care",
+        "doctorName":  "Dr. SYED UMAR PEERAN K",
+        "id":  "D1286",
+        "place":  "Virudhunagar District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Virudhunagar City Medical Centre",
+        "doctorName":  "Dr. SYED UNAI S",
+        "id":  "D1287",
+        "place":  "Virudhunagar District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Virudhunagar Sunrise Clinic",
+        "doctorName":  "Dr. THEAN MERCY M",
+        "id":  "D1288",
+        "place":  "Virudhunagar District",
+        "designation":  "Pediatrician"
+    },
+    {
+        "hospital":  "Kanyakumari Apollo Hospital",
+        "doctorName":  "Dr. YAMINI SREE N",
+        "id":  "D1289",
+        "place":  "Kanyakumari District",
+        "designation":  "Neurologist"
+    },
+    {
+        "hospital":  "Kanyakumari GH Multispeciality",
+        "doctorName":  "Dr. ARIF BASHA A",
+        "id":  "D1290",
+        "place":  "Kanyakumari District",
+        "designation":  "Orthopedic Surgeon"
+    },
+    {
+        "hospital":  "Kanyakumari Aster Care",
+        "doctorName":  "Dr. SULTHAN HALITH",
+        "id":  "D1291",
+        "place":  "Kanyakumari District",
+        "designation":  "General Physician"
+    },
+    {
+        "hospital":  "Kanyakumari City Medical Centre",
+        "doctorName":  "Dr. SYED MUZAFFAR HUSSAIN",
+        "id":  "D1292",
+        "place":  "Kanyakumari District",
+        "designation":  "Cardiologist"
+    },
+    {
+        "hospital":  "Kanyakumari Sunrise Clinic",
+        "doctorName":  "Dr. AKSHAYA S",
+        "id":  "D1293",
+        "place":  "Kanyakumari District",
+        "designation":  "Pediatrician"
+    }
 ]

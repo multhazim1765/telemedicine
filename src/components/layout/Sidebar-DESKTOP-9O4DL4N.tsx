@@ -6,6 +6,7 @@ import {
   ClipboardList,
   FileText,
   LayoutDashboard,
+  MessageSquare,
   Pill,
   Settings,
   Shield,
@@ -36,6 +37,7 @@ const navByRole: Record<UserRole, Array<{ to: string; label: string; icon: JSX.E
     { to: "/super-admin/hospitals", label: "Hospitals", icon: <Building2 className="h-4 w-4" /> },
     { to: "/super-admin/patients", label: "Patients", icon: <UserRound className="h-4 w-4" /> },
     { to: "/super-admin/pharmacies", label: "Pharmacies", icon: <Syringe className="h-4 w-4" /> },
+    { to: "/super-admin/sms-booking", label: "SMS Booking", icon: <MessageSquare className="h-4 w-4" /> },
     { to: "/super-admin/triage-rules", label: "Triage Rules", icon: <ClipboardList className="h-4 w-4" /> },
     { to: "/super-admin/medicines", label: "Medicines", icon: <Pill className="h-4 w-4" /> },
     { to: "/super-admin/sms-logs", label: "SMS Logs", icon: <Bell className="h-4 w-4" /> },
@@ -67,9 +69,8 @@ const SidebarContent = ({ collapsed, role, onCloseMobile }: Pick<SidebarProps, "
               key={item.to}
               to={item.to}
               onClick={onCloseMobile}
-              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
-                active ? "bg-[linear-gradient(135deg,#f9eedb,#f4dfb7)] text-[#5b311e] ring-1 ring-[#e2c999]" : "text-[#6d584a] hover:bg-[#faf3ea]"
-              }`}
+              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${active ? "bg-[linear-gradient(135deg,#f9eedb,#f4dfb7)] text-[#5b311e] ring-1 ring-[#e2c999]" : "text-[#6d584a] hover:bg-[#faf3ea]"
+                }`}
             >
               {item.icon}
               {!collapsed && <span>{item.label}</span>}

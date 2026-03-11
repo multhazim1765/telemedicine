@@ -3,8 +3,8 @@ import { Activity } from "lucide-react";
 
 export const MedicalSpinner = ({
   fullScreen = false,
-  label = "Doctor is running...",
-  message = "Opening your care workspace"
+  label = "Opening care tools",
+  message = "Bringing the next screen online"
 }: {
   fullScreen?: boolean;
   label?: string;
@@ -12,16 +12,21 @@ export const MedicalSpinner = ({
 }) => (
   <div className={fullScreen ? "mascot-loader mascot-loader-fullscreen" : "mascot-loader"}>
     <div className="mascot-loader-panel">
-      <div className="mascot-loader-track">
-        <div className="mascot-loader-track-line" />
-        <motion.img
-          src="/doctor-3d.svg"
-          alt="Running doctor"
-          className="mascot-loader-image mascot-loader-image-running"
-          animate={{ x: ["-42%", "42%", "-42%"], y: [0, -8, 0, -8, 0], rotate: [0, 2, 0, -2, 0] }}
-          transition={{ duration: 3.1, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      <motion.div
+        className="mascot-loader-orbit"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
+      >
+        <span className="mascot-loader-node mascot-loader-node-large" />
+        <span className="mascot-loader-node mascot-loader-node-small" />
+      </motion.div>
+      <motion.img
+        src="/doctor-3d.svg"
+        alt="Telehealth mascot"
+        className="mascot-loader-image"
+        animate={{ y: [0, -10, 0], scale: [1, 1.02, 1] }}
+        transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+      />
       <div className="mascot-loader-copy">
         <p className="mascot-loader-label">{label}</p>
         <p className="mascot-loader-message">{message}</p>

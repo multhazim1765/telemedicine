@@ -274,6 +274,15 @@ const findDemoUserByUid = (uid: string): AppUser | null => {
   return rest;
 };
 
+const findDemoUserByEmail = (email: string): AppUser | null => {
+  const user = getDemoUsers().find((item) => item.email.toLowerCase() === email.toLowerCase());
+  if (!user) {
+    return null;
+  }
+  const { password: _password, ...rest } = user;
+  return rest;
+};
+
 const broadcastDemoAuthChange = () => {
   window.dispatchEvent(new Event("telehealth-demo-auth-changed"));
 };
@@ -513,6 +522,17 @@ export const getCurrentUserProfile = async (uid: string): Promise<AppUser | null
 
   const userDoc = await getDoc(doc(db, "users", uid));
   if (!userDoc.exists()) {
+    if (authUser?.email) {
+      const seededProfile = findDemoUserByEmail(authUser.email);
+      if (seededProfile) {
+        return {
+          ...seededProfile,
+          uid,
+          email: authUser.email
+        };
+      }
+    }
+
     if (!authUser?.email || !claimRole) {
       return null;
     }
